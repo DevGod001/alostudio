@@ -25,7 +25,8 @@ function App() {
     customer_email: '',
     customer_phone: '',
     booking_date: '',
-    booking_time: ''
+    booking_time: '',
+    service_id: ''
   });
   const [availableSlots, setAvailableSlots] = useState([]);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
