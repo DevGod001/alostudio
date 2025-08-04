@@ -56,7 +56,7 @@ class Service(BaseModel):
     description: str
     base_price: float
     deposit_percentage: float  # 25% for indoor, 60% for outdoor
-    duration_hours: int
+    duration_hours: float
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
 
