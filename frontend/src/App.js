@@ -340,9 +340,9 @@ function App() {
             <nav className="flex space-x-6">
               <Button variant="ghost" onClick={() => setCurrentView('home')}>Home</Button>
               <Button variant="ghost" onClick={() => setCurrentView('customer-portal')}>My Bookings</Button>
-              <Dialog>
+              <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost">Admin</Button>
+                  <Button variant="ghost" onClick={() => setShowAdminDialog(true)}>Admin</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
