@@ -35,6 +35,7 @@ class ServiceType(str, Enum):
     EDITING = "editing"
     GRAPHIC_DESIGN = "graphic_design"
     MEMORY_STORAGE = "memory_storage"
+    FRAMES = "frames"
 
 class BookingStatus(str, Enum):
     PENDING_PAYMENT = "pending_payment"
@@ -57,12 +58,27 @@ class Service(BaseModel):
     base_price: float
     deposit_percentage: float  # 25% for indoor, 60% for outdoor
     duration_hours: float
+    features: Optional[List[str]] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = True
+
+class ComboService(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    service_ids: List[str]
+    description: str
+    total_price: float
+    discount_percentage: float = 15.0
+    final_price: float
+    duration_hours: float
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
 
 class Booking(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     service_id: str
+    service_type: str
+    is_combo: bool = False
     customer_email: str
     customer_phone: str
     customer_name: str
@@ -82,12 +98,11 @@ class Admin(BaseModel):
     password_hash: str  # In real app, use proper hashing
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class PricingConfig(BaseModel):
+class Settings(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    service_type: str
-    service_name: str
-    price: float
-    description: str
+    whatsapp_number: str = "+16144055997"
+    cashapp_id: str = "$VitiPay"
+    business_name: str = "Alostudio"
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 # Input Models
@@ -117,10 +132,15 @@ class ServiceCreate(BaseModel):
     deposit_percentage: float
     duration_hours: float
 
+class SettingsUpdate(BaseModel):
+    whatsapp_number: str
+    cashapp_id: str
+
 # Initialize default services
 async def initialize_default_services():
     # Clear existing services first
     await db.services.delete_many({})
+    await db.combo_services.delete_many({})
     
     default_services = [
         # Makeup Services
@@ -130,7 +150,8 @@ async def initialize_default_services():
             "description": "Perfect for everyday elegance with subtle enhancement. Includes skin prep, natural foundation, soft eyeshadow, mascara, and nude lip color.",
             "base_price": 75.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 1
+            "duration_hours": 1.0,
+            "features": ["Skin prep", "Natural foundation", "Soft eyeshadow", "Mascara", "Nude lip color"]
         },
         {
             "name": "Soft Glow Glam",
@@ -138,7 +159,8 @@ async def initialize_default_services():
             "description": "Ideal for special occasions with enhanced beauty. Includes contouring, highlighting, defined eyes, and glamorous finish.",
             "base_price": 95.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 1.5
+            "duration_hours": 1.5,
+            "features": ["Contouring", "Highlighting", "Defined eyes", "Glamorous finish", "Professional touch-ups"]
         },
         {
             "name": "Full Glow Glam",
@@ -146,7 +168,8 @@ async def initialize_default_services():
             "description": "Complete transformation for red carpet events. Premium makeup with airbrush foundation, dramatic eyes, contouring, and luxury finish.",
             "base_price": 150.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 2
+            "duration_hours": 2.0,
+            "features": ["Airbrush foundation", "Dramatic eyes", "Full contouring", "Luxury finish", "False lashes", "Premium products"]
         },
         # Photography Services
         {
@@ -156,7 +179,8 @@ async def initialize_default_services():
             "description": "Professional studio session with basic lighting setup, 1 hour session, 10 edited photos.",
             "base_price": 180.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 1
+            "duration_hours": 1.0,
+            "features": ["Professional lighting", "1 hour session", "10 edited photos", "Basic retouching", "Digital delivery"]
         },
         {
             "name": "Deluxe Indoor Session",
@@ -165,7 +189,8 @@ async def initialize_default_services():
             "description": "Premium studio session with advanced lighting, props, 2 hours, 20 edited photos, and styling consultation.",
             "base_price": 280.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 2
+            "duration_hours": 2.0,
+            "features": ["Advanced lighting", "Props included", "2 hours session", "20 edited photos", "Styling consultation", "Premium retouching"]
         },
         {
             "name": "Newborn/Infant Session",
@@ -174,7 +199,8 @@ async def initialize_default_services():
             "description": "Specialized newborn photography with safety first approach. Up to 3 clothing changes, 5 edited photos, $15 per additional edit.",
             "base_price": 230.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 2
+            "duration_hours": 2.0,
+            "features": ["Safety first approach", "Up to 3 clothing changes", "5 edited photos", "Newborn props", "Gentle handling", "Additional edits $15 each"]
         },
         {
             "name": "Outdoor Photography",
@@ -183,7 +209,8 @@ async def initialize_default_services():
             "description": "On-location outdoor session at scenic locations. Natural lighting, candid and posed shots, 15 edited photos.",
             "base_price": 320.0,
             "deposit_percentage": 60.0,
-            "duration_hours": 2
+            "duration_hours": 2.0,
+            "features": ["Scenic locations", "Natural lighting", "Candid & posed shots", "15 edited photos", "Location scouting", "Weather backup plan"]
         },
         # Video Services
         {
@@ -193,7 +220,8 @@ async def initialize_default_services():
             "description": "Professional studio video production with lighting setup, 2-hour session, basic editing included.",
             "base_price": 350.0,
             "deposit_percentage": 25.0,
-            "duration_hours": 2
+            "duration_hours": 2.0,
+            "features": ["Professional lighting", "2-hour session", "Basic editing", "Multiple angles", "Audio recording", "Digital delivery"]
         },
         {
             "name": "Outdoor Video Session",
@@ -202,20 +230,111 @@ async def initialize_default_services():
             "description": "On-location video production for events, documentaries, or promotional content. Professional equipment and editing.",
             "base_price": 500.0,
             "deposit_percentage": 60.0,
-            "duration_hours": 3
+            "duration_hours": 3.0,
+            "features": ["Professional equipment", "3-hour session", "Advanced editing", "Multiple locations", "Drone shots available", "Sound recording"]
+        },
+        # Additional Services
+        {
+            "name": "Photo Editing Service",
+            "type": "editing",
+            "description": "Professional photo editing and retouching. Upload your photos and we'll enhance them with professional editing techniques.",
+            "base_price": 25.0,
+            "deposit_percentage": 50.0,
+            "duration_hours": 0.5,
+            "features": ["Color correction", "Retouching", "Background removal", "Creative effects", "High-resolution output", "1-2 day turnaround"]
+        },
+        {
+            "name": "Video Editing Service", 
+            "type": "editing",
+            "description": "Professional video editing with transitions, effects, color grading, and sound mixing. Perfect for events, vlogs, or promotional content.",
+            "base_price": 75.0,
+            "deposit_percentage": 50.0,
+            "duration_hours": 2.0,
+            "features": ["Professional editing", "Transitions & effects", "Color grading", "Sound mixing", "Title graphics", "1-2 week turnaround"]
+        },
+        {
+            "name": "Graphic Design Service",
+            "type": "graphic_design",
+            "description": "Custom graphic design for logos, flyers, social media posts, invitations, and more. Professional creative solutions.",
+            "base_price": 85.0,
+            "deposit_percentage": 50.0,
+            "duration_hours": 1.5,
+            "features": ["Custom designs", "Multiple revisions", "High-resolution files", "Various formats", "Brand consistency", "3-5 day delivery"]
+        },
+        {
+            "name": "Memory Storage (6 months)",
+            "type": "memory_storage",
+            "description": "Secure cloud storage for your photos and videos. 6-month access with privacy controls and easy sharing options.",
+            "base_price": 6.0,
+            "deposit_percentage": 100.0,
+            "duration_hours": 0.0,
+            "features": ["Secure cloud storage", "6-month access", "Privacy controls", "Easy sharing", "Download anytime", "Unlimited views"]
+        },
+        {
+            "name": "Premium Picture Frames",
+            "type": "frames",
+            "description": "High-quality picture frames in various sizes. Perfect for displaying your professional photos. Multiple styles available.",
+            "base_price": 45.0,
+            "deposit_percentage": 50.0,
+            "duration_hours": 0.0,
+            "features": ["Various sizes", "Multiple styles", "High quality materials", "Professional mounting", "Gift wrapping available", "Bulk discounts"]
         }
     ]
     
+    service_ids = {}
     for service_data in default_services:
         service = Service(**service_data)
         await db.services.insert_one(service.dict())
+        service_ids[service.type] = service.id
+    
+    # Create combo services
+    combo_services = [
+        {
+            "name": "Makeup + Photography Combo",
+            "service_ids": [service_ids.get("makeup"), service_ids.get("photography")],
+            "description": "Perfect combination of professional makeup and photography session. Get the complete experience with 15% discount.",
+            "total_price": 255.0,  # Natural Glow (75) + Standard Photo (180)
+            "discount_percentage": 15.0,
+            "final_price": 216.75,  # 15% discount
+            "duration_hours": 2.0
+        },
+        {
+            "name": "Makeup + Video Combo",
+            "service_ids": [service_ids.get("makeup"), service_ids.get("video")], 
+            "description": "Professional makeup plus video session combo. Look your best on camera with our expert team and save 15%.",
+            "total_price": 425.0,  # Natural Glow (75) + Indoor Video (350)
+            "discount_percentage": 15.0,
+            "final_price": 361.25,  # 15% discount
+            "duration_hours": 3.0
+        },
+        {
+            "name": "Full Glam + Deluxe Photo Combo",
+            "service_ids": [service_ids.get("makeup"), service_ids.get("photography")],
+            "description": "Ultimate experience with Full Glow Glam makeup and Deluxe Photography session. Perfect for special occasions with 15% savings.",
+            "total_price": 430.0,  # Full Glow (150) + Deluxe Photo (280)
+            "discount_percentage": 15.0,
+            "final_price": 365.50,  # 15% discount
+            "duration_hours": 4.0
+        }
+    ]
+    
+    for combo_data in combo_services:
+        combo = ComboService(**combo_data)
+        await db.combo_services.insert_one(combo.dict())
 
 # Initialize default admin
 async def initialize_default_admin():
     existing_admin = await db.admins.count_documents({})
     if existing_admin == 0:
-        default_admin = Admin(username="admin", password_hash="admin123")  # Use proper hashing in production
+        default_admin = Admin(username="admin", password_hash="admin123")
         await db.admins.insert_one(default_admin.dict())
+
+# Initialize default settings
+async def initialize_default_settings():
+    existing_settings = await db.settings.count_documents({})
+    if existing_settings == 0:
+        default_settings = Settings()
+        await db.settings.insert_one(default_settings.dict())
 
 # Routes
 @api_router.get("/")
@@ -232,12 +351,37 @@ async def get_services_by_type(service_type: ServiceType):
     services = await db.services.find({"type": service_type, "is_active": True}).to_list(1000)
     return [Service(**service) for service in services]
 
+@api_router.get("/combo-services")
+async def get_combo_services():
+    combos = await db.combo_services.find({"is_active": True}).to_list(1000)
+    # Clean up MongoDB ObjectId
+    for combo in combos:
+        if '_id' in combo:
+            del combo['_id']
+    return combos
+
+@api_router.get("/settings")
+async def get_settings():
+    settings = await db.settings.find_one({})
+    if settings:
+        if '_id' in settings:
+            del settings['_id']
+    return settings or {"whatsapp_number": "+16144055997", "cashapp_id": "$VitiPay", "business_name": "Alostudio"}
+
 @api_router.post("/bookings", response_model=Booking)
 async def create_booking(booking_data: BookingCreate):
-    # Check if service exists
+    # Check if service exists (regular service)
     service = await db.services.find_one({"id": booking_data.service_id})
+    combo_service = None
+    is_combo = False
+    
     if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
+        # Check if it's a combo service
+        combo_service = await db.combo_services.find_one({"id": booking_data.service_id})
+        if combo_service:
+            is_combo = True
+        else:
+            raise HTTPException(status_code=404, detail="Service not found")
     
     # Check availability (simplified - check if time slot is taken)
     booking_datetime = datetime.strptime(f"{booking_data.booking_date} {booking_data.booking_time}", "%Y-%m-%d %H:%M")
@@ -249,8 +393,12 @@ async def create_booking(booking_data: BookingCreate):
     if existing_booking:
         raise HTTPException(status_code=400, detail="Time slot not available")
     
+    service_type = combo_service["name"] if is_combo else service["type"]
+    
     booking = Booking(
         service_id=booking_data.service_id,
+        service_type=service_type,
+        is_combo=is_combo,
         customer_email=booking_data.customer_email,
         customer_phone=booking_data.customer_phone,
         customer_name=booking_data.customer_name,
@@ -387,6 +535,21 @@ async def update_service_price(service_id: str, price: float):
     
     return {"message": "Service price updated"}
 
+@api_router.put("/admin/settings")
+async def update_settings(settings_data: SettingsUpdate):
+    result = await db.settings.update_one(
+        {},
+        {
+            "$set": {
+                "whatsapp_number": settings_data.whatsapp_number,
+                "cashapp_id": settings_data.cashapp_id,
+                "updated_at": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+    return {"message": "Settings updated successfully"}
+
 # Check availability
 @api_router.get("/availability/{date}")
 async def check_availability(date: str):
@@ -442,6 +605,7 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     await initialize_default_services()
     await initialize_default_admin()
+    await initialize_default_settings()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

@@ -9,7 +9,7 @@ import { Textarea } from './components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
 import { Badge } from './components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import { Clock, Calendar as CalendarIcon, MapPin, Star, Camera, Video, Palette, Package, Edit3, Image, Users, CheckCircle, Clock as ClockIcon, AlertCircle } from 'lucide-react';
+import { Clock, Calendar as CalendarIcon, MapPin, Star, Camera, Video, Palette, Package, Edit3, Image, Users, CheckCircle, Clock as ClockIcon, AlertCircle, MessageCircle, Phone, Heart, Gift, Cloud } from 'lucide-react';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -17,6 +17,8 @@ const API = `${BACKEND_URL}/api`;
 
 function App() {
   const [services, setServices] = useState([]);
+  const [comboServices, setComboServices] = useState([]);
+  const [settings, setSettings] = useState({});
   const [selectedService, setSelectedService] = useState(null);
   const [bookingForm, setBookingForm] = useState({
     customer_name: '',
@@ -42,9 +44,12 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminForm, setAdminForm] = useState({ username: '', password: '' });
   const [allBookings, setAllBookings] = useState([]);
+  const [adminSettings, setAdminSettings] = useState({ whatsapp_number: '', cashapp_id: '' });
 
   useEffect(() => {
     fetchServices();
+    fetchComboServices();
+    fetchSettings();
   }, []);
 
   const fetchServices = async () => {
@@ -53,6 +58,24 @@ function App() {
       setServices(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
+    }
+  };
+
+  const fetchComboServices = async () => {
+    try {
+      const response = await axios.get(`${API}/combo-services`);
+      setComboServices(response.data);
+    } catch (error) {
+      console.error('Error fetching combo services:', error);
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      setSettings(response.data);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
     }
   };
 
@@ -108,7 +131,7 @@ function App() {
       const response = await axios.post(`${API}/admin/login`, adminForm);
       setIsAdmin(true);
       setCurrentView('admin');
-      setShowAdminDialog(false); // Close the dialog
+      setShowAdminDialog(false);
       fetchAllBookings();
       alert('Admin login successful!');
     } catch (error) {
@@ -135,12 +158,26 @@ function App() {
     }
   };
 
+  const handleUpdateSettings = async () => {
+    try {
+      await axios.put(`${API}/admin/settings`, adminSettings);
+      alert('Settings updated successfully!');
+      fetchSettings();
+    } catch (error) {
+      alert('Error updating settings');
+    }
+  };
+
   const getServiceIcon = (type) => {
     switch (type) {
       case 'makeup': return <Palette className="w-6 h-6" />;
       case 'photography': return <Camera className="w-6 h-6" />;
       case 'video': return <Video className="w-6 h-6" />;
       case 'combo': return <Package className="w-6 h-6" />;
+      case 'editing': return <Edit3 className="w-6 h-6" />;
+      case 'graphic_design': return <Image className="w-6 h-6" />;
+      case 'memory_storage': return <Cloud className="w-6 h-6" />;
+      case 'frames': return <Gift className="w-6 h-6" />;
       default: return <Star className="w-6 h-6" />;
     }
   };
@@ -166,14 +203,33 @@ function App() {
     'photography': [
       'https://images.unsplash.com/photo-1617463874381-85b513b3e991?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxwaG90b2dyYXBoeSUyMHN0dWRpb3xlbnwwfHx8fDE3NTQzNDkyOTF8MA&ixlib=rb-4.1.0&q=85',
       'https://images.unsplash.com/photo-1471341971476-ae15ff5dd4ea?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwzfHxwaG90b2dyYXBoeSUyMHN0dWRpb3xlbnwwfHx8fDE3NTQzNDkyOTF8MA&ixlib=rb-4.1.0&q=85',
-      'https://images.unsplash.com/photo-1641236210747-48bc43e4517f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxwaG90b2dyYXBoeSUyMHN0dWRpb3xlbnwwfHx8fDE3NTQzNDkyOTF8MA&ixlib=rb-4.1.0&q=85'
+      'https://images.unsplash.com/photo-1641236210747-48bc43e4517f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxwaG90b2dyYXBoeSUyMHN0dWRpb3xlbnwwfHx8fDE3NTQzNDkyOTF8MA&ixlib=rb-4.1.0&q=85',
+      'https://images.unsplash.com/photo-1527011046414-4781f1f94f8c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxwaG90byUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc1NDM0OTYyMXww&ixlib=rb-4.1.0&q=85'
     ],
     'video': [
       'https://images.unsplash.com/photo-1497015289639-54688650d173?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHx2aWRlbyUyMHByb2R1Y3Rpb258ZW58MHx8fHwxNzU0MzQ5Mjk2fDA&ixlib=rb-4.1.0&q=85',
-      'https://images.unsplash.com/photo-1490971774356-7fac993cc438?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHw0fHx2aWRlbyUyMHByb2R1Y3Rpb258ZW58MHx8fHwxNzU0MzQ5Mjk2fDA&ixlib=rb-4.1.0&q=85',
-      'https://images.pexels.com/photos/66134/pexels-photo-66134.jpeg'
-    ]
+      'https://images.unsplash.com/photo-1490971774356-7fac993cc438?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHw0fHx2aWRlbyUyMHByb2R1Y3Rpb258ZW58MHx8fHwxNzU0MzQ5Mjk2fDA&ixlib=rb-4.1.0&q=85'
+    ],
+    'editing': [
+      'https://images.unsplash.com/photo-1574717024239-25253f4ef40a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHx2aWRlbyUyMGVkaXRpbmclMjB3b3Jrc3BhY2V8ZW58MHx8fHwxNzU0MzQ5NjU5fDA&ixlib=rb-4.1.0&q=85',
+      'https://images.unsplash.com/photo-1574717025058-2f8737d2e2b7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHx2aWRlbyUyMGVkaXRpbmclMjB3b3Jrc3BhY2V8ZW58MHx8fHwxNzU0MzQ5NjU5fDA&ixlib=rb-4.1.0&q=85'
+    ],
+    'memory_storage': 'https://images.unsplash.com/photo-1506399558188-acca6f8cbf41?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwc3RvcmFnZSUyMGNsb3VkfGVufDB8fHx8MTc1NDM0OTY5MXww&ixlib=rb-4.1.0&q=85',
+    'frames': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxwaWN0dXJlJTIwZnJhbWVzJTIwZGlzcGxheXxlbnwwfHx8fDE3NTQzNDk3MTN8MA&ixlib=rb-4.1.0&q=85',
+    'combo': 'https://images.unsplash.com/photo-1647427854253-b92bb40c9330?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxwaG90byUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc1NDM0OTYyMXww&ixlib=rb-4.1.0&q=85'
   };
+
+  // WhatsApp Chat Component
+  const WhatsAppChat = () => (
+    <div className="fixed bottom-6 right-6 z-50">
+      <Button
+        className="bg-green-500 hover:bg-green-600 rounded-full p-4 shadow-lg bounce-in"
+        onClick={() => window.open(`https://wa.me/${settings.whatsapp_number?.replace('+', '')}?text=Hi! I'm interested in Alostudio services.`)}
+      >
+        <MessageCircle className="w-6 h-6" />
+      </Button>
+    </div>
+  );
 
   if (currentView === 'admin' && isAdmin) {
     return (
@@ -186,64 +242,97 @@ function App() {
             </Button>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>All Bookings</CardTitle>
-              <CardDescription>Manage customer bookings and payments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {allBookings.map((booking) => (
-                  <div key={booking.id} className="border rounded-lg p-4 bg-white shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold">{booking.customer_name}</h3>
-                        <p className="text-sm text-gray-600">{booking.customer_email}</p>
-                        <p className="text-sm text-gray-600">{booking.customer_phone}</p>
-                        <p className="text-sm">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
-                        <p className="text-sm">Time: {booking.booking_time}</p>
-                        {booking.payment_amount && (
-                          <p className="text-sm font-medium text-green-600">
-                            Payment: ${booking.payment_amount} - Ref: {booking.payment_reference}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-2 items-end">
-                        {getStatusBadge(booking.status)}
-                        <div className="flex gap-2">
-                          {booking.status === 'payment_submitted' && (
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>All Bookings</CardTitle>
+                <CardDescription>Manage customer bookings and payments</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {allBookings.map((booking) => (
+                    <div key={booking.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-semibold">{booking.customer_name}</h3>
+                          <p className="text-sm text-gray-600">{booking.customer_email}</p>
+                          <p className="text-sm text-gray-600">{booking.customer_phone}</p>
+                          <p className="text-sm">Service: {booking.service_type}</p>
+                          <p className="text-sm">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
+                          <p className="text-sm">Time: {booking.booking_time}</p>
+                          {booking.payment_amount && (
+                            <p className="text-sm font-medium text-green-600">
+                              Payment: ${booking.payment_amount} - Ref: {booking.payment_reference}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-2 items-end">
+                          {getStatusBadge(booking.status)}
+                          <div className="flex gap-2">
+                            {booking.status === 'payment_submitted' && (
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleBookingAction(booking.id, 'approve')}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                Approve
+                              </Button>
+                            )}
+                            {booking.status === 'confirmed' && (
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleBookingAction(booking.id, 'complete')}
+                                variant="outline"
+                              >
+                                Complete
+                              </Button>
+                            )}
                             <Button 
                               size="sm" 
-                              onClick={() => handleBookingAction(booking.id, 'approve')}
-                              className="bg-green-600 hover:bg-green-700"
+                              variant="destructive"
+                              onClick={() => handleBookingAction(booking.id, 'cancel')}
                             >
-                              Approve
+                              Cancel
                             </Button>
-                          )}
-                          {booking.status === 'confirmed' && (
-                            <Button 
-                              size="sm" 
-                              onClick={() => handleBookingAction(booking.id, 'complete')}
-                              variant="outline"
-                            >
-                              Mark Complete
-                            </Button>
-                          )}
-                          <Button 
-                            size="sm" 
-                            variant="destructive"
-                            onClick={() => handleBookingAction(booking.id, 'cancel')}
-                          >
-                            Cancel
-                          </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Settings</CardTitle>
+                <CardDescription>Update business settings</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                  <Input
+                    id="whatsapp"
+                    value={adminSettings.whatsapp_number || settings.whatsapp_number}
+                    onChange={(e) => setAdminSettings(prev => ({ ...prev, whatsapp_number: e.target.value }))}
+                    placeholder="+16144055997"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cashapp">CashApp ID</Label>
+                  <Input
+                    id="cashapp"
+                    value={adminSettings.cashapp_id || settings.cashapp_id}
+                    onChange={(e) => setAdminSettings(prev => ({ ...prev, cashapp_id: e.target.value }))}
+                    placeholder="$VitiPay"
+                  />
+                </div>
+                <Button onClick={handleUpdateSettings} className="w-full bg-pink-600 hover:bg-pink-700">
+                  Update Settings
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
@@ -296,6 +385,7 @@ function App() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-semibold">Booking #{booking.id.slice(0, 8)}</h3>
+                          <p className="text-sm text-gray-600">Service: {booking.service_type}</p>
                           <p className="text-sm text-gray-600">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
                           <p className="text-sm text-gray-600">Time: {booking.booking_time}</p>
                         </div>
@@ -322,6 +412,7 @@ function App() {
             </Card>
           )}
         </div>
+        <WhatsAppChat />
       </div>
     );
   }
@@ -329,11 +420,11 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-black/5">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-pink-100">
+      <header className="bg-white shadow-sm border-b border-pink-100 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-black bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-black bg-clip-text text-transparent">
                 Alostudio
               </h1>
             </div>
@@ -378,19 +469,21 @@ function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-5xl font-bold text-gray-900 mb-6">
+      <section className="relative py-20 px-4 bg-gradient-to-r from-pink-100 via-white to-pink-50">
+        <div className="absolute inset-0 opacity-10 bg-cover bg-center" 
+             style={{backgroundImage: 'url(https://images.unsplash.com/photo-1647427854253-b92bb40c9330?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxwaG90byUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc1NDM0OTYyMXww&ixlib=rb-4.1.0&q=85)'}}></div>
+        <div className="container mx-auto text-center relative z-10">
+          <h2 className="text-6xl font-bold text-gray-900 mb-6 fade-in-up">
             Professional Photo & Video Studio
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Transform your moments into memories with our expert makeup, photography, and video services for all occasions.
+            Transform your moments into memories with our expert makeup, photography, and video services for all occasions including weddings, birthdays, events, and more.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white px-8">
+            <Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white px-8 shadow-lg hover-lift">
               Book Session
             </Button>
-            <Button size="lg" variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50">
+            <Button size="lg" variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50 shadow-lg hover-lift">
               View Portfolio
             </Button>
           </div>
@@ -400,21 +493,23 @@ function App() {
       {/* Services Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Our Services</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">Our Services</h2>
           
           <Tabs defaultValue="makeup" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-6 mb-8">
               <TabsTrigger value="makeup">Makeup</TabsTrigger>
               <TabsTrigger value="photography">Photography</TabsTrigger>
               <TabsTrigger value="video">Video</TabsTrigger>
               <TabsTrigger value="combo">Combos</TabsTrigger>
+              <TabsTrigger value="editing">Editing</TabsTrigger>
+              <TabsTrigger value="extras">Extras</TabsTrigger>
             </TabsList>
             
             <TabsContent value="makeup" className="space-y-6">
               <div className="grid md:grid-cols-3 gap-6">
                 {services.filter(service => service.type === 'makeup').map((service, index) => (
-                  <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="aspect-video relative">
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                    <div className="aspect-video relative image-overlay">
                       <img 
                         src={serviceImages.makeup[index] || serviceImages.makeup[0]} 
                         alt={service.name}
@@ -437,10 +532,23 @@ function App() {
                           <Clock className="w-4 h-4" />
                           {service.duration_hours}h session
                         </div>
-                        <Badge variant="secondary">{service.deposit_percentage}% deposit</Badge>
+                        <Badge variant="secondary" className="bg-pink-100 text-pink-800">{service.deposit_percentage}% deposit</Badge>
                       </div>
+                      {service.features && (
+                        <div className="mb-4">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Includes:</p>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {service.features.slice(0, 3).map((feature, idx) => (
+                              <li key={idx} className="flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3 text-green-500" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <Button 
-                        className="w-full bg-pink-600 hover:bg-pink-700" 
+                        className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
                         onClick={() => {
                           setSelectedService(service);
                           setShowBookingDialog(true);
@@ -455,10 +563,10 @@ function App() {
             </TabsContent>
             
             <TabsContent value="photography" className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {services.filter(service => service.type === 'photography').map((service, index) => (
-                  <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="aspect-video relative">
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                    <div className="aspect-video relative image-overlay">
                       <img 
                         src={serviceImages.photography[index] || serviceImages.photography[0]} 
                         alt={service.name}
@@ -467,13 +575,13 @@ function App() {
                     </div>
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           {getServiceIcon(service.type)}
                           {service.name}
                         </CardTitle>
-                        <span className="text-2xl font-bold text-pink-600">${service.base_price}</span>
+                        <span className="text-xl font-bold text-pink-600">${service.base_price}</span>
                       </div>
-                      <CardDescription>{service.description}</CardDescription>
+                      <CardDescription className="text-sm">{service.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between mb-4">
@@ -481,10 +589,22 @@ function App() {
                           <MapPin className="w-4 h-4" />
                           {service.location || 'Studio'}
                         </div>
-                        <Badge variant="secondary">{service.deposit_percentage}% deposit</Badge>
+                        <Badge variant="secondary" className="bg-pink-100 text-pink-800">{service.deposit_percentage}% deposit</Badge>
                       </div>
+                      {service.features && (
+                        <div className="mb-4">
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {service.features.slice(0, 3).map((feature, idx) => (
+                              <li key={idx} className="flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3 text-green-500" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <Button 
-                        className="w-full bg-pink-600 hover:bg-pink-700" 
+                        className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
                         onClick={() => {
                           setSelectedService(service);
                           setShowBookingDialog(true);
@@ -501,8 +621,8 @@ function App() {
             <TabsContent value="video" className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 {services.filter(service => service.type === 'video').map((service, index) => (
-                  <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="aspect-video relative">
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                    <div className="aspect-video relative image-overlay">
                       <img 
                         src={serviceImages.video[index] || serviceImages.video[0]} 
                         alt={service.name}
@@ -525,10 +645,22 @@ function App() {
                           <MapPin className="w-4 h-4" />
                           {service.location || 'Studio'}
                         </div>
-                        <Badge variant="secondary">{service.deposit_percentage}% deposit</Badge>
+                        <Badge variant="secondary" className="bg-pink-100 text-pink-800">{service.deposit_percentage}% deposit</Badge>
                       </div>
+                      {service.features && (
+                        <div className="mb-4">
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {service.features.slice(0, 4).map((feature, idx) => (
+                              <li key={idx} className="flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3 text-green-500" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <Button 
-                        className="w-full bg-pink-600 hover:bg-pink-700" 
+                        className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
                         onClick={() => {
                           setSelectedService(service);
                           setShowBookingDialog(true);
@@ -543,18 +675,197 @@ function App() {
             </TabsContent>
             
             <TabsContent value="combo">
-              <div className="text-center py-12">
-                <Package className="w-16 h-16 mx-auto text-pink-600 mb-4" />
-                <h3 className="text-2xl font-bold mb-4">Alo Combos Coming Soon!</h3>
-                <p className="text-gray-600 mb-6">
-                  Get discounted rates when you combine makeup with photography or video sessions.
-                </p>
-                <Button variant="outline" className="border-pink-600 text-pink-600">
-                  Notify Me
-                </Button>
+              <div className="grid md:grid-cols-3 gap-6">
+                {comboServices.map((combo) => (
+                  <Card key={combo.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift border-2 border-pink-200">
+                    <div className="aspect-video relative image-overlay">
+                      <img 
+                        src={serviceImages.combo} 
+                        alt={combo.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-green-500 text-white">15% OFF</Badge>
+                      </div>
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                          <Package className="w-6 h-6" />
+                          {combo.name}
+                        </CardTitle>
+                        <div className="text-right">
+                          <p className="text-lg line-through text-gray-400">${combo.total_price}</p>
+                          <p className="text-2xl font-bold text-pink-600">${combo.final_price}</p>
+                        </div>
+                      </div>
+                      <CardDescription>{combo.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Clock className="w-4 h-4" />
+                          {combo.duration_hours}h total
+                        </div>
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">Save ${(combo.total_price - combo.final_price).toFixed(2)}</Badge>
+                      </div>
+                      <Button 
+                        className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 shadow-lg" 
+                        onClick={() => {
+                          setSelectedService({...combo, type: 'combo', deposit_percentage: 25, base_price: combo.final_price});
+                          setShowBookingDialog(true);
+                        }}
+                      >
+                        Book Combo
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="editing">
+              <div className="grid md:grid-cols-3 gap-6">
+                {services.filter(service => service.type === 'editing' || service.type === 'graphic_design').map((service, index) => (
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                    <div className="aspect-video relative image-overlay">
+                      <img 
+                        src={serviceImages.editing[index] || serviceImages.editing[0]} 
+                        alt={service.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                          {getServiceIcon(service.type)}
+                          {service.name}
+                        </CardTitle>
+                        <span className="text-2xl font-bold text-pink-600">${service.base_price}</span>
+                      </div>
+                      <CardDescription>{service.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Clock className="w-4 h-4" />
+                          {service.duration_hours > 0 ? `${service.duration_hours}h` : 'Quick turnaround'}
+                        </div>
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">{service.deposit_percentage}% deposit</Badge>
+                      </div>
+                      {service.features && (
+                        <div className="mb-4">
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {service.features.slice(0, 3).map((feature, idx) => (
+                              <li key={idx} className="flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3 text-green-500" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      <Button 
+                        className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
+                        onClick={() => {
+                          setSelectedService(service);
+                          setShowBookingDialog(true);
+                        }}
+                      >
+                        Order Now
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="extras">
+              <div className="grid md:grid-cols-2 gap-6">
+                {services.filter(service => service.type === 'memory_storage' || service.type === 'frames').map((service) => (
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                    <div className="aspect-video relative image-overlay">
+                      <img 
+                        src={service.type === 'memory_storage' ? serviceImages.memory_storage : serviceImages.frames} 
+                        alt={service.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                          {getServiceIcon(service.type)}
+                          {service.name}
+                        </CardTitle>
+                        <span className="text-2xl font-bold text-pink-600">${service.base_price}</span>
+                      </div>
+                      <CardDescription>{service.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {service.features && (
+                        <div className="mb-4">
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {service.features.map((feature, idx) => (
+                              <li key={idx} className="flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3 text-green-500" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      <Button 
+                        className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
+                        onClick={() => {
+                          setSelectedService(service);
+                          setShowBookingDialog(true);
+                        }}
+                      >
+                        {service.type === 'memory_storage' ? 'Get Storage' : 'Order Frames'}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </TabsContent>
           </Tabs>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-16 px-4 bg-gradient-to-r from-pink-50 to-white">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Why Choose Alostudio</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Expert Team</h3>
+              <p className="text-gray-600">Professional makeup artists, photographers, and videographers with years of experience.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Camera className="w-8 h-8 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Latest Equipment</h3>
+              <p className="text-gray-600">State-of-the-art cameras, lighting, and professional studio equipment for perfect results.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-8 h-8 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">All Occasions</h3>
+              <p className="text-gray-600">Weddings, birthdays, events, baby showers, community gatherings - we cover it all.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Quality Guaranteed</h3>
+              <p className="text-gray-600">Professional editing with 1-2 week processing time and satisfaction guarantee.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -564,21 +875,21 @@ function App() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl font-bold text-pink-400 mb-4">Alostudio</h3>
-              <p className="text-gray-300">Professional photo and video studio for all your special moments.</p>
+              <p className="text-gray-300">Professional photo and video studio for all your special moments and occasions.</p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Services</h4>
               <ul className="space-y-2 text-gray-300">
                 <li>Makeup Services</li>
-                <li>Photography</li>
+                <li>Photography Sessions</li>
                 <li>Video Production</li>
-                <li>Event Coverage</li>
+                <li>Professional Editing</li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-300">
-                <li>CashApp: $VitiPay</li>
+                <li>WhatsApp: {settings.whatsapp_number}</li>
                 <li>Email: info@alostudio.com</li>
                 <li>Phone: (555) 123-4567</li>
               </ul>
@@ -586,14 +897,21 @@ function App() {
             <div>
               <h4 className="font-semibold mb-4">Policies</h4>
               <ul className="space-y-2 text-gray-300">
-                <li>No Refund Policy</li>
+                <li>No Refund Policy (User Cancellation)</li>
                 <li>Processing: 1-2 weeks</li>
-                <li>Late Fee Applies</li>
+                <li>Late Fee for Indoor Sessions</li>
+                <li>Admin Cancellation: Refund Available</li>
               </ul>
             </div>
           </div>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Alostudio. All rights reserved. | Professional Photo & Video Studio</p>
+          </div>
         </div>
       </footer>
+
+      {/* WhatsApp Chat Button */}
+      <WhatsAppChat />
 
       {/* Booking Dialog */}
       <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
@@ -602,6 +920,11 @@ function App() {
             <DialogTitle>Book {selectedService?.name}</DialogTitle>
             <DialogDescription>
               ${selectedService?.base_price} - {selectedService?.deposit_percentage}% deposit required
+              {selectedService?.type === 'combo' && (
+                <span className="block text-green-600 font-medium mt-1">
+                  🎉 15% Discount Applied!
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -650,7 +973,7 @@ function App() {
             {availableSlots.length > 0 && (
               <div>
                 <Label>Available Times</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
+                <div className="grid grid-cols-3 gap-2 mt-2 max-h-32 overflow-y-auto">
                   {availableSlots.map((slot) => (
                     <Button
                       key={slot}
@@ -665,6 +988,13 @@ function App() {
                 </div>
               </div>
             )}
+            <div className="bg-pink-50 p-3 rounded-lg">
+              <p className="text-sm text-pink-800">
+                <strong>Payment Info:</strong> Send {selectedService?.deposit_percentage}% deposit 
+                (${((selectedService?.base_price || 0) * (selectedService?.deposit_percentage || 0) / 100).toFixed(2)}) 
+                to CashApp: <strong>{settings.cashapp_id}</strong>
+              </p>
+            </div>
             <Button 
               onClick={handleBooking} 
               className="w-full bg-pink-600 hover:bg-pink-700"
@@ -682,13 +1012,13 @@ function App() {
           <DialogHeader>
             <DialogTitle>Submit Payment</DialogTitle>
             <DialogDescription>
-              Send payment via CashApp to $VitiPay and enter details below
+              Send payment via CashApp and enter details below
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="p-4 bg-pink-50 rounded-lg">
               <p className="font-semibold text-pink-800">Payment Instructions:</p>
-              <p className="text-pink-700">Send payment to CashApp: <strong>$VitiPay</strong></p>
+              <p className="text-pink-700">Send payment to CashApp: <strong>{settings.cashapp_id}</strong></p>
             </div>
             <div>
               <Label htmlFor="amount">Amount Paid</Label>
