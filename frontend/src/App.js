@@ -53,7 +53,17 @@ function App() {
     fetchSettings();
   }, []);
 
-  const fetchServices = async () => {
+  const scrollToServices = () => {
+    const servicesSection = document.querySelector('#services-section');
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToPortfolio = () => {
+    // For now, scroll to services section - you can create a portfolio section later
+    scrollToServices();
+  };
     try {
       const response = await axios.get(`${API}/services`);
       setServices(response.data);
