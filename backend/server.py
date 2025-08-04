@@ -119,95 +119,96 @@ class ServiceCreate(BaseModel):
 
 # Initialize default services
 async def initialize_default_services():
-    existing_services = await db.services.count_documents({})
-    if existing_services == 0:
-        default_services = [
-            # Makeup Services
-            {
-                "name": "Natural Glow Glam",
-                "type": "makeup",
-                "description": "Perfect for everyday elegance with subtle enhancement. Includes skin prep, natural foundation, soft eyeshadow, mascara, and nude lip color.",
-                "base_price": 75.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 1
-            },
-            {
-                "name": "Soft Glow Glam",
-                "type": "makeup",
-                "description": "Ideal for special occasions with enhanced beauty. Includes contouring, highlighting, defined eyes, and glamorous finish.",
-                "base_price": 95.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 1.5
-            },
-            {
-                "name": "Full Glow Glam",
-                "type": "makeup",
-                "description": "Complete transformation for red carpet events. Premium makeup with airbrush foundation, dramatic eyes, contouring, and luxury finish.",
-                "base_price": 150.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 2
-            },
-            # Photography Services
-            {
-                "name": "Standard Indoor Session",
-                "type": "photography",
-                "location": "indoor",
-                "description": "Professional studio session with basic lighting setup, 1 hour session, 10 edited photos.",
-                "base_price": 180.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 1
-            },
-            {
-                "name": "Deluxe Indoor Session",
-                "type": "photography",
-                "location": "indoor",
-                "description": "Premium studio session with advanced lighting, props, 2 hours, 20 edited photos, and styling consultation.",
-                "base_price": 280.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 2
-            },
-            {
-                "name": "Newborn/Infant Session",
-                "type": "photography",
-                "location": "indoor",
-                "description": "Specialized newborn photography with safety first approach. Up to 3 clothing changes, 5 edited photos, $15 per additional edit.",
-                "base_price": 230.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 2
-            },
-            {
-                "name": "Outdoor Photography",
-                "type": "photography",
-                "location": "outdoor",
-                "description": "On-location outdoor session at scenic locations. Natural lighting, candid and posed shots, 15 edited photos.",
-                "base_price": 320.0,
-                "deposit_percentage": 60.0,
-                "duration_hours": 2
-            },
-            # Video Services
-            {
-                "name": "Indoor Video Session",
-                "type": "video",
-                "location": "indoor",
-                "description": "Professional studio video production with lighting setup, 2-hour session, basic editing included.",
-                "base_price": 350.0,
-                "deposit_percentage": 25.0,
-                "duration_hours": 2
-            },
-            {
-                "name": "Outdoor Video Session",
-                "type": "video",
-                "location": "outdoor",
-                "description": "On-location video production for events, documentaries, or promotional content. Professional equipment and editing.",
-                "base_price": 500.0,
-                "deposit_percentage": 60.0,
-                "duration_hours": 3
-            }
-        ]
-        
-        for service_data in default_services:
-            service = Service(**service_data)
-            await db.services.insert_one(service.dict())
+    # Clear existing services first
+    await db.services.delete_many({})
+    
+    default_services = [
+        # Makeup Services
+        {
+            "name": "Natural Glow Glam",
+            "type": "makeup",
+            "description": "Perfect for everyday elegance with subtle enhancement. Includes skin prep, natural foundation, soft eyeshadow, mascara, and nude lip color.",
+            "base_price": 75.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 1
+        },
+        {
+            "name": "Soft Glow Glam",
+            "type": "makeup",
+            "description": "Ideal for special occasions with enhanced beauty. Includes contouring, highlighting, defined eyes, and glamorous finish.",
+            "base_price": 95.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 1.5
+        },
+        {
+            "name": "Full Glow Glam",
+            "type": "makeup",
+            "description": "Complete transformation for red carpet events. Premium makeup with airbrush foundation, dramatic eyes, contouring, and luxury finish.",
+            "base_price": 150.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 2
+        },
+        # Photography Services
+        {
+            "name": "Standard Indoor Session",
+            "type": "photography",
+            "location": "indoor",
+            "description": "Professional studio session with basic lighting setup, 1 hour session, 10 edited photos.",
+            "base_price": 180.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 1
+        },
+        {
+            "name": "Deluxe Indoor Session",
+            "type": "photography",
+            "location": "indoor",
+            "description": "Premium studio session with advanced lighting, props, 2 hours, 20 edited photos, and styling consultation.",
+            "base_price": 280.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 2
+        },
+        {
+            "name": "Newborn/Infant Session",
+            "type": "photography",
+            "location": "indoor",
+            "description": "Specialized newborn photography with safety first approach. Up to 3 clothing changes, 5 edited photos, $15 per additional edit.",
+            "base_price": 230.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 2
+        },
+        {
+            "name": "Outdoor Photography",
+            "type": "photography",
+            "location": "outdoor",
+            "description": "On-location outdoor session at scenic locations. Natural lighting, candid and posed shots, 15 edited photos.",
+            "base_price": 320.0,
+            "deposit_percentage": 60.0,
+            "duration_hours": 2
+        },
+        # Video Services
+        {
+            "name": "Indoor Video Session",
+            "type": "video",
+            "location": "indoor",
+            "description": "Professional studio video production with lighting setup, 2-hour session, basic editing included.",
+            "base_price": 350.0,
+            "deposit_percentage": 25.0,
+            "duration_hours": 2
+        },
+        {
+            "name": "Outdoor Video Session",
+            "type": "video",
+            "location": "outdoor",
+            "description": "On-location video production for events, documentaries, or promotional content. Professional equipment and editing.",
+            "base_price": 500.0,
+            "deposit_percentage": 60.0,
+            "duration_hours": 3
+        }
+    ]
+    
+    for service_data in default_services:
+        service = Service(**service_data)
+        await db.services.insert_one(service.dict())
 
 # Initialize default admin
 async def initialize_default_admin():
