@@ -148,6 +148,31 @@ class AlostudioAPITester:
         """Test admin service management"""
         return self.run_test("Admin Get All Services", "GET", "admin/services", 200)[0]
 
+    def test_combo_services(self):
+        """Test getting combo services"""
+        success, response = self.run_test("Get Combo Services", "GET", "combo-services", 200)
+        if success and response:
+            print(f"   Found {len(response)} combo services")
+            for combo in response:
+                print(f"   - {combo.get('name', 'Unknown')}: ${combo.get('final_price', 0)} (was ${combo.get('total_price', 0)})")
+        return success
+
+    def test_settings(self):
+        """Test getting settings"""
+        success, response = self.run_test("Get Settings", "GET", "settings", 200)
+        if success and response:
+            print(f"   WhatsApp: {response.get('whatsapp_number', 'Not set')}")
+            print(f"   CashApp: {response.get('cashapp_id', 'Not set')}")
+        return success
+
+    def test_admin_update_settings(self):
+        """Test admin updating settings"""
+        settings_data = {
+            "whatsapp_number": "+16144055997",
+            "cashapp_id": "$VitiPay"
+        }
+        return self.run_test("Admin Update Settings", "PUT", "admin/settings", 200, settings_data)[0]
+
 def main():
     print("🚀 Starting Alostudio API Tests")
     print("=" * 50)
