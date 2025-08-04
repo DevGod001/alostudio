@@ -47,6 +47,18 @@ function App() {
   const [allBookings, setAllBookings] = useState([]);
   const [adminSettings, setAdminSettings] = useState({ whatsapp_number: '', cashapp_id: '' });
 
+  const scrollToServices = () => {
+    const servicesSection = document.querySelector('#services-section');
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToPortfolio = () => {
+    // For now, scroll to services section - you can create a portfolio section later
+    scrollToServices();
+  };
+
   useEffect(() => {
     fetchServices();
     fetchComboServices();
