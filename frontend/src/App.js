@@ -773,6 +773,7 @@ function App() {
                         className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
                         onClick={() => {
                           setSelectedService(service);
+                          setBookingForm(prev => ({ ...prev, service_id: service.id }));
                           setShowBookingDialog(true);
                         }}
                       >
