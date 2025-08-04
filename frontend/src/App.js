@@ -91,7 +91,14 @@ function App() {
 
   const handleBooking = async () => {
     try {
-      const response = await axios.post(`${API}/bookings`, bookingForm);
+      // Ensure service_id is set
+      const bookingData = {
+        ...bookingForm,
+        service_id: selectedService?.id || bookingForm.service_id
+      };
+      
+      console.log('Booking data:', bookingData); // Debug log
+      const response = await axios.post(`${API}/bookings`, bookingData);
       alert('Booking created! Please proceed with payment.');
       setShowBookingDialog(false);
       setBookingForm({
@@ -99,9 +106,11 @@ function App() {
         customer_email: '',
         customer_phone: '',
         booking_date: '',
-        booking_time: ''
+        booking_time: '',
+        service_id: ''
       });
     } catch (error) {
+      console.error('Booking error:', error.response?.data);
       alert(error.response?.data?.detail || 'Error creating booking');
     }
   };
