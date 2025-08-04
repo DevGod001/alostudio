@@ -108,6 +108,7 @@ function App() {
       const response = await axios.post(`${API}/admin/login`, adminForm);
       setIsAdmin(true);
       setCurrentView('admin');
+      setShowAdminDialog(false); // Close the dialog
       fetchAllBookings();
       alert('Admin login successful!');
     } catch (error) {
