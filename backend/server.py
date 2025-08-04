@@ -115,7 +115,7 @@ class ServiceCreate(BaseModel):
     description: str
     base_price: float
     deposit_percentage: float
-    duration_hours: int
+    duration_hours: float
 
 # Initialize default services
 async def initialize_default_services():
