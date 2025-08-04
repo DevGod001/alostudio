@@ -304,7 +304,13 @@ async def admin_login(login_data: AdminLogin):
 @api_router.get("/admin/bookings")
 async def get_all_bookings():
     bookings = await db.bookings.find().sort("created_at", -1).to_list(1000)
-    return bookings
+    # Convert MongoDB documents to proper format
+    result = []
+    for booking in bookings:
+        if '_id' in booking:
+            del booking['_id']  # Remove MongoDB ObjectId
+        result.append(booking)
+    return result
 
 @api_router.put("/admin/bookings/{booking_id}/approve")
 async def approve_booking(booking_id: str):
