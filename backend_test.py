@@ -184,6 +184,8 @@ def main():
         ("Root Endpoint", tester.test_root_endpoint),
         ("Get All Services", tester.test_get_all_services),
         ("Get Services by Type", tester.test_get_services_by_type),
+        ("Get Combo Services", tester.test_combo_services),
+        ("Get Settings", tester.test_settings),
         ("Check Availability", tester.test_availability_check),
         ("Create Booking", tester.test_create_booking),
         ("Submit Payment", tester.test_submit_payment),
@@ -191,7 +193,8 @@ def main():
         ("Admin Login", tester.test_admin_login),
         ("Admin Get Bookings", tester.test_admin_get_bookings),
         ("Admin Booking Actions", tester.test_admin_booking_actions),
-        ("Admin Services", tester.test_admin_services)
+        ("Admin Services", tester.test_admin_services),
+        ("Admin Update Settings", tester.test_admin_update_settings)
     ]
     
     for test_name, test_func in tests:
