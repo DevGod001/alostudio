@@ -76,6 +76,8 @@ function App() {
     // For now, scroll to services section - you can create a portfolio section later
     scrollToServices();
   };
+
+  const fetchServices = async () => {
     try {
       const response = await axios.get(`${API}/services`);
       setServices(response.data);
