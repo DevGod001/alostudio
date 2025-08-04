@@ -36,6 +36,7 @@ function App() {
     payment_reference: ''
   });
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showAdminDialog, setShowAdminDialog] = useState(false);
   
   // Admin state
   const [isAdmin, setIsAdmin] = useState(false);
