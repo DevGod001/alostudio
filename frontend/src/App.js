@@ -716,6 +716,7 @@ function App() {
                         className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 shadow-lg" 
                         onClick={() => {
                           setSelectedService({...combo, type: 'combo', deposit_percentage: 25, base_price: combo.final_price});
+                          setBookingForm(prev => ({ ...prev, service_id: combo.id }));
                           setShowBookingDialog(true);
                         }}
                       >
