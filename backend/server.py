@@ -284,7 +284,13 @@ async def submit_payment(booking_id: str, payment_data: PaymentSubmission):
 @api_router.get("/bookings/customer/{email}")
 async def get_customer_bookings(email: str):
     bookings = await db.bookings.find({"customer_email": email}).to_list(1000)
-    return bookings
+    # Convert MongoDB documents to proper format
+    result = []
+    for booking in bookings:
+        if '_id' in booking:
+            del booking['_id']  # Remove MongoDB ObjectId
+        result.append(booking)
+    return result
 
 # Admin Routes
 @api_router.post("/admin/login")
