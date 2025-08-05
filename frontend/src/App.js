@@ -125,14 +125,6 @@ function App() {
   };
 
   useEffect(() => {
-    console.log('showCompletionDialog changed:', showCompletionDialog);
-  }, [showCompletionDialog]);
-
-  useEffect(() => {
-    console.log('showPhotoUploadDialog changed:', showPhotoUploadDialog);
-  }, [showPhotoUploadDialog]);
-
-  useEffect(() => {
     fetchServices();
     fetchComboServices();
     fetchSettings();
