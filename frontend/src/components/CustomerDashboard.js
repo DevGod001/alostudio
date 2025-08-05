@@ -98,11 +98,11 @@ export const CustomerDashboard = ({
 
       {/* Main Dashboard Tabs */}
       <Tabs defaultValue="photos" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="photos">My Photos</TabsTrigger>
-          <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          <TabsTrigger value="frames">Frame Orders</TabsTrigger>
-          <TabsTrigger value="order-frame">Order Frame</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+          <TabsTrigger value="photos" className="text-xs md:text-sm">My Photos</TabsTrigger>
+          <TabsTrigger value="bookings" className="text-xs md:text-sm">Bookings</TabsTrigger>
+          <TabsTrigger value="frames" className="text-xs md:text-sm">Frame Orders</TabsTrigger>
+          <TabsTrigger value="order-frame" className="text-xs md:text-sm">Order Frame</TabsTrigger>
         </TabsList>
 
         <TabsContent value="photos" className="space-y-4">
