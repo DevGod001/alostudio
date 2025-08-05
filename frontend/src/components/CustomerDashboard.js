@@ -433,7 +433,7 @@ export const CustomerDashboard = ({
                     className="w-full bg-pink-600 hover:bg-pink-700 text-white py-3"
                     disabled={selectedPhotos.length === 0 || !frameOrderForm.frame_size || !frameOrderForm.frame_style || !frameOrderForm.delivery_method}
                   >
-                    Proceed to Payment - ${calculateFramePrice(frameOrderForm.frame_size, frameOrderForm.quantity * selectedPhotos.length)}
+                    Proceed to Payment - ${calculateFrameTotal()}
                   </Button>
                 </>
               ) : (
