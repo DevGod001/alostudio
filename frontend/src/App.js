@@ -570,8 +570,10 @@ function App() {
             <div className="flex gap-2">
               <Button 
                 onClick={() => {
-                  console.log('TEST: Opening completion dialog manually');
+                  alert('TEST Complete button clicked! State should change now.');
+                  console.log('Before state change - showCompletionDialog:', showCompletionDialog);
                   setShowCompletionDialog(true);
+                  console.log('After state change - showCompletionDialog should be true');
                 }} 
                 variant="outline" 
                 className="bg-yellow-100"
@@ -580,8 +582,10 @@ function App() {
               </Button>
               <Button 
                 onClick={() => {
-                  console.log('TEST: Opening upload dialog manually');
+                  alert('TEST Upload button clicked! State should change now.');
+                  console.log('Before state change - showPhotoUploadDialog:', showPhotoUploadDialog);
                   setShowPhotoUploadDialog(true);
+                  console.log('After state change - showPhotoUploadDialog should be true');
                 }} 
                 variant="outline" 
                 className="bg-blue-100"
