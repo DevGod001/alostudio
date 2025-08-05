@@ -452,25 +452,25 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-black/5">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-pink-100 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
+        <div className="container mx-auto px-4 py-4 mobile-header">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
             <div className="flex items-center space-x-4">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-black bg-clip-text text-transparent">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-600 to-black bg-clip-text text-transparent">
                 Alostudio
               </h1>
             </div>
-            <nav className="flex space-x-6">
-              <Button variant="ghost" onClick={() => setCurrentView('home')}>Home</Button>
-              <Button variant="ghost" onClick={() => setCurrentView('customer-portal')}>My Bookings</Button>
+            <nav className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6 w-full md:w-auto mobile-nav">
+              <Button variant="ghost" onClick={() => setCurrentView('home')} className="w-full md:w-auto">Home</Button>
+              <Button variant="ghost" onClick={() => setCurrentView('customer-portal')} className="w-full md:w-auto">My Bookings</Button>
               <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" onClick={() => setShowAdminDialog(true)}>Admin</Button>
+                  <Button variant="ghost" onClick={() => setShowAdminDialog(true)} className="w-full md:w-auto">Admin</Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="mobile-dialog">
                   <DialogHeader>
                     <DialogTitle>Admin Login</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4">
+                  <div className="space-y-4 mobile-form">
                     <div>
                       <Label htmlFor="username">Username</Label>
                       <Input
@@ -500,21 +500,21 @@ function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-r from-pink-100 via-white to-pink-50">
+      <section className="relative py-12 md:py-20 px-4 bg-gradient-to-r from-pink-100 via-white to-pink-50 mobile-hero">
         <div className="absolute inset-0 opacity-10 bg-cover bg-center" 
              style={{backgroundImage: 'url(https://images.unsplash.com/photo-1647427854253-b92bb40c9330?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxwaG90byUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc1NDM0OTYyMXww&ixlib=rb-4.1.0&q=85)'}}></div>
         <div className="container mx-auto text-center relative z-10">
-          <h2 className="text-6xl font-bold text-gray-900 mb-6 fade-in-up">
+          <h2 className="text-3xl md:text-6xl font-bold text-gray-900 mb-4 md:mb-6 fade-in-up leading-tight">
             Professional Photo & Video Studio
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-gray-600 mb-6 md:mb-8 max-w-2xl mx-auto px-4">
             Transform your moments into memories with our expert makeup, photography, and video services for all occasions including weddings, birthdays, events, and more.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" onClick={scrollToServices} className="bg-pink-600 hover:bg-pink-700 text-white px-8 shadow-lg hover-lift">
+          <div className="flex flex-col md:flex-row justify-center gap-4 mobile-hero-buttons px-4">
+            <Button size="lg" onClick={scrollToServices} className="bg-pink-600 hover:bg-pink-700 text-white px-6 md:px-8 shadow-lg hover-lift w-full md:w-auto">
               Book Session
             </Button>
-            <Button size="lg" onClick={scrollToPortfolio} variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50 shadow-lg hover-lift">
+            <Button size="lg" onClick={scrollToPortfolio} variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50 shadow-lg hover-lift w-full md:w-auto">
               View Portfolio
             </Button>
           </div>
@@ -522,18 +522,18 @@ function App() {
       </section>
 
       {/* Services Section */}
-      <section id="services-section" className="py-16 px-4">
+      <section id="services-section" className="py-12 md:py-16 px-4 mobile-services">
         <div className="container mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">Our Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12 text-gray-900">Our Services</h2>
           
-          <Tabs defaultValue="makeup" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 mb-8">
-              <TabsTrigger value="makeup">Makeup</TabsTrigger>
-              <TabsTrigger value="photography">Photography</TabsTrigger>
-              <TabsTrigger value="video">Video</TabsTrigger>
-              <TabsTrigger value="combo">Combos</TabsTrigger>
-              <TabsTrigger value="editing">Editing</TabsTrigger>
-              <TabsTrigger value="extras">Extras</TabsTrigger>
+          <Tabs defaultValue="makeup" className="w-full mobile-tabs">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 mb-6 md:mb-8 text-xs md:text-sm">
+              <TabsTrigger value="makeup" className="px-2 md:px-4">Makeup</TabsTrigger>
+              <TabsTrigger value="photography" className="px-2 md:px-4">Photo</TabsTrigger>
+              <TabsTrigger value="video" className="px-2 md:px-4">Video</TabsTrigger>
+              <TabsTrigger value="combo" className="px-2 md:px-4">Combos</TabsTrigger>
+              <TabsTrigger value="editing" className="px-2 md:px-4">Editing</TabsTrigger>
+              <TabsTrigger value="extras" className="px-2 md:px-4">Extras</TabsTrigger>
             </TabsList>
             
             <TabsContent value="makeup" className="space-y-6">
