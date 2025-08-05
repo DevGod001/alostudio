@@ -219,33 +219,148 @@ export const CustomerDashboard = ({
           <Card>
             <CardHeader>
               <CardTitle>Frame Orders</CardTitle>
-              <CardDescription>Your custom frame orders and their status</CardDescription>
+              <CardDescription>Track your custom frame orders and manage delivery options</CardDescription>
             </CardHeader>
             <CardContent>
-              {userDashboard.frame_orders.length > 0 ? (
-                <div className="space-y-4">
+              {userDashboard.frame_orders && userDashboard.frame_orders.length > 0 ? (
+                <div className="space-y-6">
                   {userDashboard.frame_orders.map((order) => (
-                    <div key={order.id} className="border rounded-lg p-4 bg-white shadow-sm">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-semibold">Frame Order #{order.id.slice(0, 8)}</h3>
-                          <p className="text-sm text-gray-600">Size: {order.frame_size} | Style: {order.frame_style}</p>
-                          <p className="text-sm text-gray-600">Quantity: {order.quantity} | Photos: {order.photo_ids.length}</p>
-                          <p className="text-sm font-medium">Total: ${order.total_price}</p>
-                          {order.special_instructions && (
-                            <p className="text-sm text-gray-600">Instructions: {order.special_instructions}</p>
+                    <div key={order.id} className="border rounded-lg p-6 bg-white shadow-sm">
+                      <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
+                        {/* Order Details */}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-4">
+                            <h3 className="font-semibold text-lg">Frame Order #{order.id.slice(0, 8)}</h3>
+                            {getFrameStatusBadge(order.status)}
+                          </div>
+                          
+                          <div className="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Frame Details</p>
+                              <p className="text-sm text-gray-600">Size: {order.frame_size}</p>
+                              <p className="text-sm text-gray-600">Style: {order.frame_style}</p>
+                              <p className="text-sm text-gray-600">Quantity: {order.quantity} per photo</p>
+                              <p className="text-sm text-gray-600">Photos: {order.photo_ids.length}</p>
+                            </div>
+                            
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Delivery</p>
+                              <p className="text-sm text-gray-600">
+                                Method: {order.delivery_method === 'self_pickup' ? 'Self Pickup' : 'Ship to Me'}
+                              </p>
+                              {order.delivery_method === 'ship_to_me' && order.delivery_address && (
+                                <p className="text-sm text-gray-600">Address: {order.delivery_address.substring(0, 50)}...</p>
+                              )}
+                              {order.delivery_fee > 0 && (
+                                <p className="text-sm text-gray-600">Delivery Fee: ${order.delivery_fee}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Payment Info */}
+                          <div className="bg-gray-50 p-3 rounded-lg mb-4">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium">Frame Cost:</span>
+                              <span className="text-sm">${order.total_price}</span>
+                            </div>
+                            {order.delivery_fee > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">Delivery Fee:</span>
+                                <span className="text-sm">${order.delivery_fee}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between items-center font-semibold pt-2 border-t mt-2">
+                              <span>Total:</span>
+                              <span>${(order.total_price + (order.delivery_fee || 0)).toFixed(2)}</span>
+                            </div>
+                          </div>
+
+                          {/* Status-specific Information */}
+                          {order.status === 'payment_submitted' && (
+                            <div className="bg-orange-50 p-3 rounded-lg mb-4">
+                              <p className="text-sm text-orange-800">
+                                <strong>Payment Reference:</strong> {order.payment_reference}
+                              </p>
+                              <p className="text-sm text-orange-600 mt-1">
+                                Your payment is being reviewed by admin. You'll be notified once approved.
+                              </p>
+                            </div>
+                          )}
+
+                          {order.status === 'confirmed' && (
+                            <div className="bg-blue-50 p-3 rounded-lg mb-4">
+                              <p className="text-sm text-blue-800">
+                                <strong>Payment Approved!</strong> Your frames are now in our production queue.
+                              </p>
+                            </div>
+                          )}
+
+                          {order.status === 'in_progress' && (
+                            <div className="bg-purple-50 p-3 rounded-lg mb-4">
+                              <p className="text-sm text-purple-800">
+                                <strong>In Production:</strong> Your frames are currently being created by our team.
+                              </p>
+                            </div>
+                          )}
+
+                          {(order.status === 'ready_for_pickup' || order.status === 'ready_for_delivery') && (
+                            <div className="bg-green-50 p-3 rounded-lg mb-4">
+                              <p className="text-sm text-green-800 font-medium">
+                                {order.status === 'ready_for_pickup' 
+                                  ? '🎉 Ready for Pickup!' 
+                                  : '🎉 Ready for Delivery!'}
+                              </p>
+                              {order.status === 'ready_for_pickup' && (
+                                <div className="mt-2 text-sm text-green-700">
+                                  <p><strong>Pickup Address:</strong></p>
+                                  <p>{settings.pickup_address || '123 Studio Lane, Photography City, PC 12345'}</p>
+                                  <p><strong>Hours:</strong> {settings.pickup_hours || 'Monday-Friday: 9AM-6PM'}</p>
+                                </div>
+                              )}
+                              {order.status === 'ready_for_delivery' && (
+                                <p className="mt-1 text-sm text-green-700">
+                                  Your frames will be delivered to your specified address soon.
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {order.admin_notes && (
+                            <div className="bg-gray-50 p-3 rounded-lg">
+                              <p className="text-sm font-medium text-gray-700">Admin Notes:</p>
+                              <p className="text-sm text-gray-600">{order.admin_notes}</p>
+                            </div>
                           )}
                         </div>
-                        <div className="flex flex-col gap-2 items-end">
-                          {getStatusBadge(order.status)}
-                          {order.status === 'pending_payment' && (
-                            <Button
-                              size="sm"
-                              onClick={() => handleFramePayment(order.id, order.total_price * 0.5)} // 50% deposit
-                              className="bg-pink-600 hover:bg-pink-700"
-                            >
-                              Pay Deposit
-                            </Button>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-col gap-2 min-w-[150px]">
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500">Order Date</p>
+                            <p className="text-sm font-medium">
+                              {new Date(order.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          
+                          {(order.status === 'ready_for_pickup' || order.status === 'ready_for_delivery') && 
+                           order.delivery_method === 'ship_to_me' && !order.delivery_method_confirmed && (
+                            <div className="space-y-2 mt-4">
+                              <p className="text-sm font-medium">Confirm Delivery:</p>
+                              <Button
+                                size="sm"
+                                onClick={() => confirmDeliveryMethod(order.id, 'self_pickup')}
+                                className="w-full text-xs bg-gray-600 hover:bg-gray-700"
+                              >
+                                Switch to Pickup
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => confirmDeliveryMethod(order.id, 'ship_to_me')}
+                                className="w-full text-xs bg-pink-600 hover:bg-pink-700"
+                              >
+                                Confirm Shipping
+                              </Button>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -255,8 +370,18 @@ export const CustomerDashboard = ({
               ) : (
                 <div className="text-center py-12">
                   <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Frame Orders</h3>
-                  <p className="text-gray-600">Order custom frames for your photos!</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Frame Orders Yet</h3>
+                  <p className="text-gray-600 mb-4">Order custom frames for your favorite photos!</p>
+                  <Button 
+                    className="bg-pink-600 hover:bg-pink-700"
+                    onClick={() => {
+                      // Switch to order frame tab
+                      const orderTab = document.querySelector('[data-state="active"][value="order-frame"]');
+                      if (orderTab) orderTab.click();
+                    }}
+                  >
+                    Order Frames
+                  </Button>
                 </div>
               )}
             </CardContent>
