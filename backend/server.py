@@ -108,6 +108,20 @@ class UserPhoto(BaseModel):
     is_private: bool = False
     uploaded_by_admin: bool = False
 
+class DeliveryMethod(str, Enum):
+    SELF_PICKUP = "self_pickup"
+    SHIP_TO_ME = "ship_to_me"
+
+class FrameOrderStatus(str, Enum):
+    PENDING_PAYMENT = "pending_payment"
+    PAYMENT_SUBMITTED = "payment_submitted" 
+    CONFIRMED = "confirmed"
+    IN_PROGRESS = "in_progress"
+    READY_FOR_PICKUP = "ready_for_pickup"
+    READY_FOR_DELIVERY = "ready_for_delivery"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
 class FrameOrder(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     user_email: str
@@ -117,7 +131,17 @@ class FrameOrder(BaseModel):
     frame_style: str  # "modern", "classic", "rustic"
     quantity: int
     total_price: float
-    status: BookingStatus = BookingStatus.PENDING_PAYMENT
+    status: FrameOrderStatus = FrameOrderStatus.PENDING_PAYMENT
+    payment_amount: Optional[float] = None
+    payment_reference: Optional[str] = None
+    payment_submitted_at: Optional[datetime] = None
+    delivery_method: Optional[DeliveryMethod] = None
+    delivery_fee: Optional[float] = 0.0
+    delivery_address: Optional[str] = None
+    special_instructions: Optional[str] = None
+    admin_notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
     payment_amount: Optional[float] = None
     payment_reference: Optional[str] = None
     special_instructions: Optional[str] = None
