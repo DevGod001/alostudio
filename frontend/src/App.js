@@ -342,20 +342,76 @@ function App() {
       return;
     }
 
+    if (!frameOrderForm.frame_size || !frameOrderForm.frame_style || !frameOrderForm.delivery_method) {
+      alert('Please complete all frame options and delivery preferences');
+      return;
+    }
+
+    if (frameOrderForm.delivery_method === 'ship_to_me' && !frameOrderForm.delivery_address.trim()) {
+      alert('Please provide your delivery address for shipping');
+      return;
+    }
+
+    // Get CashApp payment reference
+    const reference = prompt('Please enter your CashApp payment reference after sending payment:');
+    if (!reference) return;
+
     try {
       const orderData = {
         user_email: customerEmail,
         user_name: userDashboard?.bookings?.[0]?.customer_name || 'Customer',
         photo_ids: selectedPhotos,
+        payment_reference: reference,
         ...frameOrderForm
       };
 
       const response = await axios.post(`${API}/frames/order`, orderData);
-      alert(`Frame order created! Total: $${response.data.total_price}`);
-      setSelectedPhotos([]);
-      fetchUserDashboard(customerEmail);
+      
+      // Show payment instructions and submit payment
+      const cashappId = response.data.cashapp_id;
+      const totalAmount = response.data.total_price;
+      
+      const confirmPayment = confirm(
+        `Frame Order Created!\n\n` +
+        `Total Amount: $${totalAmount}\n` +
+        `Payment Instructions:\n` +
+        `1. Send $${totalAmount} to ${cashappId} via CashApp\n` +
+        `2. Use reference: ${reference}\n` +
+        `3. Click OK to confirm payment submitted\n\n` +
+        `Your order will be pending admin review until payment is verified.`
+      );
+
+      if (confirmPayment) {
+        // Submit payment information
+        await axios.post(`${API}/frames/${response.data.id}/payment`, {
+          payment_amount: totalAmount,
+          payment_reference: reference
+        });
+
+        alert('Payment submitted! Your frame order is now pending admin review. You can track the status in your Frame Orders tab.');
+        
+        // Reset form and refresh data
+        setSelectedPhotos([]);
+        setFrameOrderForm({
+          frame_size: '8x10',
+          frame_style: 'modern',
+          quantity: 1,
+          delivery_method: 'self_pickup',
+          delivery_address: '',
+          special_instructions: ''
+        });
+        
+        if (customerEmail) {
+          fetchUserDashboard(customerEmail);
+        }
+      } else {
+        // If user doesn't confirm payment, cancel the order
+        await axios.delete(`${API}/frames/${response.data.id}`);
+        alert('Order cancelled. Please complete payment when ready to proceed.');
+      }
     } catch (error) {
-      alert('Error creating frame order');
+      console.error('Frame order error:', error);
+      alert('Error processing frame order: ' + (error.response?.data?.detail || error.message));
     }
   };
 
