@@ -213,27 +213,66 @@ body {
   animation: bounce-in 0.6s ease-out;
 }
 
-/* Hide Made with Emergent badge */
-[data-emergent], 
-.emergent-badge,
+/* Hide Made with Emergent badge - more aggressive approach */
+div[data-emergent-badge],
+[class*="emergent"],
+[id*="emergent"],
 div:has-text("Made with Emergent"),
-div[class*="emergent"],
-div[id*="emergent"] {
+div:contains("Made with Emergent"),
+div:contains("Emergent") {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   position: absolute !important;
   left: -9999px !important;
+  z-index: -9999 !important;
+  pointer-events: none !important;
 }
 
 /* Hide scrollbars */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
+}
+
+/* Mobile tabs scrolling */
+.mobile-tabs .scrollbar-hide {
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-tabs [role="tablist"] {
+  min-width: max-content;
+  width: auto;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 768px) {
+  .mobile-tabs [role="tablist"] {
+    grid-template-columns: none;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    width: max-content;
+    min-width: 100%;
+  }
+  
+  .mobile-tabs [role="tab"] {
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: auto;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
 }
 
 /* MOBILE RESPONSIVE STYLES */
