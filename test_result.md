@@ -167,15 +167,18 @@ backend:
 
   - task: "Admin Photo Upload for Sessions"
     implemented: true
-    working: "unknown"
+    working: true
     file: "server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "unknown"
           agent: "main"
           comment: "Admin photo upload endpoints implemented - admin can upload session photos/videos for completed bookings using both file upload and base64 methods"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Admin Photo Upload functionality fully working. All 6 comprehensive tests passed: 1) Base64 upload method works correctly for completed bookings, 2) Proper validation prevents uploads to non-completed bookings (400 error), 3) Invalid booking IDs properly rejected (404 error), 4) Get booking photos endpoint retrieves uploaded photos correctly, 5) Session photos appear in user dashboard with correct metadata (photo_type='session', uploaded_by_admin=True), 6) Complete workflow test confirms end-to-end functionality. Photos are properly stored with base64 data, linked to correct booking, and appear in user's photo gallery as expected."
 
 frontend:
   - task: "Admin Photo Upload UI"
