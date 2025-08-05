@@ -1634,6 +1634,88 @@ function App() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Booking Completion Dialog */}
+      <Dialog open={showCompletionDialog} onOpenChange={setShowCompletionDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Complete Booking</DialogTitle>
+            <DialogDescription>
+              Mark booking as completed for {selectedBookingForCompletion?.customer_name}
+              <br />
+              <span className="text-xs text-gray-500">
+                Service: {selectedBookingForCompletion?.service_type}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="full_payment_received"
+                checked={completionForm.full_payment_received}
+                onChange={(e) => setCompletionForm(prev => ({ ...prev, full_payment_received: e.target.checked }))}
+                className="h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+              />
+              <Label htmlFor="full_payment_received" className="text-sm font-medium">
+                Customer paid the full service amount
+              </Label>
+            </div>
+            
+            {completionForm.full_payment_received && (
+              <>
+                <div>
+                  <Label htmlFor="full_amount">Full Payment Amount ($)</Label>
+                  <Input
+                    id="full_amount"
+                    type="number"
+                    step="0.01"
+                    value={completionForm.full_payment_amount}
+                    onChange={(e) => setCompletionForm(prev => ({ ...prev, full_payment_amount: e.target.value }))}
+                    placeholder="Enter full payment amount"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This should be the total amount for the full service (not just the remaining balance)
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="payment_ref">Payment Reference (Optional)</Label>
+                  <Input
+                    id="payment_ref"
+                    value={completionForm.payment_reference}
+                    onChange={(e) => setCompletionForm(prev => ({ ...prev, payment_reference: e.target.value }))}
+                    placeholder="CashApp reference, receipt number, etc."
+                  />
+                </div>
+              </>
+            )}
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleBookingCompletion}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Complete Booking
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowCompletionDialog(false);
+                  setSelectedBookingForCompletion(null);
+                  setCompletionForm({
+                    full_payment_received: false,
+                    full_payment_amount: '',
+                    payment_reference: ''
+                  });
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
