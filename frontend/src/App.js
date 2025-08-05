@@ -560,14 +560,14 @@ function App() {
           </div>
 
           <Tabs defaultValue="bookings" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
-              <TabsTrigger value="bookings">Bookings</TabsTrigger>
-              <TabsTrigger value="frames">Frame Orders</TabsTrigger>
-              <TabsTrigger value="wallet">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6">
+              <TabsTrigger value="bookings" className="text-xs md:text-sm">Bookings</TabsTrigger>
+              <TabsTrigger value="frames" className="text-xs md:text-sm">Frame Orders</TabsTrigger>
+              <TabsTrigger value="wallet" className="text-xs md:text-sm">
                 <Wallet className="w-4 h-4 mr-2" />
                 Earnings
               </TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
             </TabsList>
 
             <TabsContent value="bookings">
