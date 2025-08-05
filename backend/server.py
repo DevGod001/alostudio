@@ -916,9 +916,10 @@ async def submit_frame_payment(order_id: str, payment_data: PaymentSubmission):
         {"id": order_id},
         {
             "$set": {
-                "status": "payment_submitted",
+                "status": FrameOrderStatus.PAYMENT_SUBMITTED.value,
                 "payment_amount": payment_data.payment_amount,
                 "payment_reference": payment_data.payment_reference,
+                "payment_submitted_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow()
             }
         }
@@ -927,7 +928,7 @@ async def submit_frame_payment(order_id: str, payment_data: PaymentSubmission):
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Frame order not found")
     
-    return {"message": "Payment submitted for admin review"}
+    return {"message": "Payment submitted for admin review! Your order is now pending approval."}
 
 @api_router.get("/admin/frames")
 async def get_all_frame_orders():
