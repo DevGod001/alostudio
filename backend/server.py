@@ -92,6 +92,49 @@ class Booking(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+class UserPhoto(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_email: str
+    user_name: str
+    booking_id: Optional[str] = None
+    file_name: str
+    file_url: str
+    upload_date: datetime = Field(default_factory=datetime.utcnow)
+    photo_type: str  # "session", "upload", "edited"
+    is_edited: bool = False
+    is_private: bool = False
+
+class FrameOrder(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_email: str
+    user_name: str
+    photo_ids: List[str]  # References to UserPhoto IDs
+    frame_size: str  # "5x7", "8x10", "11x14", "16x20"
+    frame_style: str  # "modern", "classic", "rustic"
+    quantity: int
+    total_price: float
+    status: BookingStatus = BookingStatus.PENDING_PAYMENT
+    payment_amount: Optional[float] = None
+    payment_reference: Optional[str] = None
+    special_instructions: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class AdminSession(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    admin_id: str
+    session_token: str
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class Earnings(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    booking_id: str
+    service_type: str
+    amount: float
+    payment_date: datetime
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class Admin(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     username: str
