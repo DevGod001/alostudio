@@ -659,6 +659,33 @@ async def admin_upload_photos_base64(booking_id: str, upload_data: AdminPhotoUpl
         "photos": uploaded_photos
     }
 
+@api_router.put("/admin/bookings/{booking_id}/cancel")
+async def cancel_booking(booking_id: str):
+    result = await db.bookings.update_one(
+        {"id": booking_id},
+        {
+            "$set": {
+                "status": "cancelled",
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    return {"message": "Booking cancelled"}
+
+@api_router.get("/admin/bookings/{booking_id}/photos")
+async def get_booking_photos(booking_id: str):
+    """Get all photos uploaded for a specific booking"""
+    photos = await db.user_photos.find({"booking_id": booking_id}).sort("upload_date", -1).to_list(1000)
+    # Clean up MongoDB ObjectId
+    for photo in photos:
+        if '_id' in photo:
+            del photo['_id']
+    return photos
+
 @api_router.get("/admin/services", response_model=List[Service])
 async def admin_get_all_services():
     services = await db.services.find().to_list(1000)
