@@ -553,9 +553,14 @@ function App() {
         <div className="container mx-auto px-4 py-8 mobile-admin">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-            <Button onClick={() => { setCurrentView('home'); }} variant="outline">
-              Back to Website
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleAdminLogout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
+                Logout
+              </Button>
+              <Button onClick={() => { setCurrentView('home'); }} variant="outline">
+                Back to Website
+              </Button>
+            </div>
           </div>
 
           <Tabs defaultValue="bookings" className="w-full">
