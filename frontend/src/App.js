@@ -362,15 +362,21 @@ function App() {
     if (!reference) return;
 
     try {
-      await axios.post(`${API}/frames/${orderId}/payment`, {
+      const response = await axios.post(`${API}/frames/${orderId}/payment`, {
         booking_id: orderId,
         payment_amount: amount,
         payment_reference: reference
       });
-      alert('Payment submitted for admin review!');
-      fetchUserDashboard(customerEmail);
+      
+      if (response.status === 200) {
+        alert('Payment submitted for admin review!');
+        if (customerEmail) {
+          fetchUserDashboard(customerEmail);
+        }
+      }
     } catch (error) {
-      alert('Error submitting payment');
+      console.error('Frame payment error:', error);
+      alert('Error submitting payment: ' + (error.response?.data?.detail || error.message));
     }
   };
 
