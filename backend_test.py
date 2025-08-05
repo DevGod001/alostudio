@@ -190,8 +190,8 @@ class AlostudioAPITester:
             print("❌ Cannot test session verification - no session token available")
             return False
         
-        success, response = self.run_test("Admin Session Verification", "POST", "admin/verify-session", 200, 
-                                        {"session_token": self.admin_session_token})
+        success, response = self.run_test("Admin Session Verification", "POST", 
+                                        f"admin/verify-session?session_token={self.admin_session_token}", 200)
         if success and response:
             print(f"   Session extended to: {response.get('expires_at')}")
         return success
