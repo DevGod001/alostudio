@@ -1730,35 +1730,40 @@ function App() {
         </DialogContent>
       </Dialog>
 
-      {/* Image Zoom Modal */}
+      {/* Enhanced Image Zoom Modal */}
       {zoomedImage && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-[9999] p-4"
           onClick={() => setZoomedImage(null)}
+          style={{ zIndex: 9999 }}
         >
-          <div className="relative max-w-full max-h-full">
+          <div className="relative w-full h-full flex items-center justify-center">
             <img 
               src={zoomedImage.file_url} 
               alt={zoomedImage.file_name}
-              className="max-w-full max-h-full object-contain"
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
             
             {/* Action Buttons */}
-            <div className="absolute top-4 right-4 flex gap-2">
+            <div className="absolute top-4 right-4 flex gap-3">
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
                   handleImageDownload(zoomedImage);
                 }}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-3 transition-all flex items-center gap-2"
+                className="bg-pink-600 hover:bg-pink-700 text-white rounded-full p-3 shadow-lg transition-all flex items-center gap-2"
                 title="Download image"
               >
                 <Download className="w-5 h-5" />
+                <span className="hidden sm:inline text-sm font-medium">Download</span>
               </button>
               <button 
-                onClick={() => setZoomedImage(null)}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-3 transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setZoomedImage(null);
+                }}
+                className="bg-gray-800 bg-opacity-80 hover:bg-opacity-100 text-white rounded-full p-3 shadow-lg transition-all"
                 title="Close"
               >
                 <span className="w-5 h-5 flex items-center justify-center text-lg font-bold">×</span>
@@ -1766,29 +1771,31 @@ function App() {
             </div>
             
             {/* Image Info */}
-            <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-4 rounded-lg">
-              <div className="flex justify-between items-start">
+            <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-80 text-white p-4 rounded-lg backdrop-blur-sm">
+              <div className="flex justify-between items-center">
                 <div>
                   <p className="text-lg font-medium">{zoomedImage.file_name}</p>
                   <p className="text-sm text-gray-300">
-                    {zoomedImage.photo_type === 'session' && zoomedImage.uploaded_by_admin ? 'Session Photo' : 'Uploaded Photo'}
+                    {zoomedImage.photo_type === 'session' && zoomedImage.uploaded_by_admin ? 'Session Photo by Alostudio' : 'Uploaded Photo'}
                   </p>
                   {zoomedImage.upload_date && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 mt-1">
                       {new Date(zoomedImage.upload_date).toLocaleDateString()}
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImageDownload(zoomedImage);
-                  }}
-                  className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
-                >
-                  <Download className="w-4 h-4" />
-                  Download
-                </button>
+                <div className="text-right">
+                  <p className="text-sm text-gray-300">Click image to close</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Mobile Close Indicator */}
+            <div className="sm:hidden absolute top-1/2 left-4 right-4 transform -translate-y-1/2 pointer-events-none">
+              <div className="text-center">
+                <p className="text-white text-sm bg-black bg-opacity-50 px-4 py-2 rounded-full inline-block">
+                  Tap anywhere to close
+                </p>
               </div>
             </div>
           </div>
