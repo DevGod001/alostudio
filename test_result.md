@@ -235,11 +235,14 @@ frontend:
     file: "App.js, CustomerDashboard.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "unknown"
           agent: "main"
           comment: "Frame ordering workflow implemented - photo selection, size/style selection, payment submission"
+        - working: "unknown"
+          agent: "main"
+          comment: "Reviewed complete frame ordering implementation. getFrameStatusBadge function already exists (lines 64-78). Comprehensive frame order display UI with status badges, delivery options, payment info, and action buttons all implemented. CustomerDashboard integration is complete. Ready for testing."
 
   - task: "Admin Session Persistence UI"
     implemented: true
