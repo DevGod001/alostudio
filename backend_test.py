@@ -777,6 +777,7 @@ class AlostudioAPITester:
                         "frame_size": size,
                         "frame_style": style,
                         "quantity": qty,
+                        "payment_reference": f"INITIAL_REF_{size}_{style}_{qty}",
                         "delivery_method": "self_pickup",
                         "special_instructions": f"Test {size} {style} frame x{qty}"
                     }
