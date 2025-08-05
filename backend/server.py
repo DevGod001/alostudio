@@ -880,7 +880,7 @@ async def get_user_dashboard(email: str):
 # Frame Order Routes
 @api_router.post("/frames/order")
 async def create_frame_order(order_data: FrameOrderCreate):
-    """Create a new frame order"""
+    """Create a new frame order with payment information"""
     # Calculate price based on size and quantity
     size_prices = {
         "5x7": 25.0,
@@ -894,11 +894,20 @@ async def create_frame_order(order_data: FrameOrderCreate):
     
     frame_order = FrameOrder(
         **order_data.dict(),
-        total_price=total_price
+        total_price=total_price,
+        status=FrameOrderStatus.PENDING_PAYMENT
     )
     
     await db.frame_orders.insert_one(frame_order.dict())
-    return frame_order
+    
+    # Get admin settings for CashApp ID
+    settings = await get_admin_settings()
+    
+    return {
+        **frame_order.dict(),
+        "cashapp_id": settings.cashapp_id,
+        "payment_instructions": f"Send ${total_price} to {settings.cashapp_id} via CashApp and confirm payment below"
+    }
 
 @api_router.post("/frames/{order_id}/payment")
 async def submit_frame_payment(order_id: str, payment_data: PaymentSubmission):
