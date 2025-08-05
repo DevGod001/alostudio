@@ -422,6 +422,33 @@ function App() {
     }
   };
 
+  const handleBookingCompletion = async () => {
+    if (!selectedBookingForCompletion) return;
+    
+    try {
+      const completionData = {
+        booking_id: selectedBookingForCompletion.id,
+        full_payment_received: completionForm.full_payment_received,
+        full_payment_amount: completionForm.full_payment_received ? parseFloat(completionForm.full_payment_amount) : null,
+        payment_reference: completionForm.payment_reference
+      };
+      
+      await axios.put(`${API}/admin/bookings/${selectedBookingForCompletion.id}/complete`, completionData);
+      alert('Booking marked as completed!');
+      setShowCompletionDialog(false);
+      setSelectedBookingForCompletion(null);
+      setCompletionForm({
+        full_payment_received: false,
+        full_payment_amount: '',
+        payment_reference: ''
+      });
+      fetchAllBookings();
+      fetchEarnings();
+    } catch (error) {
+      alert('Error completing booking: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const handleBookingAction = async (bookingId, action) => {
     try {
       await axios.put(`${API}/admin/bookings/${bookingId}/${action}`);
