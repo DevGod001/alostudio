@@ -946,7 +946,7 @@ async def approve_frame_order(order_id: str):
         {"id": order_id},
         {
             "$set": {
-                "status": "confirmed",
+                "status": FrameOrderStatus.CONFIRMED.value,
                 "updated_at": datetime.utcnow()
             }
         }
@@ -966,7 +966,82 @@ async def approve_frame_order(order_id: str):
         )
         await db.earnings.insert_one(earnings.dict())
     
-    return {"message": "Frame order approved"}
+    return {"message": "Frame order approved and added to earnings"}
+
+@api_router.put("/admin/frames/{order_id}/status")
+async def update_frame_order_status(order_id: str, status_data: dict):
+    """Update frame order status"""
+    valid_statuses = [status.value for status in FrameOrderStatus]
+    new_status = status_data.get("status")
+    
+    if new_status not in valid_statuses:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    update_data = {
+        "status": new_status,
+        "updated_at": datetime.utcnow()
+    }
+    
+    # Add admin notes if provided
+    if "admin_notes" in status_data:
+        update_data["admin_notes"] = status_data["admin_notes"]
+    
+    result = await db.frame_orders.update_one(
+        {"id": order_id},
+        {"$set": update_data}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Frame order not found")
+    
+    return {"message": f"Frame order status updated to {new_status}"}
+
+@api_router.put("/frames/{order_id}/delivery")
+async def update_delivery_preference(order_id: str, delivery_data: dict):
+    """Update delivery preference for frame order"""
+    delivery_method = delivery_data.get("delivery_method")
+    delivery_address = delivery_data.get("delivery_address", "")
+    special_instructions = delivery_data.get("special_instructions", "")
+    
+    if delivery_method not in [DeliveryMethod.SELF_PICKUP.value, DeliveryMethod.SHIP_TO_ME.value]:
+        raise HTTPException(status_code=400, detail="Invalid delivery method")
+    
+    update_data = {
+        "delivery_method": delivery_method,
+        "delivery_address": delivery_address,
+        "special_instructions": special_instructions,
+        "updated_at": datetime.utcnow()
+    }
+    
+    result = await db.frame_orders.update_one(
+        {"id": order_id},
+        {"$set": update_data}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Frame order not found")
+    
+    return {"message": "Delivery preference updated"}
+
+@api_router.put("/admin/frames/{order_id}/delivery-fee")
+async def add_delivery_fee(order_id: str, fee_data: dict):
+    """Admin adds delivery fee for shipping"""
+    delivery_fee = fee_data.get("delivery_fee", 0.0)
+    
+    result = await db.frame_orders.update_one(
+        {"id": order_id},
+        {
+            "$set": {
+                "delivery_fee": delivery_fee,
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Frame order not found")
+    
+    return {"message": f"Delivery fee of ${delivery_fee} added to order"}
 
 # Admin Earnings/Wallet Routes
 @api_router.get("/admin/earnings")
