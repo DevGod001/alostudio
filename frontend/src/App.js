@@ -557,27 +557,13 @@ function App() {
             <div className="flex gap-2">
               <Button 
                 onClick={() => {
-                  alert('TEST Complete button clicked! State should change now.');
-                  console.log('Before state change - showCompletionDialog:', showCompletionDialog);
+                  alert('Button clicked - testing');
                   setShowCompletionDialog(true);
-                  console.log('After state change - showCompletionDialog should be true');
                 }} 
                 variant="outline" 
                 className="bg-yellow-100"
               >
-                TEST Complete
-              </Button>
-              <Button 
-                onClick={() => {
-                  alert('TEST Upload button clicked! State should change now.');
-                  console.log('Before state change - showPhotoUploadDialog:', showPhotoUploadDialog);
-                  setShowPhotoUploadDialog(true);
-                  console.log('After state change - showPhotoUploadDialog should be true');
-                }} 
-                variant="outline" 
-                className="bg-blue-100"
-              >
-                TEST Upload
+                Simple Test
               </Button>
               <Button onClick={handleAdminLogout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
                 Logout
