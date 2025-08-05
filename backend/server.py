@@ -525,6 +525,17 @@ async def approve_booking(booking_id: str):
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Booking not found")
     
+    # Add to earnings when booking is approved
+    booking = await db.bookings.find_one({"id": booking_id})
+    if booking and booking.get("payment_amount"):
+        earnings = Earnings(
+            booking_id=booking_id,
+            service_type=booking["service_type"],
+            amount=booking["payment_amount"],
+            payment_date=datetime.utcnow()
+        )
+        await db.earnings.insert_one(earnings.dict())
+    
     return {"message": "Booking approved"}
 
 @api_router.put("/admin/bookings/{booking_id}/complete")
