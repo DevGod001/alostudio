@@ -790,7 +790,7 @@ async def get_admin_earnings():
     
     # Get recent earnings (last 30 days)
     thirty_days_ago = datetime.utcnow() - timedelta(days=30)
-    recent_earnings = [e for e in earnings if datetime.fromisoformat(e["payment_date"].replace("Z", "+00:00")) > thirty_days_ago]
+    recent_earnings = [e for e in earnings if e["payment_date"] > thirty_days_ago]
     recent_total = sum(e["amount"] for e in recent_earnings)
     
     return {
