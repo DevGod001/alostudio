@@ -968,6 +968,7 @@ class AlostudioAPITester:
                 "frame_size": "8x10",
                 "frame_style": "modern",
                 "quantity": 1,
+                "payment_reference": "EARNINGS_INITIAL_REF",
                 "delivery_method": "self_pickup"
             }
             
