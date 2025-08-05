@@ -8,7 +8,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { CheckCircle, Camera, Package, Clock, Image as ImageIcon, ShoppingCart } from 'lucide-react';
+import { CheckCircle, Camera, Package, Clock, Image as ImageIcon, ShoppingCart, ZoomIn } from 'lucide-react';
 
 export const CustomerDashboard = ({ 
   userDashboard, 
