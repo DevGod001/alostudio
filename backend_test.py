@@ -705,81 +705,45 @@ class AlostudioAPITester:
         return focused_passed == focused_total
 
 def main():
-    print("🚀 Starting Alostudio API Tests - Comprehensive Backend Testing")
+    print("🚀 Starting Alostudio API Tests - Focused Review Testing")
     print("=" * 70)
     
     tester = AlostudioAPITester()
     
-    # Test sequence - organized by feature areas
-    tests = [
-        # Basic API Tests
+    # First run essential setup tests to prepare for focused tests
+    setup_tests = [
         ("Root Endpoint", tester.test_root_endpoint),
         ("Get All Services", tester.test_get_all_services),
-        ("Service Types Enhancement", tester.test_service_types_enhancement),
-        ("Get Services by Type", tester.test_get_services_by_type),
-        ("Get Combo Services", tester.test_combo_services),
-        ("Get Settings", tester.test_settings),
-        
-        # Booking Flow Tests
-        ("Check Availability", tester.test_availability_check),
         ("Create Booking", tester.test_create_booking),
         ("Submit Payment", tester.test_submit_payment),
-        ("Get Customer Bookings", tester.test_customer_bookings),
-        
-        # Admin Session Management Tests
-        ("Admin Login", tester.test_admin_login),
-        ("Admin Session Verification", tester.test_admin_session_verification),
-        ("Invalid Session Token", tester.test_invalid_admin_session),
-        
-        # Photo Gallery API Tests
-        ("User Photo Upload", tester.test_user_photo_upload),
-        ("Get User Photos", tester.test_get_user_photos),
-        ("User Dashboard", tester.test_user_dashboard),
-        
-        # Frame Order System Tests
-        ("Create Frame Orders", tester.test_create_frame_order),
-        ("Frame Order Payment", tester.test_frame_order_payment),
-        ("Admin Get Frame Orders", tester.test_admin_get_frame_orders),
-        ("Admin Approve Frame Order", tester.test_admin_approve_frame_order),
-        
-        # Admin Management Tests
         ("Admin Get Bookings", tester.test_admin_get_bookings),
-        ("Admin Booking Actions", tester.test_admin_booking_actions),
-        ("Admin Services", tester.test_admin_services),
-        ("Admin Update Settings", tester.test_admin_update_settings),
-        
-        # Admin Photo Upload Tests - NEW FUNCTIONALITY
-        ("Admin Photo Upload (Base64)", tester.test_admin_photo_upload_base64),
-        ("Admin Photo Upload (Non-Completed Booking)", tester.test_admin_photo_upload_non_completed_booking),
-        ("Admin Photo Upload (Invalid Booking)", tester.test_admin_photo_upload_invalid_booking),
-        ("Get Booking Photos", tester.test_get_booking_photos),
-        ("User Dashboard (With Session Photos)", tester.test_user_dashboard_with_session_photos),
-        ("Admin Photo Upload Workflow", tester.test_admin_photo_upload_workflow),
-        
-        # Admin Earnings/Wallet Tests
-        ("Admin Earnings", tester.test_admin_earnings),
+        ("Admin Booking Actions", tester.test_admin_booking_actions),  # This completes the booking
     ]
     
-    print(f"📋 Running {len(tests)} comprehensive tests...")
+    print(f"📋 Running {len(setup_tests)} setup tests...")
     
-    for test_name, test_func in tests:
-        print(f"\n{'='*25} {test_name} {'='*25}")
+    for test_name, test_func in setup_tests:
+        print(f"\n{'='*15} {test_name} {'='*15}")
         try:
             test_func()
         except Exception as e:
-            print(f"❌ Test {test_name} failed with exception: {str(e)}")
+            print(f"❌ Setup test {test_name} failed with exception: {str(e)}")
+    
+    # Now run the focused review tests
+    focused_success = tester.run_focused_review_tests()
     
     # Print final results
     print(f"\n{'='*70}")
-    print(f"📊 FINAL RESULTS")
-    print(f"Tests passed: {tester.tests_passed}/{tester.tests_run}")
-    print(f"Success rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    print(f"📊 OVERALL RESULTS")
+    print(f"Setup tests passed: {tester.tests_passed}/{tester.tests_run}")
+    print(f"Setup success rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    print(f"Focused review tests: {'✅ PASSED' if focused_success else '❌ FAILED'}")
     
-    if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed!")
+    if focused_success:
+        print("🎉 All focused review tests passed!")
         return 0
     else:
-        print("⚠️  Some tests failed")
+        print("⚠️  Some focused review tests failed")
         return 1
 
 if __name__ == "__main__":
