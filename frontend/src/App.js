@@ -991,34 +991,34 @@ function App() {
             </TabsContent>
 
             <TabsContent value="extras">
-              <div className="grid md:grid-cols-2 gap-6">
-                {services.filter(service => service.type === 'memory_storage' || service.type === 'frames').map((service) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {services.filter(service => service.type === 'frames').map((service) => (
                   <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
                     <div className="aspect-video relative image-overlay">
                       <img 
-                        src={service.type === 'memory_storage' ? serviceImages.memory_storage : serviceImages.frames} 
+                        src={serviceImages.frames} 
                         alt={service.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
+                    <CardHeader className="p-4 md:p-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0">
                         <CardTitle className="flex items-center gap-2">
                           {getServiceIcon(service.type)}
                           {service.name}
                         </CardTitle>
-                        <span className="text-2xl font-bold text-pink-600">${service.base_price}</span>
+                        <span className="text-xl md:text-2xl font-bold text-pink-600">From ${service.base_price}</span>
                       </div>
-                      <CardDescription>{service.description}</CardDescription>
+                      <CardDescription className="text-sm md:text-base">{service.description}</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 md:p-6 pt-0">
                       {service.features && (
                         <div className="mb-4">
-                          <ul className="text-xs text-gray-600 space-y-1">
+                          <ul className="text-xs md:text-sm text-gray-600 space-y-1">
                             {service.features.map((feature, idx) => (
                               <li key={idx} className="flex items-center gap-1">
-                                <CheckCircle className="w-3 h-3 text-green-500" />
-                                {feature}
+                                <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                                <span className="text-xs md:text-sm">{feature}</span>
                               </li>
                             ))}
                           </ul>
@@ -1027,12 +1027,11 @@ function App() {
                       <Button 
                         className="w-full bg-pink-600 hover:bg-pink-700 shadow-lg" 
                         onClick={() => {
-                          setSelectedService(service);
-                          setBookingForm(prev => ({ ...prev, service_id: service.id }));
-                          setShowBookingDialog(true);
+                          // For frames, redirect to customer portal to select photos
+                          setCurrentView('customer-portal');
                         }}
                       >
-                        {service.type === 'memory_storage' ? 'Get Storage' : 'Order Frames'}
+                        Order Custom Frames
                       </Button>
                     </CardContent>
                   </Card>
