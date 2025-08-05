@@ -936,10 +936,10 @@ function App() {
             <div className="text-center md:text-left">
               <h4 className="font-semibold mb-4">Services</h4>
               <ul className="space-y-2 text-gray-300 text-sm md:text-base">
-                <li>Makeup Services</li>
-                <li>Photography Sessions</li>
-                <li>Video Production</li>
-                <li>Professional Editing</li>
+                <li><button onClick={() => scrollToServiceType('makeup')} className="hover:text-pink-400 transition-colors">Makeup Services</button></li>
+                <li><button onClick={() => scrollToServiceType('photography')} className="hover:text-pink-400 transition-colors">Photography Sessions</button></li>
+                <li><button onClick={() => scrollToServiceType('video')} className="hover:text-pink-400 transition-colors">Video Production</button></li>
+                <li><button onClick={() => scrollToServiceType('editing')} className="hover:text-pink-400 transition-colors">Professional Editing</button></li>
               </ul>
             </div>
             <div className="text-center md:text-left">
