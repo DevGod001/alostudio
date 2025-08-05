@@ -568,6 +568,26 @@ function App() {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
             <div className="flex gap-2">
+              <Button 
+                onClick={() => {
+                  console.log('TEST: Opening completion dialog manually');
+                  setShowCompletionDialog(true);
+                }} 
+                variant="outline" 
+                className="bg-yellow-100"
+              >
+                TEST Complete
+              </Button>
+              <Button 
+                onClick={() => {
+                  console.log('TEST: Opening upload dialog manually');
+                  setShowPhotoUploadDialog(true);
+                }} 
+                variant="outline" 
+                className="bg-blue-100"
+              >
+                TEST Upload
+              </Button>
               <Button onClick={handleAdminLogout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
                 Logout
               </Button>
