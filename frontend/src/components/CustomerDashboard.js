@@ -417,7 +417,7 @@ export const CustomerDashboard = ({
                       </div>
                       <div className="flex justify-between font-medium pt-2 border-t">
                         <span>Total:</span>
-                        <span>${calculateFramePrice(frameOrderForm.frame_size, frameOrderForm.quantity * selectedPhotos.length)}</span>
+                        <span>${calculateFrameTotal()}</span>
                       </div>
                       {frameOrderForm.delivery_method === 'ship_to_me' && (
                         <p className="text-xs text-gray-600 mt-1">
