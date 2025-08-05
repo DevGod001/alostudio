@@ -65,6 +65,18 @@ function App() {
     scrollToServices();
   };
 
+  const scrollToServiceType = (serviceType) => {
+    // First scroll to services section
+    scrollToServices();
+    // Wait a moment then switch tab
+    setTimeout(() => {
+      const tabButton = document.querySelector(`[value="${serviceType}"]`);
+      if (tabButton) {
+        tabButton.click();
+      }
+    }, 500);
+  };
+
   useEffect(() => {
     fetchServices();
     fetchComboServices();
