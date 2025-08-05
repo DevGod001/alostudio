@@ -972,6 +972,16 @@ async def verify_admin_session(session_token: str):
     
     return {"message": "Session valid", "expires_at": new_expires_at.isoformat()}
 
+@api_router.post("/admin/logout")
+async def admin_logout(session_token: str):
+    """Logout admin and invalidate session"""
+    result = await db.admin_sessions.delete_one({"session_token": session_token})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    return {"message": "Logout successful"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
