@@ -149,7 +149,15 @@ class AlostudioAPITester:
             return False
 
         success1 = self.run_test("Admin Approve Booking", "PUT", f"admin/bookings/{self.created_booking_id}/approve", 200)[0]
-        success2 = self.run_test("Admin Complete Booking", "PUT", f"admin/bookings/{self.created_booking_id}/complete", 200)[0]
+        
+        # Use the new BookingCompletion model for completion
+        completion_data = {
+            "booking_id": self.created_booking_id,
+            "full_payment_received": True,
+            "full_payment_amount": 75.0,  # Natural Glow Glam base price
+            "payment_reference": "COMPLETION_TEST_REF"
+        }
+        success2 = self.run_test("Admin Complete Booking", "PUT", f"admin/bookings/{self.created_booking_id}/complete", 200, completion_data)[0]
         
         return success1 and success2
 
