@@ -1485,6 +1485,80 @@ function App() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Admin Photo Upload Dialog */}
+      <Dialog open={showPhotoUploadDialog} onOpenChange={setShowPhotoUploadDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload Session Photos</DialogTitle>
+            <DialogDescription>
+              Upload photos/videos for {selectedBookingForUpload?.customer_name}'s session
+              <br />
+              <span className="text-xs text-gray-500">
+                Booking: {selectedBookingForUpload?.service_type} - {selectedBookingForUpload && new Date(selectedBookingForUpload.booking_date).toLocaleDateString()}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="photo_files">Select Photos/Videos</Label>
+              <Input
+                id="photo_files"
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={(e) => {
+                  if (e.target.files.length > 0) {
+                    // Preview selected files
+                    const fileNames = Array.from(e.target.files).map(f => f.name).join(', ');
+                    console.log('Selected files:', fileNames);
+                  }
+                }}
+                className="cursor-pointer"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                You can select multiple photos and videos. Supported formats: JPG, PNG, GIF, MP4, MOV
+              </p>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => {
+                  const fileInput = document.getElementById('photo_files');
+                  const files = fileInput.files;
+                  if (selectedBookingForUpload && files) {
+                    handleAdminPhotoUpload(selectedBookingForUpload.id, files);
+                  }
+                }}
+                disabled={uploadingPhotos}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
+                {uploadingPhotos ? (
+                  <>
+                    <ClockIcon className="w-4 h-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Camera className="w-4 h-4 mr-2" />
+                    Upload Photos
+                  </>
+                )}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowPhotoUploadDialog(false);
+                  setSelectedBookingForUpload(null);
+                }}
+                disabled={uploadingPhotos}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
