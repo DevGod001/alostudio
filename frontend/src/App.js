@@ -54,19 +54,15 @@ function App() {
   const [earnings, setEarnings] = useState({});
   const [frameOrders, setFrameOrders] = useState([]);
   
-  // Photo upload state
-  const [showPhotoUploadDialog, setShowPhotoUploadDialog] = useState(false);
-  const [selectedBookingForUpload, setSelectedBookingForUpload] = useState(null);
-  const [uploadingPhotos, setUploadingPhotos] = useState(false);
-  
-  // Completion dialog state
-  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
-  const [selectedBookingForCompletion, setSelectedBookingForCompletion] = useState(null);
+  // Admin action states - using inline forms instead of modals
+  const [expandedCompletionBooking, setExpandedCompletionBooking] = useState(null);
+  const [expandedUploadBooking, setExpandedUploadBooking] = useState(null);
   const [completionForm, setCompletionForm] = useState({
     full_payment_received: false,
     full_payment_amount: '',
     payment_reference: ''
   });
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
   
   // User dashboard state
   const [userPhotos, setUserPhotos] = useState([]);
