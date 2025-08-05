@@ -870,37 +870,37 @@ function App() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-pink-50 to-white">
+      <section className="py-12 md:py-16 px-4 bg-gradient-to-r from-pink-50 to-white mobile-why-choose">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Why Choose Alostudio</h2>
-          <div className="grid md:grid-cols-4 gap-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-900">Why Choose Alostudio</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-pink-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Expert Team</h3>
-              <p className="text-gray-600">Professional makeup artists, photographers, and videographers with years of experience.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-2">Expert Team</h3>
+              <p className="text-gray-600 text-sm md:text-base">Professional makeup artists, photographers, and videographers with years of experience.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Camera className="w-8 h-8 text-pink-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Latest Equipment</h3>
-              <p className="text-gray-600">State-of-the-art cameras, lighting, and professional studio equipment for perfect results.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-2">Latest Equipment</h3>
+              <p className="text-gray-600 text-sm md:text-base">State-of-the-art cameras, lighting, and professional studio equipment for perfect results.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="w-8 h-8 text-pink-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">All Occasions</h3>
-              <p className="text-gray-600">Weddings, birthdays, events, baby showers, community gatherings - we cover it all.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-2">All Occasions</h3>
+              <p className="text-gray-600 text-sm md:text-base">Weddings, birthdays, events, baby showers, community gatherings - we cover it all.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-pink-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Quality Guaranteed</h3>
-              <p className="text-gray-600">Professional editing with 1-2 week processing time and satisfaction guarantee.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-2">Quality Guaranteed</h3>
+              <p className="text-gray-600 text-sm md:text-base">Professional editing with 1-2 week processing time and satisfaction guarantee.</p>
             </div>
           </div>
         </div>
