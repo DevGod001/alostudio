@@ -59,6 +59,15 @@ function App() {
   const [selectedBookingForUpload, setSelectedBookingForUpload] = useState(null);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
   
+  // Completion dialog state
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [selectedBookingForCompletion, setSelectedBookingForCompletion] = useState(null);
+  const [completionForm, setCompletionForm] = useState({
+    full_payment_received: false,
+    full_payment_amount: '',
+    payment_reference: ''
+  });
+  
   // User dashboard state
   const [userPhotos, setUserPhotos] = useState([]);
   const [userDashboard, setUserDashboard] = useState(null);
