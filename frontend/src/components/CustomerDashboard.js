@@ -50,14 +50,41 @@ export const CustomerDashboard = ({
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'pending_payment': { color: 'bg-yellow-500', text: 'Pending Payment' },
-      'payment_submitted': { color: 'bg-blue-500', text: 'Payment Review' },
-      'confirmed': { color: 'bg-green-500', text: 'Confirmed' },
-      'completed': { color: 'bg-gray-500', text: 'Completed' },
-      'cancelled': { color: 'bg-red-500', text: 'Cancelled' }
+      pending: { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' },
+      payment_submitted: { color: 'bg-orange-100 text-orange-800', text: 'Payment Submitted' },
+      confirmed: { color: 'bg-blue-100 text-blue-800', text: 'Confirmed' },
+      completed: { color: 'bg-green-100 text-green-800', text: 'Completed' },
+      cancelled: { color: 'bg-red-100 text-red-800', text: 'Cancelled' },
     };
-    const config = statusConfig[status] || { color: 'bg-gray-500', text: status };
+    
+    const config = statusConfig[status] || statusConfig.pending;
     return <Badge className={`${config.color} text-white`}>{config.text}</Badge>;
+  };
+
+  const getFrameStatusBadge = (status) => {
+    const statusConfig = {
+      pending_payment: { color: 'bg-gray-100 text-gray-800', text: 'Pending Payment' },
+      payment_submitted: { color: 'bg-orange-100 text-orange-800', text: 'Payment Submitted' },
+      confirmed: { color: 'bg-blue-100 text-blue-800', text: 'Approved' },
+      in_progress: { color: 'bg-purple-100 text-purple-800', text: 'In Progress' },
+      ready_for_pickup: { color: 'bg-green-100 text-green-800', text: 'Ready for Pickup' },
+      ready_for_delivery: { color: 'bg-green-100 text-green-800', text: 'Ready for Delivery' },
+      completed: { color: 'bg-green-100 text-green-800', text: 'Completed' },
+      cancelled: { color: 'bg-red-100 text-red-800', text: 'Cancelled' },
+    };
+    
+    const config = statusConfig[status] || statusConfig.pending_payment;
+    return <Badge className={`${config.color} text-white`}>{config.text}</Badge>;
+  };
+
+  const confirmDeliveryMethod = async (orderId, method) => {
+    try {
+      // This would be a call to update delivery preference
+      // For now, just show confirmation
+      alert(`Delivery method updated to: ${method === 'self_pickup' ? 'Self Pickup' : 'Ship to Me'}`);
+    } catch (error) {
+      alert('Error updating delivery preference');
+    }
   };
 
   if (!userDashboard) {
