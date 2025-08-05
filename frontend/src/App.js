@@ -622,8 +622,7 @@ function App() {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    setSelectedBookingForUpload(booking);
-                                    setShowPhotoUploadDialog(true);
+                                    setExpandedUploadBooking(booking.id);
                                   }}
                                   className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
                                 >
