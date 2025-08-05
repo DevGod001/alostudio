@@ -549,26 +549,8 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-black/5">
         <div className="container mx-auto px-4 py-8 mobile-admin">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-              Admin Dashboard (Completion: {showCompletionDialog ? 'OPEN' : 'CLOSED'}, Upload: {showPhotoUploadDialog ? 'OPEN' : 'CLOSED'})
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
             <div className="flex gap-2">
-              <button 
-                onClick={() => {
-                  console.log('Setting completion dialog to true');
-                  setShowCompletionDialog(true);
-                }}
-                style={{
-                  padding: '10px',
-                  backgroundColor: 'green',
-                  color: 'white',
-                  border: '2px solid black',
-                  cursor: 'pointer',
-                  borderRadius: '4px'
-                }}
-              >
-                TEST MODAL
-              </button>
               <Button onClick={handleAdminLogout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
                 Logout
               </Button>
