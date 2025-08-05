@@ -907,33 +907,33 @@ function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12">
+      <footer className="bg-black text-white py-8 md:py-12 mobile-footer">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+            <div className="text-center md:text-left">
               <h3 className="text-xl font-bold text-pink-400 mb-4">Alostudio</h3>
-              <p className="text-gray-300">Professional photo and video studio for all your special moments and occasions.</p>
+              <p className="text-gray-300 text-sm md:text-base">Professional photo and video studio for all your special moments and occasions.</p>
             </div>
-            <div>
+            <div className="text-center md:text-left">
               <h4 className="font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-gray-300">
+              <ul className="space-y-2 text-gray-300 text-sm md:text-base">
                 <li>Makeup Services</li>
                 <li>Photography Sessions</li>
                 <li>Video Production</li>
                 <li>Professional Editing</li>
               </ul>
             </div>
-            <div>
+            <div className="text-center md:text-left">
               <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-gray-300">
+              <ul className="space-y-2 text-gray-300 text-sm md:text-base">
                 <li>WhatsApp: {settings.whatsapp_number}</li>
                 <li>Email: info@alostudio.com</li>
                 <li>Phone: (555) 123-4567</li>
               </ul>
             </div>
-            <div>
+            <div className="text-center md:text-left">
               <h4 className="font-semibold mb-4">Policies</h4>
-              <ul className="space-y-2 text-gray-300">
+              <ul className="space-y-2 text-gray-300 text-sm md:text-base">
                 <li>No Refund Policy (User Cancellation)</li>
                 <li>Processing: 1-2 weeks</li>
                 <li>Late Fee for Indoor Sessions</li>
@@ -941,16 +941,16 @@ function App() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Alostudio. All rights reserved. | Professional Photo & Video Studio</p>
+          <div className="border-t border-gray-700 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-gray-400">
+            <p className="text-sm md:text-base">&copy; 2025 Alostudio. All rights reserved. | Professional Photo & Video Studio</p>
           </div>
         </div>
       </footer>
 
-      {/* WhatsApp Chat Button - positioned to avoid conflicts */}
-      <div className="fixed bottom-20 right-6 z-50">
+      {/* WhatsApp Chat Button - Mobile Responsive */}
+      <div className="fixed bottom-16 md:bottom-20 right-4 md:right-6 z-50 mobile-whatsapp">
         <Button
-          className="bg-green-500 hover:bg-green-600 rounded-full p-4 shadow-xl bounce-in"
+          className="bg-green-500 hover:bg-green-600 rounded-full p-3 md:p-4 shadow-xl bounce-in"
           onClick={() => {
             const phone = settings.whatsapp_number?.replace('+', '');
             const message = encodeURIComponent("Hi! I'm interested in Alostudio services.");
@@ -958,7 +958,7 @@ function App() {
             window.open(whatsappURL, '_blank');
           }}
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />
         </Button>
       </div>
 
