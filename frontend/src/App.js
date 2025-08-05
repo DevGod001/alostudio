@@ -940,7 +940,7 @@ function App() {
       </footer>
 
       {/* WhatsApp Chat Button - positioned to avoid conflicts */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-20 right-6 z-50">
         <Button
           className="bg-green-500 hover:bg-green-600 rounded-full p-4 shadow-xl bounce-in"
           onClick={() => window.open(`https://wa.me/${settings.whatsapp_number?.replace('+', '')}?text=Hi! I'm interested in Alostudio services.`)}
