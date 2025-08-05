@@ -305,22 +305,13 @@ async def initialize_default_services():
             "features": ["Custom designs", "Multiple revisions", "High-resolution files", "Various formats", "Brand consistency", "3-5 day delivery"]
         },
         {
-            "name": "Memory Storage (6 months)",
-            "type": "memory_storage",
-            "description": "Secure cloud storage for your photos and videos. 6-month access with privacy controls and easy sharing options.",
-            "base_price": 6.0,
-            "deposit_percentage": 100.0,
-            "duration_hours": 0.0,
-            "features": ["Secure cloud storage", "6-month access", "Privacy controls", "Easy sharing", "Download anytime", "Unlimited views"]
-        },
-        {
-            "name": "Premium Picture Frames",
+            "name": "Custom Picture Frames",
             "type": "frames",
-            "description": "High-quality picture frames in various sizes. Perfect for displaying your professional photos. Multiple styles available.",
+            "description": "High-quality custom frames for your professional photos. Choose from your existing photo gallery with us or upload new photos to be framed.",
             "base_price": 45.0,
             "deposit_percentage": 50.0,
             "duration_hours": 0.0,
-            "features": ["Various sizes", "Multiple styles", "High quality materials", "Professional mounting", "Gift wrapping available", "Bulk discounts"]
+            "features": ["Choose from photo gallery", "Multiple sizes available", "Professional mounting", "High quality materials", "Various frame styles", "Custom sizing options"]
         }
     ]
     
