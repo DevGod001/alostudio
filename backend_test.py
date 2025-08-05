@@ -595,6 +595,14 @@ def main():
         ("Admin Services", tester.test_admin_services),
         ("Admin Update Settings", tester.test_admin_update_settings),
         
+        # Admin Photo Upload Tests - NEW FUNCTIONALITY
+        ("Admin Photo Upload (Base64)", tester.test_admin_photo_upload_base64),
+        ("Admin Photo Upload (Non-Completed Booking)", tester.test_admin_photo_upload_non_completed_booking),
+        ("Admin Photo Upload (Invalid Booking)", tester.test_admin_photo_upload_invalid_booking),
+        ("Get Booking Photos", tester.test_get_booking_photos),
+        ("User Dashboard (With Session Photos)", tester.test_user_dashboard_with_session_photos),
+        ("Admin Photo Upload Workflow", tester.test_admin_photo_upload_workflow),
+        
         # Admin Earnings/Wallet Tests
         ("Admin Earnings", tester.test_admin_earnings),
     ]
