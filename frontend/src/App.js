@@ -549,6 +549,19 @@ function App() {
                                   Mark Complete
                                 </Button>
                               )}
+                              {booking.status === 'completed' && (
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => {
+                                    setSelectedBookingForUpload(booking);
+                                    setShowPhotoUploadDialog(true);
+                                  }}
+                                  className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
+                                >
+                                  <Camera className="w-4 h-4 mr-1" />
+                                  Upload Photos
+                                </Button>
+                              )}
                               <Button 
                                 size="sm" 
                                 variant="destructive"
