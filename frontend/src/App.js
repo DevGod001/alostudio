@@ -112,6 +112,15 @@ function App() {
     fetchServices();
     fetchComboServices();
     fetchSettings();
+    
+    // Verify admin session on mount
+    if (adminToken) {
+      verifyAdminSession().then(isValid => {
+        if (isValid) {
+          setIsAdmin(true);
+        }
+      });
+    }
   }, []);
 
   const fetchServices = async () => {
