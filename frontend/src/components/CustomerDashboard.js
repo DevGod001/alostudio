@@ -19,7 +19,8 @@ export const CustomerDashboard = ({
   handleFrameOrder, 
   handleFramePayment,
   settings,
-  onBookSession 
+  onBookSession,
+  onImageZoom
 }) => {
   const [showFrameDialog, setShowFrameDialog] = useState(false);
   
