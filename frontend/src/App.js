@@ -527,14 +527,16 @@ function App() {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12 text-gray-900">Our Services</h2>
           
           <Tabs defaultValue="makeup" className="w-full mobile-tabs">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 mb-6 md:mb-8 text-xs md:text-sm">
-              <TabsTrigger value="makeup" className="px-2 md:px-4">Makeup</TabsTrigger>
-              <TabsTrigger value="photography" className="px-2 md:px-4">Photo</TabsTrigger>
-              <TabsTrigger value="video" className="px-2 md:px-4">Video</TabsTrigger>
-              <TabsTrigger value="combo" className="px-2 md:px-4">Combos</TabsTrigger>
-              <TabsTrigger value="editing" className="px-2 md:px-4">Editing</TabsTrigger>
-              <TabsTrigger value="extras" className="px-2 md:px-4">Extras</TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto scrollbar-hide">
+              <TabsList className="grid grid-cols-6 min-w-max md:w-full mb-6 md:mb-8 text-xs md:text-sm">
+                <TabsTrigger value="makeup" className="px-3 md:px-4 whitespace-nowrap">Makeup</TabsTrigger>
+                <TabsTrigger value="photography" className="px-3 md:px-4 whitespace-nowrap">Photo</TabsTrigger>
+                <TabsTrigger value="video" className="px-3 md:px-4 whitespace-nowrap">Video</TabsTrigger>
+                <TabsTrigger value="combo" className="px-3 md:px-4 whitespace-nowrap">Combos</TabsTrigger>
+                <TabsTrigger value="editing" className="px-3 md:px-4 whitespace-nowrap">Editing</TabsTrigger>
+                <TabsTrigger value="extras" className="px-3 md:px-4 whitespace-nowrap">Extras</TabsTrigger>
+              </TabsList>
+            </div>
             
             <TabsContent value="makeup" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
