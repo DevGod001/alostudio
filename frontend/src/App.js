@@ -1737,18 +1737,53 @@ function App() {
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />
-            <button 
-              onClick={() => setZoomedImage(null)}
-              className="absolute top-4 right-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-2 transition-all"
-            >
-              <span className="sr-only">Close</span>
-              ✕
-            </button>
-            <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
-              <p className="text-sm font-medium">{zoomedImage.file_name}</p>
-              <p className="text-xs text-gray-300">
-                {zoomedImage.photo_type === 'session' && zoomedImage.uploaded_by_admin ? 'Session Photo' : 'Uploaded Photo'}
-              </p>
+            
+            {/* Action Buttons */}
+            <div className="absolute top-4 right-4 flex gap-2">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleImageDownload(zoomedImage);
+                }}
+                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-3 transition-all flex items-center gap-2"
+                title="Download image"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setZoomedImage(null)}
+                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-3 transition-all"
+                title="Close"
+              >
+                <span className="w-5 h-5 flex items-center justify-center text-lg font-bold">×</span>
+              </button>
+            </div>
+            
+            {/* Image Info */}
+            <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-4 rounded-lg">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-lg font-medium">{zoomedImage.file_name}</p>
+                  <p className="text-sm text-gray-300">
+                    {zoomedImage.photo_type === 'session' && zoomedImage.uploaded_by_admin ? 'Session Photo' : 'Uploaded Photo'}
+                  </p>
+                  {zoomedImage.upload_date && (
+                    <p className="text-xs text-gray-400">
+                      {new Date(zoomedImage.upload_date).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleImageDownload(zoomedImage);
+                  }}
+                  className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </button>
+              </div>
             </div>
           </div>
         </div>
