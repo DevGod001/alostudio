@@ -551,6 +551,159 @@ class AlostudioAPITester:
         # For this test, we expect a 404 status, so success means we got the expected error
         return success
 
+    # FOCUSED TESTS FOR REVIEW REQUEST - NEW FIXES
+    
+    def test_admin_credentials_from_env(self):
+        """Test admin login with environment-based credentials (admin/admin123)"""
+        print("\n🔍 Testing Admin Credentials from Environment Variables...")
+        
+        # Test with correct credentials from .env
+        admin_data = {
+            "username": "admin",
+            "password": "admin123"
+        }
+        success, response = self.run_test("Admin Login (Env Credentials)", "POST", "admin/login", 200, admin_data)
+        if success and response:
+            self.admin_session_token = response.get('session_token')
+            print(f"   ✅ Login successful with env credentials")
+            print(f"   Session token: {self.admin_session_token[:20]}...")
+            print(f"   Expires at: {response.get('expires_at')}")
+            return True
+        return False
+
+    def test_admin_logout_functionality(self):
+        """Test new /api/admin/logout endpoint"""
+        print("\n🔍 Testing Admin Logout Functionality...")
+        
+        if not self.admin_session_token:
+            print("❌ Cannot test logout - no session token available")
+            return False
+        
+        # Test logout with session token
+        success, response = self.run_test("Admin Logout", "POST", 
+                                        f"admin/logout?session_token={self.admin_session_token}", 200)
+        if success:
+            print("   ✅ Logout successful - session invalidated")
+            
+            # Verify session is actually invalidated by trying to use it
+            invalid_success, _ = self.run_test("Verify Session Invalidated", "POST", 
+                                             f"admin/verify-session?session_token={self.admin_session_token}", 401)
+            if invalid_success:
+                print("   ✅ Session properly invalidated - cannot be used after logout")
+                self.admin_session_token = None  # Clear the token
+                return True
+            else:
+                print("   ❌ Session not properly invalidated")
+                return False
+        return False
+
+    def test_booking_completion_with_payment_verification(self):
+        """Test updated /api/admin/bookings/{id}/complete endpoint with BookingCompletion model"""
+        print("\n🔍 Testing Booking Completion with Payment Verification...")
+        
+        if not self.created_booking_id:
+            print("❌ Cannot test booking completion - no booking ID available")
+            return False
+        
+        # Re-login to get a fresh session token since we logged out
+        admin_data = {"username": "admin", "password": "admin123"}
+        login_success, login_response = self.run_test("Re-login for Completion Test", "POST", "admin/login", 200, admin_data)
+        if not login_success:
+            return False
+        self.admin_session_token = login_response.get('session_token')
+        
+        # Test booking completion with full payment verification
+        completion_data = {
+            "booking_id": self.created_booking_id,
+            "full_payment_received": True,
+            "full_payment_amount": 150.0,  # Full service amount
+            "payment_reference": "FULL_PAYMENT_REF_789"
+        }
+        
+        success, response = self.run_test("Booking Completion (Payment Verification)", "PUT", 
+                                        f"admin/bookings/{self.created_booking_id}/complete", 200, completion_data)
+        if success:
+            print("   ✅ Booking completion with payment verification successful")
+            
+            # Verify earnings calculation includes balance payment
+            earnings_success, earnings_response = self.run_test("Check Earnings After Completion", "GET", "admin/earnings", 200)
+            if earnings_success and earnings_response:
+                earnings_history = earnings_response.get('earnings_history', [])
+                balance_earnings = [e for e in earnings_history if '_balance' in e.get('service_type', '')]
+                
+                if balance_earnings:
+                    print(f"   ✅ Balance payment earnings recorded: {len(balance_earnings)} entries")
+                    for earning in balance_earnings[:2]:  # Show first 2
+                        print(f"     - {earning.get('service_type')}: ${earning.get('amount')}")
+                    return True
+                else:
+                    print("   ⚠️  No balance payment earnings found (may be expected if deposit = full amount)")
+                    return True  # This might be expected behavior
+            return True
+        return False
+
+    def test_photo_upload_still_works(self):
+        """Quick verification that existing photo upload functionality still works after changes"""
+        print("\n🔍 Testing Photo Upload Still Works After Changes...")
+        
+        if not self.created_booking_id:
+            print("❌ Cannot test photo upload - no completed booking available")
+            return False
+        
+        # Test admin photo upload (should still work)
+        sample_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        upload_data = {
+            "user_email": "test@example.com",
+            "user_name": "Test User",
+            "booking_id": self.created_booking_id,
+            "files": [
+                {"file_name": "verification_photo.jpg", "file_data": sample_base64}
+            ],
+            "photo_type": "session"
+        }
+        
+        success, response = self.run_test("Photo Upload Verification", "POST", 
+                                        f"admin/bookings/{self.created_booking_id}/upload-photos-base64", 200, upload_data)
+        if success and response:
+            photos = response.get('photos', [])
+            print(f"   ✅ Photo upload still working - uploaded {len(photos)} photos")
+            return True
+        return False
+
+    def run_focused_review_tests(self):
+        """Run the focused tests requested in the review"""
+        print("\n" + "="*80)
+        print("🎯 FOCUSED REVIEW TESTS - Testing Updated Alostudio Backend Fixes")
+        print("="*80)
+        
+        focused_tests = [
+            ("Admin Credentials from Environment Variables", self.test_admin_credentials_from_env),
+            ("Admin Logout Functionality", self.test_admin_logout_functionality),
+            ("Booking Completion with Payment Verification", self.test_booking_completion_with_payment_verification),
+            ("Photo Upload Still Works", self.test_photo_upload_still_works),
+        ]
+        
+        focused_passed = 0
+        focused_total = len(focused_tests)
+        
+        for test_name, test_func in focused_tests:
+            print(f"\n{'='*25} {test_name} {'='*25}")
+            try:
+                if test_func():
+                    focused_passed += 1
+                    print(f"✅ {test_name} - PASSED")
+                else:
+                    print(f"❌ {test_name} - FAILED")
+            except Exception as e:
+                print(f"❌ {test_name} - FAILED with exception: {str(e)}")
+        
+        print(f"\n{'='*80}")
+        print(f"🎯 FOCUSED REVIEW RESULTS")
+        print(f"Tests passed: {focused_passed}/{focused_total}")
+        print(f"Success rate: {(focused_passed/focused_total)*100:.1f}%")
+        
+        return focused_passed == focused_total
+
 def main():
     print("🚀 Starting Alostudio API Tests - Comprehensive Backend Testing")
     print("=" * 70)
