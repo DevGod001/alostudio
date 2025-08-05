@@ -47,6 +47,7 @@ function App() {
   const [allBookings, setAllBookings] = useState([]);
   const [adminSettings, setAdminSettings] = useState({ whatsapp_number: '', cashapp_id: '' });
 
+  // Scroll functions
   const scrollToServices = () => {
     const servicesSection = document.querySelector('#services-section');
     if (servicesSection) {
@@ -64,18 +65,6 @@ function App() {
     fetchComboServices();
     fetchSettings();
   }, []);
-
-  const scrollToServices = () => {
-    const servicesSection = document.querySelector('#services-section');
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const scrollToPortfolio = () => {
-    // For now, scroll to services section - you can create a portfolio section later
-    scrollToServices();
-  };
 
   const fetchServices = async () => {
     try {
@@ -514,10 +503,10 @@ function App() {
             Transform your moments into memories with our expert makeup, photography, and video services for all occasions including weddings, birthdays, events, and more.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white px-8 shadow-lg hover-lift">
+            <Button size="lg" onClick={scrollToServices} className="bg-pink-600 hover:bg-pink-700 text-white px-8 shadow-lg hover-lift">
               Book Session
             </Button>
-            <Button size="lg" variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50 shadow-lg hover-lift">
+            <Button size="lg" onClick={scrollToPortfolio} variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50 shadow-lg hover-lift">
               View Portfolio
             </Button>
           </div>
@@ -525,7 +514,7 @@ function App() {
       </section>
 
       {/* Services Section */}
-      <section className="py-16 px-4">
+      <section id="services-section" className="py-16 px-4">
         <div className="container mx-auto">
           <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">Our Services</h2>
           
@@ -950,8 +939,15 @@ function App() {
         </div>
       </footer>
 
-      {/* WhatsApp Chat Button */}
-      <WhatsAppChat />
+      {/* WhatsApp Chat Button - positioned to avoid conflicts */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <Button
+          className="bg-green-500 hover:bg-green-600 rounded-full p-4 shadow-xl bounce-in"
+          onClick={() => window.open(`https://wa.me/${settings.whatsapp_number?.replace('+', '')}?text=Hi! I'm interested in Alostudio services.`)}
+        >
+          <MessageCircle className="w-6 h-6" />
+        </Button>
+      </div>
 
       {/* Booking Dialog */}
       <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
@@ -1038,7 +1034,7 @@ function App() {
             <Button 
               onClick={handleBooking} 
               className="w-full bg-pink-600 hover:bg-pink-700"
-              disabled={!bookingForm.customer_name || !bookingForm.customer_email || !bookingForm.booking_date || !bookingForm.booking_time}
+              disabled={!bookingForm.customer_name || !bookingForm.customer_email || !bookingForm.booking_date || !bookingForm.booking_time || !bookingForm.service_id}
             >
               Create Booking
             </Button>
