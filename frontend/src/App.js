@@ -598,13 +598,13 @@ function App() {
                             </Badge>
                             
                             <div className="flex flex-col gap-2">
-                              {booking.status === 'pending' && (
+                              {booking.status === 'payment_submitted' && (
                                 <Button 
                                   size="sm" 
                                   onClick={() => handleBookingAction(booking.id, 'approve')}
                                   className="w-full md:w-auto bg-green-600 hover:bg-green-700"
                                 >
-                                  Approve
+                                  Approve Payment
                                 </Button>
                               )}
                               {booking.status === 'confirmed' && (
