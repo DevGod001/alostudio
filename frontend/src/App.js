@@ -65,6 +65,8 @@ function App() {
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [showPhotoUploadDialog, setShowPhotoUploadDialog] = useState(false);
   const [selectedBookingForUpload, setSelectedBookingForUpload] = useState(null);
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [selectedBookingForCompletion, setSelectedBookingForCompletion] = useState(null);
   
   // User dashboard state
   const [userPhotos, setUserPhotos] = useState([]);
