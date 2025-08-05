@@ -49,6 +49,9 @@ function App() {
   const [allBookings, setAllBookings] = useState([]);
   const [adminSettings, setAdminSettings] = useState({ whatsapp_number: '', cashapp_id: '' });
 
+  // Check if current URL contains /manage for admin access
+  const isManageRoute = window.location.pathname.includes('/manage');
+
   // Scroll functions
   const scrollToServices = () => {
     const servicesSection = document.querySelector('#services-section');
