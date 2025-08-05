@@ -961,6 +961,7 @@ function App() {
                   setCurrentView('home');
                   setTimeout(() => scrollToServices(), 100);
                 }}
+                onImageZoom={(photo) => setZoomedImage(photo)}
               />
             </div>
           )}
