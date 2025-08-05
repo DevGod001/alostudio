@@ -126,12 +126,17 @@ class AlostudioAPITester:
         return self.run_test("Get Customer Bookings", "GET", "bookings/customer/john@test.com", 200)[0]
 
     def test_admin_login(self):
-        """Test admin login"""
+        """Test admin login and store session token"""
         admin_data = {
             "username": "admin",
             "password": "admin123"
         }
-        return self.run_test("Admin Login", "POST", "admin/login", 200, admin_data)[0]
+        success, response = self.run_test("Admin Login", "POST", "admin/login", 200, admin_data)
+        if success and response:
+            self.admin_session_token = response.get('session_token')
+            print(f"   Session token stored: {self.admin_session_token[:20]}...")
+            print(f"   Expires at: {response.get('expires_at')}")
+        return success
 
     def test_admin_get_bookings(self):
         """Test admin getting all bookings"""
