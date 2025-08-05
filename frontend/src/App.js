@@ -628,42 +628,85 @@ function App() {
   if (currentView === 'customer-portal') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-black/5">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Customer Portal</h1>
+        <div className="container mx-auto px-4 py-8 mobile-customer-portal">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Customer Portal</h1>
             <Button onClick={() => setCurrentView('home')} variant="outline">
               Back to Home
             </Button>
           </div>
 
-          <div className="max-w-md mx-auto mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Access Your Bookings</CardTitle>
-                <CardDescription>Enter your email to view your appointments</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+          {!userDashboard ? (
+            <div className="max-w-md mx-auto mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Access Your Dashboard</CardTitle>
+                  <CardDescription>Enter your email to view your photos, bookings, and order frames</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="customer-email">Email Address</Label>
+                    <Input
+                      id="customer-email"
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="text-base"
+                    />
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      if (customerEmail) {
+                        fetchUserDashboard(customerEmail);
+                      }
+                    }} 
+                    className="w-full bg-pink-600 hover:bg-pink-700"
+                    disabled={!customerEmail}
+                  >
+                    Access Dashboard
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                  <Label htmlFor="customer-email">Email Address</Label>
-                  <Input
-                    id="customer-email"
-                    type="email"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    placeholder="Enter your email"
-                  />
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Welcome back, {userDashboard.bookings?.[0]?.customer_name || customerEmail}!
+                  </h2>
+                  <p className="text-gray-600">Manage your photos, bookings, and frame orders</p>
                 </div>
-                <Button onClick={fetchCustomerBookings} className="w-full bg-pink-600 hover:bg-pink-700">
-                  View My Bookings
+                <Button 
+                  onClick={() => {
+                    setUserDashboard(null);
+                    setCustomerEmail('');
+                  }} 
+                  variant="outline"
+                  size="sm"
+                >
+                  Switch Account
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
 
-          {customerBookings.length > 0 && (
+              <CustomerDashboard 
+                userDashboard={userDashboard}
+                selectedPhotos={selectedPhotos}
+                setSelectedPhotos={setSelectedPhotos}
+                frameOrderForm={frameOrderForm}
+                setFrameOrderForm={setFrameOrderForm}
+                handleFrameOrder={handleFrameOrder}
+                handleFramePayment={handleFramePayment}
+                settings={settings}
+              />
+            </div>
+          )}
+
+          {customerBookings.length > 0 && !userDashboard && (
             <Card>
               <CardHeader>
-                <CardTitle>Your Bookings</CardTitle>
+                <CardTitle>Your Bookings (Legacy View)</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
