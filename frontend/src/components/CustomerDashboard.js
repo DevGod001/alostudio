@@ -118,33 +118,78 @@ export const CustomerDashboard = ({
                   {userDashboard.photos.map((photo) => (
                     <div 
                       key={photo.id} 
-                      className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                         selectedPhotos.includes(photo.id) 
                           ? 'border-pink-500 ring-2 ring-pink-200' 
                           : 'border-gray-200 hover:border-pink-300'
                       }`}
-                      onClick={() => togglePhotoSelection(photo.id)}
                     >
                       <img 
                         src={photo.file_url} 
                         alt={photo.file_name}
                         className="w-full h-full object-cover"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onImageZoom && onImageZoom(photo);
-                        }}
                       />
-                      {selectedPhotos.includes(photo.id) && (
-                        <div className="absolute inset-0 bg-pink-500 bg-opacity-20 flex items-center justify-center">
-                          <CheckCircle className="w-6 h-6 text-pink-600" />
-                        </div>
-                      )}
+                      
+                      {/* Selection Overlay */}
+                      <div 
+                        className="absolute inset-0 cursor-pointer flex items-center justify-center"
+                        onClick={() => togglePhotoSelection(photo.id)}
+                      >
+                        {selectedPhotos.includes(photo.id) && (
+                          <div className="absolute inset-0 bg-pink-500 bg-opacity-20 flex items-center justify-center">
+                            <CheckCircle className="w-8 h-8 text-pink-600" />
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onImageZoom && onImageZoom(photo);
+                          }}
+                          className="bg-white bg-opacity-90 hover:bg-white rounded-full p-2 shadow-sm transition-all hover:scale-105"
+                          title="View full size"
+                        >
+                          <ZoomIn className="w-4 h-4 text-gray-700" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onImageDownload && onImageDownload(photo);
+                          }}
+                          className="bg-white bg-opacity-90 hover:bg-white rounded-full p-2 shadow-sm transition-all hover:scale-105"
+                          title="Download image"
+                        >
+                          <Download className="w-4 h-4 text-gray-700" />
+                        </button>
+                      </div>
+                      
+                      {/* Image Info */}
                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
                         <p className="text-xs truncate">{photo.file_name}</p>
+                        <p className="text-xs text-gray-300">
+                          {photo.photo_type === 'session' && photo.uploaded_by_admin ? 'Session Photo' : 'Uploaded'}
+                        </p>
                       </div>
-                      <div className="absolute top-2 right-2">
-                        <div className="bg-white bg-opacity-80 rounded-full p-1">
-                          <ZoomIn className="w-4 h-4 text-gray-600" />
+                      
+                      {/* Selection Checkbox */}
+                      <div className="absolute top-2 left-2">
+                        <div 
+                          className={`w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all ${
+                            selectedPhotos.includes(photo.id) 
+                              ? 'bg-pink-500 border-pink-500' 
+                              : 'bg-white bg-opacity-80 border-gray-300 hover:border-pink-400'
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            togglePhotoSelection(photo.id);
+                          }}
+                        >
+                          {selectedPhotos.includes(photo.id) && (
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          )}
                         </div>
                       </div>
                     </div>
