@@ -264,11 +264,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Photo Upload for Sessions"
-    - "Photo Gallery API Endpoints"
-    - "Frame Order System API" 
-    - "Admin Session Persistence"
-    - "Admin Earnings/Wallet API"
+    - "Frame Order Workflow"
+    - "CustomerDashboard Integration"
+    - "AdminWallet Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
