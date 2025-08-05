@@ -625,7 +625,6 @@ function App() {
                                 <Button 
                                   size="sm" 
                                   onClick={() => {
-                                  console.log('Mark Complete clicked - booking:', booking.id);
                                   handleBookingAction(booking.id, 'complete');
                                 }}
                                   variant="outline"
