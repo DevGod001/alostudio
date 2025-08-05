@@ -511,7 +511,7 @@ function App() {
             <nav className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6 w-full md:w-auto mobile-nav">
               <Button variant="ghost" onClick={() => setCurrentView('home')} className="w-full md:w-auto">Home</Button>
               <Button variant="ghost" onClick={() => setCurrentView('customer-portal')} className="w-full md:w-auto">My Bookings</Button>
-              {isManageRoute && (
+              {showAdminAccess && (
                 <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
                   <DialogTrigger asChild>
                     <Button variant="ghost" onClick={() => setShowAdminDialog(true)} className="w-full md:w-auto">Admin</Button>
