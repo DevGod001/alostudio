@@ -48,6 +48,20 @@ function App() {
   const [adminForm, setAdminForm] = useState({ username: '', password: '' });
   const [allBookings, setAllBookings] = useState([]);
   const [adminSettings, setAdminSettings] = useState({ whatsapp_number: '', cashapp_id: '' });
+  const [adminToken, setAdminToken] = useState(localStorage.getItem('admin_token') || '');
+  const [earnings, setEarnings] = useState({});
+  const [frameOrders, setFrameOrders] = useState([]);
+  
+  // User dashboard state
+  const [userPhotos, setUserPhotos] = useState([]);
+  const [userDashboard, setUserDashboard] = useState(null);
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [frameOrderForm, setFrameOrderForm] = useState({
+    frame_size: '8x10',
+    frame_style: 'modern',
+    quantity: 1,
+    special_instructions: ''
+  });
 
   // Check if current URL contains manage hash for admin access
   const [showAdminAccess, setShowAdminAccess] = useState(false);
