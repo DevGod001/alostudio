@@ -122,7 +122,8 @@ function App() {
         customer_phone: '',
         booking_date: '',
         booking_time: '',
-        service_id: ''
+        service_id: '',
+        has_paid: false
       });
     } catch (error) {
       console.error('Booking error:', error.response?.data);
