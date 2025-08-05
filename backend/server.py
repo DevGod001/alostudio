@@ -457,6 +457,16 @@ async def get_settings():
             del settings['_id']
     return settings or {"whatsapp_number": "+16144055997", "cashapp_id": "$VitiPay", "business_name": "Alostudio"}
 
+async def get_admin_settings():
+    """Helper function to get admin settings"""
+    settings = await db.settings.find_one({})
+    if settings:
+        if '_id' in settings:
+            del settings['_id']
+        return Settings(**settings)
+    # Return default settings if none found
+    return Settings()
+
 @api_router.post("/bookings", response_model=Booking)
 async def create_booking(booking_data: BookingCreate):
     # Check if service exists (regular service)
