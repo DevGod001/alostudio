@@ -451,15 +451,11 @@ function App() {
   };
 
   const handleBookingAction = async (bookingId, action) => {
-    console.log(`handleBookingAction called with: ${bookingId}, ${action}`);
-    
     if (action === 'complete') {
       // Open completion dialog instead of direct API call
       const booking = allBookings.find(b => b.id === bookingId);
-      console.log('Found booking for completion:', booking);
       setSelectedBookingForCompletion(booking);
       setShowCompletionDialog(true);
-      console.log('Completion dialog state set to true');
       return;
     }
 
@@ -472,7 +468,6 @@ function App() {
       }
     } catch (error) {
       alert(`Error ${action}ing booking`);
-      console.error(`Error ${action}ing booking:`, error);
     }
   };
 
