@@ -109,88 +109,51 @@ export const CustomerDashboard = ({
         <TabsContent value="photos" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Your Photo Gallery</CardTitle>
-              <CardDescription>All photos from your sessions with Alostudio</CardDescription>
+              <CardTitle>My Photos</CardTitle>
+              <CardDescription>Your session photos and uploaded images</CardDescription>
             </CardHeader>
             <CardContent>
-              {userDashboard.photos.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {userDashboard.photos && userDashboard.photos.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {userDashboard.photos.map((photo) => (
                     <div 
                       key={photo.id} 
-                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedPhotos.includes(photo.id) 
-                          ? 'border-pink-500 ring-2 ring-pink-200' 
-                          : 'border-gray-200 hover:border-pink-300'
-                      }`}
+                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-pink-300 transition-all group cursor-pointer"
+                      onClick={() => onImageZoom && onImageZoom(photo)}
                     >
                       <img 
                         src={photo.file_url} 
                         alt={photo.file_name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
                       
-                      {/* Selection Overlay */}
-                      <div 
-                        className="absolute inset-0 cursor-pointer flex items-center justify-center"
-                        onClick={() => togglePhotoSelection(photo.id)}
-                      >
-                        {selectedPhotos.includes(photo.id) && (
-                          <div className="absolute inset-0 bg-pink-500 bg-opacity-20 flex items-center justify-center">
-                            <CheckCircle className="w-8 h-8 text-pink-600" />
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Action Buttons */}
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onImageZoom && onImageZoom(photo);
-                          }}
-                          className="bg-white bg-opacity-90 hover:bg-white rounded-full p-2 shadow-sm transition-all hover:scale-105"
-                          title="View full size"
-                        >
-                          <ZoomIn className="w-4 h-4 text-gray-700" />
-                        </button>
+                      {/* Download Button */}
+                      <div className="absolute top-2 right-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onImageDownload && onImageDownload(photo);
                           }}
-                          className="bg-white bg-opacity-90 hover:bg-white rounded-full p-2 shadow-sm transition-all hover:scale-105"
+                          className="bg-white bg-opacity-90 hover:bg-white rounded-full p-2 shadow-lg transition-all hover:scale-110"
                           title="Download image"
                         >
                           <Download className="w-4 h-4 text-gray-700" />
                         </button>
                       </div>
                       
+                      {/* Zoom Indicator */}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ZoomIn className="w-8 h-8 text-white drop-shadow-lg" />
+                        </div>
+                      </div>
+                      
                       {/* Image Info */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
-                        <p className="text-xs truncate">{photo.file_name}</p>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent text-white p-3">
+                        <p className="text-sm font-medium truncate">{photo.file_name}</p>
                         <p className="text-xs text-gray-300">
                           {photo.photo_type === 'session' && photo.uploaded_by_admin ? 'Session Photo' : 'Uploaded'}
                         </p>
-                      </div>
-                      
-                      {/* Selection Checkbox */}
-                      <div className="absolute top-2 left-2">
-                        <div 
-                          className={`w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all ${
-                            selectedPhotos.includes(photo.id) 
-                              ? 'bg-pink-500 border-pink-500' 
-                              : 'bg-white bg-opacity-80 border-gray-300 hover:border-pink-400'
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            togglePhotoSelection(photo.id);
-                          }}
-                        >
-                          {selectedPhotos.includes(photo.id) && (
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          )}
-                        </div>
                       </div>
                     </div>
                   ))}
