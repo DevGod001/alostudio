@@ -394,6 +394,25 @@ function App() {
     }
   };
 
+  const handleAdminLogout = async () => {
+    try {
+      if (adminToken) {
+        await axios.post(`${API}/admin/logout`, { session_token: adminToken });
+      }
+      setIsAdmin(false);
+      setAdminToken('');
+      localStorage.removeItem('admin_token');
+      alert('Logged out successfully');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force logout even if API call fails
+      setIsAdmin(false);
+      setAdminToken('');
+      localStorage.removeItem('admin_token');
+      alert('Logged out');
+    }
+  };
+
   const handleBookingAction = async (bookingId, action) => {
     try {
       await axios.put(`${API}/admin/bookings/${bookingId}/${action}`);
