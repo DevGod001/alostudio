@@ -130,7 +130,22 @@ function App() {
       
       console.log('Booking data:', bookingData); // Debug log
       const response = await axios.post(`${API}/bookings`, bookingData);
-      alert('Booking created! Please proceed with payment.');
+      
+      // If user has paid, automatically submit payment info
+      if (bookingForm.has_paid) {
+        const depositAmount = ((selectedService?.base_price || 0) * (selectedService?.deposit_percentage || 0) / 100).toFixed(2);
+        const paymentData = {
+          booking_id: response.data.id,
+          payment_amount: parseFloat(depositAmount),
+          payment_reference: `User confirmed payment via booking form - ${new Date().toISOString().slice(0, 10)}`
+        };
+        
+        await axios.post(`${API}/bookings/${response.data.id}/payment`, paymentData);
+        alert('Booking created and payment info submitted! Admin will review and approve your payment.');
+      } else {
+        alert('Booking created! Please proceed with payment.');
+      }
+      
       setShowBookingDialog(false);
       setBookingForm({
         customer_name: '',
