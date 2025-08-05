@@ -627,7 +627,10 @@ function App() {
                               {booking.status === 'confirmed' && (
                                 <Button 
                                   size="sm" 
-                                  onClick={() => handleBookingAction(booking.id, 'complete')}
+                                  onClick={() => {
+                                  console.log('Mark Complete clicked - booking:', booking.id);
+                                  handleBookingAction(booking.id, 'complete');
+                                }}
                                   variant="outline"
                                   className="w-full md:w-auto"
                                 >
