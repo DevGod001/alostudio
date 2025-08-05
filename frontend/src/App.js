@@ -1571,7 +1571,6 @@ function App() {
       {/* Admin Photo Upload Dialog */}
       <Dialog open={showPhotoUploadDialog} onOpenChange={setShowPhotoUploadDialog}>
         <DialogContent className="max-w-md">
-          {console.log('Photo upload dialog render - showPhotoUploadDialog:', showPhotoUploadDialog)}
           <DialogHeader>
             <DialogTitle>Upload Session Photos</DialogTitle>
             <DialogDescription>
