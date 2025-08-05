@@ -111,6 +111,8 @@ function App() {
     frame_size: '8x10',
     frame_style: 'modern',
     quantity: 1,
+    delivery_method: 'self_pickup',
+    delivery_address: '',
     special_instructions: ''
   });
 
