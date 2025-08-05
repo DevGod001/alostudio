@@ -640,8 +640,10 @@ function App() {
                               {booking.status === 'completed' && (
                                 <Button 
                                   size="sm" 
-                                  onClick={() => {
-                                    console.log('Upload Photos clicked for booking:', booking);
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('Upload Photos clicked - booking:', booking.id);
                                     setSelectedBookingForUpload(booking);
                                     setShowPhotoUploadDialog(true);
                                     console.log('Photo upload dialog state set to true');
