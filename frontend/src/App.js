@@ -98,60 +98,6 @@ function App() {
     fetchServices();
     fetchComboServices();
     fetchSettings();
-    
-    // Aggressive removal of "Made with Emergent" badge
-    const removeEmergentBadge = () => {
-      setTimeout(() => {
-        // Target all possible emergent elements
-        const selectors = [
-          '[data-emergent]',
-          '[class*="emergent" i]',
-          '[id*="emergent" i]',
-          'div[style*="position: fixed"][style*="bottom"][style*="right"]',
-          '*:contains("Made with Emergent")',
-          '*:contains("Emergent")',
-          '.emergent-badge',
-          '.emergent-watermark',
-          '.powered-by-emergent'
-        ];
-        
-        selectors.forEach(selector => {
-          try {
-            const elements = document.querySelectorAll(selector);
-            elements.forEach(el => {
-              if (el && !el.classList.contains('mobile-whatsapp')) {
-                el.style.display = 'none';
-                el.style.visibility = 'hidden';
-                el.style.opacity = '0';
-                el.remove();
-              }
-            });
-          } catch (e) {
-            // Ignore selector errors
-          }
-        });
-        
-        // Also check for text content
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(el => {
-          if (el.textContent && el.textContent.includes('Made with Emergent')) {
-            if (!el.classList.contains('mobile-whatsapp')) {
-              el.style.display = 'none';
-              el.remove();
-            }
-          }
-        });
-      }, 1000);
-    };
-    
-    removeEmergentBadge();
-    
-    // Run every 5 seconds to catch dynamically added badges
-    const interval = setInterval(removeEmergentBadge, 5000);
-    
-    return () => {
-      clearInterval(interval);
-    };
   }, []);
 
   const fetchServices = async () => {
