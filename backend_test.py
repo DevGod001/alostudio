@@ -712,20 +712,402 @@ class AlostudioAPITester:
         
         return focused_passed == focused_total
 
+    def run_frame_order_comprehensive_tests(self):
+        """Comprehensive frame order system testing as requested in review"""
+        print("\n" + "="*80)
+        print("🎯 COMPREHENSIVE FRAME ORDER SYSTEM VALIDATION")
+        print("="*80)
+        
+        frame_tests = [
+            ("Frame Order Creation - All Sizes", self.test_frame_order_all_sizes_comprehensive),
+            ("Frame Payment Workflow", self.test_frame_payment_workflow_comprehensive),
+            ("Admin Frame Order Management", self.test_admin_frame_management_comprehensive),
+            ("Frame Order Status Progression", self.test_frame_status_progression),
+            ("Delivery Method Handling", self.test_delivery_method_handling),
+            ("Frame Order Earnings Integration", self.test_frame_earnings_integration),
+        ]
+        
+        frame_passed = 0
+        frame_total = len(frame_tests)
+        
+        for test_name, test_func in frame_tests:
+            print(f"\n{'='*25} {test_name} {'='*25}")
+            try:
+                if test_func():
+                    frame_passed += 1
+                    print(f"✅ {test_name} - PASSED")
+                else:
+                    print(f"❌ {test_name} - FAILED")
+            except Exception as e:
+                print(f"❌ {test_name} - FAILED with exception: {str(e)}")
+        
+        print(f"\n{'='*80}")
+        print(f"🎯 FRAME ORDER SYSTEM RESULTS")
+        print(f"Tests passed: {frame_passed}/{frame_total}")
+        print(f"Success rate: {(frame_passed/frame_total)*100:.1f}%")
+        
+        return frame_passed == frame_total
+
+    def test_frame_order_all_sizes_comprehensive(self):
+        """Test frame order creation with all size options and pricing validation"""
+        if not self.test_photo_id:
+            print("❌ Cannot test frame orders - no photo ID available")
+            return False
+
+        frame_sizes = {
+            "5x7": 25.0,
+            "8x10": 45.0, 
+            "11x14": 75.0,
+            "16x20": 120.0
+        }
+        
+        frame_styles = ["modern", "classic", "rustic"]
+        quantities = [1, 2, 3]
+        
+        all_success = True
+        created_orders = []
+        
+        for size, expected_price in frame_sizes.items():
+            for style in frame_styles[:2]:  # Test 2 styles per size
+                for qty in quantities[:2]:  # Test 2 quantities per style
+                    order_data = {
+                        "user_email": self.test_user_email,
+                        "user_name": "Test User",
+                        "photo_ids": [self.test_photo_id],
+                        "frame_size": size,
+                        "frame_style": style,
+                        "quantity": qty,
+                        "delivery_method": "self_pickup",
+                        "special_instructions": f"Test {size} {style} frame x{qty}"
+                    }
+                    
+                    success, response = self.run_test(f"Create Frame Order ({size} {style} x{qty})", 
+                                                    "POST", "frames/order", 200, order_data)
+                    if success and response:
+                        expected_total = expected_price * qty
+                        actual_total = response.get('total_price', 0)
+                        
+                        if actual_total == expected_total:
+                            print(f"   ✅ Pricing correct: {size} {style} x{qty} = ${actual_total}")
+                            created_orders.append({
+                                'id': response.get('id'),
+                                'size': size,
+                                'style': style,
+                                'quantity': qty,
+                                'total': actual_total
+                            })
+                        else:
+                            print(f"   ❌ Pricing incorrect: Expected ${expected_total}, got ${actual_total}")
+                            all_success = False
+                    else:
+                        all_success = False
+        
+        # Store some order IDs for further testing
+        if created_orders:
+            self.test_frame_order_id = created_orders[0]['id']
+            print(f"   Stored frame order ID for further testing: {self.test_frame_order_id}")
+            print(f"   Created {len(created_orders)} frame orders successfully")
+        
+        return all_success
+
+    def test_frame_payment_workflow_comprehensive(self):
+        """Test complete frame payment submission workflow"""
+        if not self.test_frame_order_id:
+            print("❌ Cannot test frame payment - no frame order ID available")
+            return False
+
+        # Test payment submission
+        payment_data = {
+            "booking_id": self.test_frame_order_id,
+            "payment_amount": 25.0,  # 5x7 frame price
+            "payment_reference": "FRAME_PAYMENT_TEST_REF"
+        }
+        
+        success, response = self.run_test("Frame Payment Submission", "POST", 
+                                        f"frames/{self.test_frame_order_id}/payment", 200, payment_data)
+        if not success:
+            return False
+        
+        print("   ✅ Frame payment submitted successfully")
+        
+        # Verify payment was recorded by checking admin frame orders
+        success2, response2 = self.run_test("Verify Payment Recorded", "GET", "admin/frames", 200)
+        if success2 and response2:
+            paid_order = None
+            for order in response2:
+                if order.get('id') == self.test_frame_order_id:
+                    paid_order = order
+                    break
+            
+            if paid_order and paid_order.get('status') == 'payment_submitted':
+                print(f"   ✅ Payment status updated: {paid_order.get('status')}")
+                print(f"   ✅ Payment amount recorded: ${paid_order.get('payment_amount')}")
+                print(f"   ✅ Payment reference: {paid_order.get('payment_reference')}")
+                return True
+            else:
+                print("   ❌ Payment not properly recorded in order")
+                return False
+        
+        return False
+
+    def test_admin_frame_management_comprehensive(self):
+        """Test admin frame order management endpoints"""
+        # Test getting all frame orders
+        success1, response1 = self.run_test("Admin Get All Frame Orders", "GET", "admin/frames", 200)
+        if not success1:
+            return False
+        
+        frame_orders = response1
+        print(f"   Found {len(frame_orders)} total frame orders")
+        
+        # Show order status distribution
+        status_counts = {}
+        for order in frame_orders:
+            status = order.get('status', 'unknown')
+            status_counts[status] = status_counts.get(status, 0) + 1
+        
+        print("   Status distribution:")
+        for status, count in status_counts.items():
+            print(f"     - {status}: {count}")
+        
+        # Test admin approval if we have a payment_submitted order
+        payment_submitted_orders = [o for o in frame_orders if o.get('status') == 'payment_submitted']
+        if payment_submitted_orders and self.test_frame_order_id:
+            success2 = self.run_test("Admin Approve Frame Order", "PUT", 
+                                   f"admin/frames/{self.test_frame_order_id}/approve", 200)[0]
+            if success2:
+                print("   ✅ Frame order approval successful")
+                return True
+        else:
+            print("   ⚠️  No payment_submitted orders to approve (may be expected)")
+            return True
+        
+        return False
+
+    def test_frame_status_progression(self):
+        """Test frame order status progression workflow"""
+        if not self.test_frame_order_id:
+            print("❌ Cannot test status progression - no frame order ID available")
+            return False
+        
+        # Test status updates
+        status_updates = [
+            ("in_progress", "Order is being processed"),
+            ("ready_for_pickup", "Frame is ready for customer pickup"),
+            ("completed", "Order completed successfully")
+        ]
+        
+        all_success = True
+        for status, admin_notes in status_updates:
+            status_data = {
+                "status": status,
+                "admin_notes": admin_notes
+            }
+            
+            success, response = self.run_test(f"Update Status to {status}", "PUT", 
+                                            f"admin/frames/{self.test_frame_order_id}/status", 200, status_data)
+            if success:
+                print(f"   ✅ Status updated to {status}")
+            else:
+                all_success = False
+        
+        return all_success
+
+    def test_delivery_method_handling(self):
+        """Test delivery method options and address handling"""
+        if not self.test_frame_order_id:
+            print("❌ Cannot test delivery methods - no frame order ID available")
+            return False
+        
+        # Test self pickup
+        pickup_data = {
+            "delivery_method": "self_pickup",
+            "special_instructions": "Please call when ready for pickup"
+        }
+        
+        success1 = self.run_test("Set Delivery Method - Self Pickup", "PUT", 
+                               f"frames/{self.test_frame_order_id}/delivery", 200, pickup_data)[0]
+        
+        # Test shipping
+        shipping_data = {
+            "delivery_method": "ship_to_me",
+            "delivery_address": "123 Test Street, Test City, TC 12345",
+            "special_instructions": "Leave at front door if no answer"
+        }
+        
+        success2 = self.run_test("Set Delivery Method - Shipping", "PUT", 
+                               f"frames/{self.test_frame_order_id}/delivery", 200, shipping_data)[0]
+        
+        # Test admin adding delivery fee
+        fee_data = {"delivery_fee": 15.0}
+        success3 = self.run_test("Admin Add Delivery Fee", "PUT", 
+                               f"admin/frames/{self.test_frame_order_id}/delivery-fee", 200, fee_data)[0]
+        
+        return success1 and success2 and success3
+
+    def test_frame_earnings_integration(self):
+        """Test frame order earnings integration with admin wallet"""
+        # Get earnings before
+        success1, response1 = self.run_test("Get Earnings Before Frame Approval", "GET", "admin/earnings", 200)
+        if not success1:
+            return False
+        
+        initial_earnings = response1.get('total_earnings', 0)
+        initial_frame_earnings = response1.get('service_breakdown', {}).get('frames', 0)
+        
+        print(f"   Initial total earnings: ${initial_earnings}")
+        print(f"   Initial frame earnings: ${initial_frame_earnings}")
+        
+        # Create and approve a new frame order to test earnings
+        if self.test_photo_id:
+            order_data = {
+                "user_email": "earnings@test.com",
+                "user_name": "Earnings Test User",
+                "photo_ids": [self.test_photo_id],
+                "frame_size": "8x10",
+                "frame_style": "modern",
+                "quantity": 1,
+                "delivery_method": "self_pickup"
+            }
+            
+            success2, response2 = self.run_test("Create Frame Order for Earnings Test", "POST", "frames/order", 200, order_data)
+            if success2:
+                earnings_order_id = response2.get('id')
+                
+                # Submit payment
+                payment_data = {
+                    "booking_id": earnings_order_id,
+                    "payment_amount": 45.0,
+                    "payment_reference": "EARNINGS_TEST_REF"
+                }
+                
+                success3 = self.run_test("Submit Payment for Earnings Test", "POST", 
+                                       f"frames/{earnings_order_id}/payment", 200, payment_data)[0]
+                
+                if success3:
+                    # Approve order
+                    success4 = self.run_test("Approve Frame Order for Earnings", "PUT", 
+                                           f"admin/frames/{earnings_order_id}/approve", 200)[0]
+                    
+                    if success4:
+                        # Check earnings after
+                        success5, response5 = self.run_test("Get Earnings After Frame Approval", "GET", "admin/earnings", 200)
+                        if success5:
+                            final_earnings = response5.get('total_earnings', 0)
+                            final_frame_earnings = response5.get('service_breakdown', {}).get('frames', 0)
+                            
+                            print(f"   Final total earnings: ${final_earnings}")
+                            print(f"   Final frame earnings: ${final_frame_earnings}")
+                            
+                            earnings_increase = final_earnings - initial_earnings
+                            frame_earnings_increase = final_frame_earnings - initial_frame_earnings
+                            
+                            if earnings_increase >= 45.0 and frame_earnings_increase >= 45.0:
+                                print(f"   ✅ Earnings correctly increased by ${earnings_increase}")
+                                print(f"   ✅ Frame earnings increased by ${frame_earnings_increase}")
+                                return True
+                            else:
+                                print(f"   ❌ Earnings increase incorrect: ${earnings_increase} (expected >= $45)")
+                                return False
+        
+        return False
+
+    def test_customer_dashboard_comprehensive(self):
+        """Test customer dashboard APIs with frame orders included"""
+        success, response = self.run_test("Customer Dashboard with Frame Orders", "GET", 
+                                        f"user/{self.test_user_email}/dashboard", 200)
+        if success and response:
+            photos = response.get('photos', [])
+            bookings = response.get('bookings', [])
+            frame_orders = response.get('frame_orders', [])
+            stats = response.get('stats', {})
+            
+            print(f"   Dashboard data retrieved:")
+            print(f"   - Photos: {len(photos)}")
+            print(f"   - Bookings: {len(bookings)}")
+            print(f"   - Frame Orders: {len(frame_orders)}")
+            print(f"   - Stats: {stats}")
+            
+            # Verify frame orders have proper structure
+            if frame_orders:
+                sample_order = frame_orders[0]
+                required_fields = ['id', 'frame_size', 'frame_style', 'quantity', 'total_price', 'status']
+                missing_fields = [field for field in required_fields if field not in sample_order]
+                
+                if not missing_fields:
+                    print("   ✅ Frame orders have proper structure")
+                    
+                    # Check status distribution
+                    status_counts = {}
+                    for order in frame_orders:
+                        status = order.get('status', 'unknown')
+                        status_counts[status] = status_counts.get(status, 0) + 1
+                    
+                    print("   Frame order status distribution:")
+                    for status, count in status_counts.items():
+                        print(f"     - {status}: {count}")
+                    
+                    return True
+                else:
+                    print(f"   ❌ Frame orders missing fields: {missing_fields}")
+                    return False
+            else:
+                print("   ⚠️  No frame orders found in dashboard (may be expected)")
+                return True
+        
+        return False
+
+    def test_admin_session_management_comprehensive(self):
+        """Test admin session management with login/logout functionality"""
+        # Test login
+        admin_data = {"username": "admin", "password": "admin123"}
+        success1, response1 = self.run_test("Admin Login", "POST", "admin/login", 200, admin_data)
+        if not success1:
+            return False
+        
+        session_token = response1.get('session_token')
+        print(f"   ✅ Login successful, session token: {session_token[:20]}...")
+        
+        # Test session verification
+        success2, response2 = self.run_test("Admin Session Verification", "POST", 
+                                          f"admin/verify-session?session_token={session_token}", 200)
+        if not success2:
+            return False
+        
+        print(f"   ✅ Session verification successful")
+        
+        # Test logout
+        success3 = self.run_test("Admin Logout", "POST", 
+                               f"admin/logout?session_token={session_token}", 200)[0]
+        if not success3:
+            return False
+        
+        print("   ✅ Logout successful")
+        
+        # Verify session is invalidated
+        success4 = self.run_test("Verify Session Invalidated", "POST", 
+                               f"admin/verify-session?session_token={session_token}", 401)[0]
+        if success4:
+            print("   ✅ Session properly invalidated after logout")
+            return True
+        
+        return False
+
 def main():
-    print("🚀 Starting Alostudio API Tests - Focused Review Testing")
-    print("=" * 70)
+    print("🚀 Starting Alostudio API Tests - COMPREHENSIVE FRAME ORDER VALIDATION")
+    print("=" * 80)
     
     tester = AlostudioAPITester()
     
-    # First run essential setup tests to prepare for focused tests
+    # Essential setup tests
     setup_tests = [
         ("Root Endpoint", tester.test_root_endpoint),
         ("Get All Services", tester.test_get_all_services),
         ("Create Booking", tester.test_create_booking),
         ("Submit Payment", tester.test_submit_payment),
         ("Admin Get Bookings", tester.test_admin_get_bookings),
-        ("Admin Booking Actions", tester.test_admin_booking_actions),  # This completes the booking
+        ("Admin Booking Actions", tester.test_admin_booking_actions),
+        ("User Photo Upload", tester.test_user_photo_upload),
     ]
     
     print(f"📋 Running {len(setup_tests)} setup tests...")
@@ -737,21 +1119,39 @@ def main():
         except Exception as e:
             print(f"❌ Setup test {test_name} failed with exception: {str(e)}")
     
-    # Now run the focused review tests
-    focused_success = tester.run_focused_review_tests()
+    # Run comprehensive frame order tests
+    frame_success = tester.run_frame_order_comprehensive_tests()
+    
+    # Run customer dashboard test
+    print(f"\n{'='*25} Customer Dashboard Integration {'='*25}")
+    dashboard_success = tester.test_customer_dashboard_comprehensive()
+    
+    # Run admin session management test
+    print(f"\n{'='*25} Admin Session Management {'='*25}")
+    session_success = tester.test_admin_session_management_comprehensive()
+    
+    # Quick admin photo upload validation
+    print(f"\n{'='*25} Admin Photo Upload Validation {'='*25}")
+    photo_success = tester.test_photo_upload_still_works()
     
     # Print final results
-    print(f"\n{'='*70}")
-    print(f"📊 OVERALL RESULTS")
+    print(f"\n{'='*80}")
+    print(f"📊 COMPREHENSIVE BACKEND VALIDATION RESULTS")
     print(f"Setup tests passed: {tester.tests_passed}/{tester.tests_run}")
     print(f"Setup success rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
-    print(f"Focused review tests: {'✅ PASSED' if focused_success else '❌ FAILED'}")
+    print(f"Frame Order System: {'✅ PASSED' if frame_success else '❌ FAILED'}")
+    print(f"Customer Dashboard: {'✅ PASSED' if dashboard_success else '❌ FAILED'}")
+    print(f"Admin Session Management: {'✅ PASSED' if session_success else '❌ FAILED'}")
+    print(f"Admin Photo Upload: {'✅ PASSED' if photo_success else '❌ FAILED'}")
     
-    if focused_success:
-        print("🎉 All focused review tests passed!")
+    all_success = frame_success and dashboard_success and session_success and photo_success
+    
+    if all_success:
+        print("🎉 All comprehensive backend validation tests passed!")
+        print("✅ Frame ordering system is ready for end-to-end testing")
         return 0
     else:
-        print("⚠️  Some focused review tests failed")
+        print("⚠️  Some backend validation tests failed")
         return 1
 
 if __name__ == "__main__":
