@@ -327,16 +327,16 @@ function App() {
                             </p>
                           )}
                         </div>
-                        <div className="flex flex-col gap-2 items-end">
+                        <div className="flex flex-col gap-2 items-end mobile-admin-actions">
                           {getStatusBadge(booking.status)}
-                          <div className="flex gap-2">
+                          <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                             {booking.status === 'payment_submitted' && (
                               <Button 
                                 size="sm" 
                                 onClick={() => handleBookingAction(booking.id, 'approve')}
-                                className="bg-green-600 hover:bg-green-700"
+                                className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
                               >
-                                Approve
+                                Approve Payment
                               </Button>
                             )}
                             {booking.status === 'confirmed' && (
@@ -344,14 +344,16 @@ function App() {
                                 size="sm" 
                                 onClick={() => handleBookingAction(booking.id, 'complete')}
                                 variant="outline"
+                                className="w-full md:w-auto"
                               >
-                                Complete
+                                Mark Complete
                               </Button>
                             )}
                             <Button 
                               size="sm" 
                               variant="destructive"
                               onClick={() => handleBookingAction(booking.id, 'cancel')}
+                              className="w-full md:w-auto"
                             >
                               Cancel
                             </Button>
