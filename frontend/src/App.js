@@ -1650,40 +1650,50 @@ function App() {
         </DialogContent>
       </Dialog>
 
-      {/* Simple Custom Modal Test */}
+      {/* Simple Custom Modal Test - HIGHEST Z-INDEX */}
       {showCompletionDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold mb-4">CUSTOM Complete Booking</h2>
-            <p>This is a custom modal test. If you see this, the state is working!</p>
-            <p className="text-sm text-gray-600 mt-2">Booking: {selectedBookingForCompletion?.customer_name}</p>
-            <div className="mt-4 flex gap-2">
-              <button 
-                onClick={() => setShowCompletionDialog(false)}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Close Custom Modal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Simple Custom Upload Modal Test */}
-      {showPhotoUploadDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold mb-4">CUSTOM Upload Photos</h2>
-            <p>This is a custom upload modal test. If you see this, the state is working!</p>
-            <p className="text-sm text-gray-600 mt-2">Booking: {selectedBookingForUpload?.customer_name}</p>
-            <div className="mt-4 flex gap-2">
-              <button 
-                onClick={() => setShowPhotoUploadDialog(false)}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Close Custom Modal
-              </button>
-            </div>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(255, 0, 0, 0.8)', // Red background to make it super obvious
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999999, // Highest possible z-index
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '50px',
+            borderRadius: '10px',
+            border: '5px solid red',
+            textAlign: 'center'
+          }}>
+            <h1 style={{ color: 'red', fontSize: '32px' }}>🎉 SUCCESS! 🎉</h1>
+            <p style={{ color: 'black', fontSize: '18px' }}>
+              MODAL IS WORKING!<br/>
+              State management works perfectly!<br/>
+              The issue was with the original Dialog component!
+            </p>
+            <button 
+              onClick={() => setShowCompletionDialog(false)}
+              style={{
+                padding: '10px 20px',
+                fontSize: '16px',
+                backgroundColor: 'red',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginTop: '20px'
+              }}
+            >
+              CLOSE MODAL
+            </button>
           </div>
         </div>
       )}
