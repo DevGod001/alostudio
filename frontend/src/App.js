@@ -447,10 +447,8 @@ function App() {
 
   const handleBookingAction = async (bookingId, action) => {
     if (action === 'complete') {
-      // Open completion dialog instead of direct API call
-      const booking = allBookings.find(b => b.id === bookingId);
-      setSelectedBookingForCompletion(booking);
-      setShowCompletionDialog(true);
+      // Expand inline completion form
+      setExpandedCompletionBooking(bookingId);
       return;
     }
 
