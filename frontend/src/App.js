@@ -219,10 +219,108 @@ function App() {
       setIsAdmin(true);
       setCurrentView('admin');
       setShowAdminDialog(false);
+      setAdminToken(response.data.session_token);
+      localStorage.setItem('admin_token', response.data.session_token);
       fetchAllBookings();
+      fetchEarnings();
+      fetchFrameOrders();
       alert('Admin login successful!');
     } catch (error) {
       alert('Invalid admin credentials');
+    }
+  };
+
+  const verifyAdminSession = async () => {
+    if (!adminToken) return false;
+    
+    try {
+      await axios.post(`${API}/admin/verify-session`, { session_token: adminToken });
+      return true;
+    } catch (error) {
+      // Session expired
+      setIsAdmin(false);
+      setAdminToken('');
+      localStorage.removeItem('admin_token');
+      return false;
+    }
+  };
+
+  const fetchEarnings = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/earnings`);
+      setEarnings(response.data);
+    } catch (error) {
+      console.error('Error fetching earnings:', error);
+    }
+  };
+
+  const fetchFrameOrders = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/frames`);
+      setFrameOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching frame orders:', error);
+    }
+  };
+
+  const fetchUserDashboard = async (email) => {
+    try {
+      const response = await axios.get(`${API}/user/${email}/dashboard`);
+      setUserDashboard(response.data);
+      setUserPhotos(response.data.photos);
+    } catch (error) {
+      console.error('Error fetching user dashboard:', error);
+    }
+  };
+
+  const handleFrameOrder = async () => {
+    if (selectedPhotos.length === 0) {
+      alert('Please select at least one photo to frame');
+      return;
+    }
+
+    try {
+      const orderData = {
+        user_email: customerEmail,
+        user_name: userDashboard?.bookings?.[0]?.customer_name || 'Customer',
+        photo_ids: selectedPhotos,
+        ...frameOrderForm
+      };
+
+      const response = await axios.post(`${API}/frames/order`, orderData);
+      alert(`Frame order created! Total: $${response.data.total_price}`);
+      setSelectedPhotos([]);
+      fetchUserDashboard(customerEmail);
+    } catch (error) {
+      alert('Error creating frame order');
+    }
+  };
+
+  const handleFramePayment = async (orderId, amount) => {
+    const reference = prompt('Enter your CashApp payment reference:');
+    if (!reference) return;
+
+    try {
+      await axios.post(`${API}/frames/${orderId}/payment`, {
+        booking_id: orderId,
+        payment_amount: amount,
+        payment_reference: reference
+      });
+      alert('Payment submitted for admin review!');
+      fetchUserDashboard(customerEmail);
+    } catch (error) {
+      alert('Error submitting payment');
+    }
+  };
+
+  const handleFrameOrderAction = async (orderId, action) => {
+    try {
+      await axios.put(`${API}/admin/frames/${orderId}/${action}`);
+      alert(`Frame order ${action}d successfully!`);
+      fetchFrameOrders();
+      fetchEarnings();
+    } catch (error) {
+      alert(`Error ${action}ing frame order`);
     }
   };
 
