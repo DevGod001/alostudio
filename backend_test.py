@@ -344,8 +344,8 @@ class AlostudioAPITester:
     def test_invalid_admin_session(self):
         """Test invalid session token handling"""
         invalid_token = "invalid-token-12345"
-        success, response = self.run_test("Invalid Session Token", "POST", "admin/verify-session", 401, 
-                                        {"session_token": invalid_token})
+        success, response = self.run_test("Invalid Session Token", "POST", 
+                                        f"admin/verify-session?session_token={invalid_token}", 401)
         # For this test, we expect a 401 status, so success means we got the expected error
         return success
 
