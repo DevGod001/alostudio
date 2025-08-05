@@ -213,48 +213,20 @@ body {
   animation: bounce-in 0.6s ease-out;
 }
 
-/* Hide Made with Emergent badge - most aggressive approach */
-*:contains("Made with Emergent"),
-*:contains("Emergent"),
-div[data-emergent-badge],
-[class*="emergent" i],
-[id*="emergent" i],
-[title*="emergent" i],
-[alt*="emergent" i] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  position: absolute !important;
-  left: -9999px !important;
-  z-index: -9999 !important;
-  pointer-events: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-/* Target common emergent badge selectors */
-div[style*="position: fixed"],
-div[style*="bottom:"],
-div[style*="right:"],
-span:contains("Made with"),
-span:contains("Emergent") {
-  display: none !important;
-}
-
-/* Specific targeting for bottom-right positioning */
+/* Hide Made with Emergent badge - simple and effective */
 div[style*="position: fixed"][style*="bottom"][style*="right"]:not(.mobile-whatsapp) {
   display: none !important;
 }
 
-/* Override any emergent styles */
-.emergent-badge,
-.emergent-watermark,
-.powered-by-emergent,
-[data-emergent],
-[data-testid*="emergent" i] {
+/* Target the badge more specifically */
+div[style*="z-index: 2147483647"] {
   display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
+}
+
+/* Additional targeting for emergent branding */
+*[class*="emergent" i]:not(.mobile-whatsapp),
+*[id*="emergent" i]:not(.mobile-whatsapp) {
+  display: none !important;
 }
 
 /* Hide scrollbars */
