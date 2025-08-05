@@ -144,7 +144,12 @@ export const CustomerDashboard = ({
                   <ImageIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No Photos Yet</h3>
                   <p className="text-gray-600 mb-4">Book a session with us to start building your photo gallery!</p>
-                  <Button className="bg-pink-600 hover:bg-pink-700">Book a Session</Button>
+                  <Button 
+                    className="bg-pink-600 hover:bg-pink-700"
+                    onClick={onBookSession}
+                  >
+                    Book a Session
+                  </Button>
                 </div>
               )}
             </CardContent>
