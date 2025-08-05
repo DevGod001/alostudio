@@ -450,10 +450,21 @@ function App() {
   };
 
   const handleBookingAction = async (bookingId, action) => {
+    if (action === 'complete') {
+      // Open completion dialog instead of direct API call
+      const booking = allBookings.find(b => b.id === bookingId);
+      setSelectedBookingForCompletion(booking);
+      setShowCompletionDialog(true);
+      return;
+    }
+
     try {
       await axios.put(`${API}/admin/bookings/${bookingId}/${action}`);
       alert(`Booking ${action}d successfully!`);
       fetchAllBookings();
+      if (action === 'approve') {
+        fetchEarnings(); // Refresh earnings when approving
+      }
     } catch (error) {
       alert(`Error ${action}ing booking`);
     }
