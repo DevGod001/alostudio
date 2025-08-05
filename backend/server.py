@@ -632,6 +632,219 @@ async def check_availability(date: str):
     
     return {"available_slots": available_slots}
 
+# User Photo Gallery Routes
+@api_router.get("/user/{email}/photos")
+async def get_user_photos(email: str):
+    """Get all photos for a user"""
+    photos = await db.user_photos.find({"user_email": email}).sort("upload_date", -1).to_list(1000)
+    # Clean up MongoDB ObjectId
+    for photo in photos:
+        if '_id' in photo:
+            del photo['_id']
+    return photos
+
+@api_router.post("/user/photos")
+async def upload_user_photo(photo_data: PhotoUpload):
+    """Add a photo to user's gallery"""
+    photo = UserPhoto(
+        **photo_data.dict(),
+        file_url=f"/uploads/{photo_data.file_name}"  # In real app, use actual file upload
+    )
+    await db.user_photos.insert_one(photo.dict())
+    return {"message": "Photo uploaded successfully", "photo_id": photo.id}
+
+@api_router.get("/user/{email}/dashboard")
+async def get_user_dashboard(email: str):
+    """Get comprehensive user dashboard data"""
+    # Get user photos
+    photos = await db.user_photos.find({"user_email": email}).sort("upload_date", -1).to_list(1000)
+    for photo in photos:
+        if '_id' in photo:
+            del photo['_id']
+    
+    # Get user bookings
+    bookings = await db.bookings.find({"customer_email": email}).sort("created_at", -1).to_list(1000)
+    for booking in bookings:
+        if '_id' in booking:
+            del booking['_id']
+    
+    # Get frame orders
+    frame_orders = await db.frame_orders.find({"user_email": email}).sort("created_at", -1).to_list(1000)
+    for order in frame_orders:
+        if '_id' in order:
+            del order['_id']
+    
+    return {
+        "photos": photos,
+        "bookings": bookings,
+        "frame_orders": frame_orders,
+        "stats": {
+            "total_photos": len(photos),
+            "total_bookings": len(bookings),
+            "pending_orders": len([o for o in frame_orders if o["status"] in ["pending_payment", "payment_submitted"]])
+        }
+    }
+
+# Frame Order Routes
+@api_router.post("/frames/order")
+async def create_frame_order(order_data: FrameOrderCreate):
+    """Create a new frame order"""
+    # Calculate price based on size and quantity
+    size_prices = {
+        "5x7": 25.0,
+        "8x10": 45.0,
+        "11x14": 75.0,
+        "16x20": 120.0
+    }
+    
+    base_price = size_prices.get(order_data.frame_size, 45.0)
+    total_price = base_price * order_data.quantity
+    
+    frame_order = FrameOrder(
+        **order_data.dict(),
+        total_price=total_price
+    )
+    
+    await db.frame_orders.insert_one(frame_order.dict())
+    return frame_order
+
+@api_router.post("/frames/{order_id}/payment")
+async def submit_frame_payment(order_id: str, payment_data: PaymentSubmission):
+    """Submit payment for frame order"""
+    result = await db.frame_orders.update_one(
+        {"id": order_id},
+        {
+            "$set": {
+                "status": "payment_submitted",
+                "payment_amount": payment_data.payment_amount,
+                "payment_reference": payment_data.payment_reference,
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Frame order not found")
+    
+    return {"message": "Payment submitted for admin review"}
+
+@api_router.get("/admin/frames")
+async def get_all_frame_orders():
+    """Get all frame orders for admin"""
+    orders = await db.frame_orders.find().sort("created_at", -1).to_list(1000)
+    for order in orders:
+        if '_id' in order:
+            del order['_id']
+    return orders
+
+@api_router.put("/admin/frames/{order_id}/approve")
+async def approve_frame_order(order_id: str):
+    """Approve a frame order payment"""
+    result = await db.frame_orders.update_one(
+        {"id": order_id},
+        {
+            "$set": {
+                "status": "confirmed",
+                "updated_at": datetime.utcnow()
+            }
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Frame order not found")
+    
+    # Add to earnings
+    order = await db.frame_orders.find_one({"id": order_id})
+    if order and order.get("payment_amount"):
+        earnings = Earnings(
+            booking_id=order_id,
+            service_type="frames",
+            amount=order["payment_amount"],
+            payment_date=datetime.utcnow()
+        )
+        await db.earnings.insert_one(earnings.dict())
+    
+    return {"message": "Frame order approved"}
+
+# Admin Earnings/Wallet Routes
+@api_router.get("/admin/earnings")
+async def get_admin_earnings():
+    """Get admin wallet/earnings summary"""
+    # Get all earnings
+    earnings = await db.earnings.find().sort("payment_date", -1).to_list(1000)
+    for earning in earnings:
+        if '_id' in earning:
+            del earning['_id']
+    
+    # Calculate totals
+    total_earnings = sum(e["amount"] for e in earnings)
+    
+    # Group by service type
+    service_totals = {}
+    for earning in earnings:
+        service_type = earning["service_type"]
+        service_totals[service_type] = service_totals.get(service_type, 0) + earning["amount"]
+    
+    # Get recent earnings (last 30 days)
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    recent_earnings = [e for e in earnings if datetime.fromisoformat(e["payment_date"].replace("Z", "+00:00")) > thirty_days_ago]
+    recent_total = sum(e["amount"] for e in recent_earnings)
+    
+    return {
+        "total_earnings": total_earnings,
+        "recent_earnings": recent_total,
+        "service_breakdown": service_totals,
+        "earnings_history": earnings[:50],  # Last 50 transactions
+        "stats": {
+            "total_transactions": len(earnings),
+            "recent_transactions": len(recent_earnings),
+            "average_transaction": total_earnings / len(earnings) if earnings else 0
+        }
+    }
+
+# Admin Session Management
+@api_router.post("/admin/login")
+async def admin_login(login_data: AdminLogin):
+    admin = await db.admins.find_one({"username": login_data.username, "password_hash": login_data.password})
+    if not admin:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Create session token (1 hour expiry)
+    session_token = str(uuid.uuid4())
+    expires_at = datetime.utcnow() + timedelta(hours=1)
+    
+    session = AdminSession(
+        admin_id=admin["id"],
+        session_token=session_token,
+        expires_at=expires_at
+    )
+    
+    await db.admin_sessions.insert_one(session.dict())
+    
+    return {
+        "message": "Login successful", 
+        "admin_id": admin["id"],
+        "session_token": session_token,
+        "expires_at": expires_at.isoformat()
+    }
+
+@api_router.post("/admin/verify-session")
+async def verify_admin_session(session_token: str):
+    """Verify admin session and extend if valid"""
+    session = await db.admin_sessions.find_one({"session_token": session_token})
+    
+    if not session or datetime.utcnow() > session["expires_at"]:
+        raise HTTPException(status_code=401, detail="Session expired")
+    
+    # Extend session by 1 hour
+    new_expires_at = datetime.utcnow() + timedelta(hours=1)
+    await db.admin_sessions.update_one(
+        {"session_token": session_token},
+        {"$set": {"expires_at": new_expires_at}}
+    )
+    
+    return {"message": "Session valid", "expires_at": new_expires_at.isoformat()}
+
 # Include the router in the main app
 app.include_router(api_router)
 
