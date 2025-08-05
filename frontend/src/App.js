@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, flushSync } from 'react';
 import axios from 'axios';
 import { Calendar } from './components/ui/calendar';
 import { Button } from './components/ui/button';
