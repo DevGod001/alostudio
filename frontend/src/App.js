@@ -142,6 +142,7 @@ function App() {
       verifyAdminSession().then(isValid => {
         if (isValid) {
           setIsAdmin(true);
+          setCurrentView('admin'); // Set admin view when session is valid
         }
       });
     }
