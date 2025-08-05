@@ -257,13 +257,18 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Admin Photo Upload for Sessions"
+    - "Photo Gallery API Endpoints"
+    - "Frame Order System API" 
+    - "Admin Session Persistence"
+    - "Admin Earnings/Wallet API"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "main"
-      message: "Backend implementation appears complete with comprehensive API endpoints for photo gallery, frame orders, admin session management, and earnings tracking. Frontend integration is also complete with CustomerDashboard and AdminWallet components properly integrated. Ready for backend API testing to verify all endpoints work correctly."
+      message: "Added critical admin photo upload functionality that was missing from the workflow. Admin can now upload session photos/videos for completed bookings, which will appear in user's photo gallery. Implemented both file upload and base64 methods. Ready for backend testing of new admin photo upload endpoints."
     - agent: "testing"
       message: "✅ COMPREHENSIVE BACKEND TESTING COMPLETED - All 31 tests passed (100% success rate). Fixed 2 minor issues during testing: 1) Admin session verification query parameter handling, 2) Admin earnings datetime calculation. All core features working perfectly: Photo Gallery APIs, Frame Order System with correct pricing, Admin Session Management with 1-hour expiry, Admin Earnings tracking with service breakdown, and enhanced Service Types. MongoDB operations working without ObjectId serialization issues. Backend APIs are production-ready."
