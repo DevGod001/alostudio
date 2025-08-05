@@ -406,7 +406,7 @@ export const CustomerDashboard = ({
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span>{selectedPhotos.length} photos × {frameOrderForm.quantity} frames each</span>
-                        <span>${calculateFramePrice(frameOrderForm.frame_size, frameOrderForm.quantity * selectedPhotos.length)}</span>
+                        <span>${calculateFrameTotal()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Frame Size: {frameOrderForm.frame_size}</span>
