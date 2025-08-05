@@ -537,9 +537,9 @@ function App() {
             </TabsList>
             
             <TabsContent value="makeup" className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {services.filter(service => service.type === 'makeup').map((service, index) => (
-                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift mobile-service-card">
                     <div className="aspect-video relative image-overlay">
                       <img 
                         src={serviceImages.makeup[index] || serviceImages.makeup[0]} 
@@ -547,23 +547,23 @@ function App() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2">
+                    <CardHeader className="p-4 md:p-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0">
+                        <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
                           {getServiceIcon(service.type)}
                           {service.name}
                         </CardTitle>
-                        <span className="text-2xl font-bold text-pink-600">${service.base_price}</span>
+                        <span className="text-xl md:text-2xl font-bold text-pink-600">${service.base_price}</span>
                       </div>
-                      <CardDescription>{service.description}</CardDescription>
+                      <CardDescription className="text-sm md:text-base">{service.description}</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between mb-4">
+                    <CardContent className="p-4 md:p-6 pt-0">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2 md:gap-0">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Clock className="w-4 h-4" />
                           {service.duration_hours}h session
                         </div>
-                        <Badge variant="secondary" className="bg-pink-100 text-pink-800">{service.deposit_percentage}% deposit</Badge>
+                        <Badge variant="secondary" className="bg-pink-100 text-pink-800 w-fit">{service.deposit_percentage}% deposit</Badge>
                       </div>
                       {service.features && (
                         <div className="mb-4">
@@ -571,8 +571,8 @@ function App() {
                           <ul className="text-xs text-gray-600 space-y-1">
                             {service.features.slice(0, 3).map((feature, idx) => (
                               <li key={idx} className="flex items-center gap-1">
-                                <CheckCircle className="w-3 h-3 text-green-500" />
-                                {feature}
+                                <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                                <span className="text-xs">{feature}</span>
                               </li>
                             ))}
                           </ul>
@@ -595,9 +595,9 @@ function App() {
             </TabsContent>
             
             <TabsContent value="photography" className="space-y-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {services.filter(service => service.type === 'photography').map((service, index) => (
-                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift">
+                  <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 service-card hover-lift mobile-service-card">
                     <div className="aspect-video relative image-overlay">
                       <img 
                         src={serviceImages.photography[index] || serviceImages.photography[0]} 
@@ -605,31 +605,31 @@ function App() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-lg">
+                    <CardHeader className="p-4 md:p-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0">
+                        <CardTitle className="flex items-center gap-2 text-base md:text-lg">
                           {getServiceIcon(service.type)}
-                          {service.name}
+                          <span className="text-sm md:text-base">{service.name}</span>
                         </CardTitle>
-                        <span className="text-xl font-bold text-pink-600">${service.base_price}</span>
+                        <span className="text-lg md:text-xl font-bold text-pink-600">${service.base_price}</span>
                       </div>
-                      <CardDescription className="text-sm">{service.description}</CardDescription>
+                      <CardDescription className="text-xs md:text-sm">{service.description}</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between mb-4">
+                    <CardContent className="p-4 md:p-6 pt-0">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2 md:gap-0">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <MapPin className="w-4 h-4" />
                           {service.location || 'Studio'}
                         </div>
-                        <Badge variant="secondary" className="bg-pink-100 text-pink-800">{service.deposit_percentage}% deposit</Badge>
+                        <Badge variant="secondary" className="bg-pink-100 text-pink-800 w-fit">{service.deposit_percentage}% deposit</Badge>
                       </div>
                       {service.features && (
                         <div className="mb-4">
                           <ul className="text-xs text-gray-600 space-y-1">
                             {service.features.slice(0, 3).map((feature, idx) => (
                               <li key={idx} className="flex items-center gap-1">
-                                <CheckCircle className="w-3 h-3 text-green-500" />
-                                {feature}
+                                <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                                <span className="text-xs">{feature}</span>
                               </li>
                             ))}
                           </ul>
