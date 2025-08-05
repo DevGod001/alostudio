@@ -173,6 +173,9 @@ class Settings(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     whatsapp_number: str = "+16144055997"
     cashapp_id: str = "$VitiPay"
+    pickup_address: str = "123 Studio Lane, Photography City, PC 12345"
+    studio_name: str = "Alostudio"
+    pickup_hours: str = "Monday-Friday: 9AM-6PM, Saturday: 10AM-4PM"
     business_name: str = "Alostudio"
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
