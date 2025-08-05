@@ -178,8 +178,228 @@ body {
   padding: 0 4px;
 }
 
-/* Responsive design helpers */
+/* Custom animations */
+@keyframes pulse-pink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse-pink {
+  animation: pulse-pink 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+/* MOBILE RESPONSIVE STYLES */
+
+/* Base mobile styles */
 @media (max-width: 768px) {
+  /* Header mobile styles */
+  .mobile-header {
+    padding: 1rem;
+  }
+  
+  .mobile-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .mobile-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .mobile-nav button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Hero section mobile */
+  .mobile-hero {
+    padding: 3rem 1rem;
+  }
+  
+  .mobile-hero h2 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+  
+  .mobile-hero p {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .mobile-hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .mobile-hero-buttons button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+
+  /* Services section mobile */
+  .mobile-services {
+    padding: 2rem 1rem;
+  }
+  
+  .mobile-services h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .mobile-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-tabs .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .mobile-service-card {
+    margin-bottom: 1rem;
+  }
+  
+  .mobile-service-card .card-header {
+    padding: 1rem;
+  }
+  
+  .mobile-service-card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .mobile-service-card .card-description {
+    font-size: 0.9rem;
+  }
+
+  /* Why choose us mobile */
+  .mobile-why-choose {
+    padding: 2rem 1rem;
+  }
+  
+  .mobile-why-choose .grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  /* Footer mobile */
+  .mobile-footer {
+    padding: 2rem 1rem;
+  }
+  
+  .mobile-footer .grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  /* Dialog/Modal mobile */
+  .mobile-dialog {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  
+  .mobile-dialog .dialog-content {
+    padding: 1.5rem;
+  }
+
+  /* WhatsApp button mobile */
+  .mobile-whatsapp {
+    bottom: 5rem;
+    right: 1rem;
+    z-index: 50;
+  }
+  
+  .mobile-whatsapp button {
+    padding: 1rem;
+    border-radius: 50%;
+  }
+
+  /* Forms mobile */
+  .mobile-form input,
+  .mobile-form textarea,
+  .mobile-form select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    width: 100%;
+  }
+  
+  .mobile-form .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Time slots mobile */
+  .mobile-time-slots {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .mobile-time-slots button {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Admin dashboard mobile */
+  .mobile-admin {
+    padding: 1rem;
+  }
+  
+  .mobile-admin .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .mobile-admin .booking-card {
+    padding: 1rem;
+  }
+  
+  .mobile-admin .booking-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .mobile-admin .booking-actions button {
+    width: 100%;
+  }
+
+  /* Customer portal mobile */
+  .mobile-customer-portal {
+    padding: 1rem;
+  }
+
+  /* Utility classes for mobile */
   .mobile-stack {
     flex-direction: column;
   }
@@ -190,6 +410,68 @@ body {
   
   .mobile-text-center {
     text-align: center;
+  }
+  
+  .mobile-hidden {
+    display: none;
+  }
+  
+  .mobile-show {
+    display: block;
+  }
+  
+  .mobile-px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .mobile-py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Small mobile devices (phones) */
+@media (max-width: 480px) {
+  .mobile-hero h2 {
+    font-size: 2rem;
+  }
+  
+  .mobile-services h2 {
+    font-size: 1.75rem;
+  }
+  
+  .mobile-time-slots {
+    grid-template-columns: 1fr;
+  }
+  
+  .mobile-dialog {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+  
+  .mobile-whatsapp {
+    bottom: 4rem;
+    right: 0.5rem;
+  }
+}
+
+/* Tablet responsive */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tablet-hero h2 {
+    font-size: 3rem;
+  }
+  
+  .tablet-services {
+    padding: 3rem 2rem;
+  }
+  
+  .tablet-dialog {
+    max-width: 500px;
   }
 }
 
@@ -227,37 +509,22 @@ body {
   }
 }
 
-/* Custom animations */
-@keyframes pulse-pink {
-  0%, 100% {
-    opacity: 1;
+/* High contrast support */
+@media (prefers-contrast: high) {
+  .service-card {
+    border: 2px solid #000;
   }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.pulse-pink {
-  animation: pulse-pink 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
+  
+  .btn-pink {
+    border: 2px solid #000;
   }
 }
 
-.bounce-in {
-  animation: bounce-in 0.6s ease-out;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
