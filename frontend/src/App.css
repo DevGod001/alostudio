@@ -213,6 +213,29 @@ body {
   animation: bounce-in 0.6s ease-out;
 }
 
+/* Hide Made with Emergent badge */
+[data-emergent], 
+.emergent-badge,
+div:has-text("Made with Emergent"),
+div[class*="emergent"],
+div[id*="emergent"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+/* Hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
 /* MOBILE RESPONSIVE STYLES */
 
 /* Base mobile styles */
