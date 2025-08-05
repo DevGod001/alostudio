@@ -190,7 +190,6 @@ frontend:
           agent: "main"
           comment: "Admin photo upload dialog and functionality implemented - Upload Photos button appears for completed bookings, handles multiple file upload with base64 conversion"
 
-frontend:
   - task: "CustomerDashboard Integration"
     implemented: true
     working: "unknown"
