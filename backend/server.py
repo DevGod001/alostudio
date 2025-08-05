@@ -179,6 +179,21 @@ class SettingsUpdate(BaseModel):
     whatsapp_number: str
     cashapp_id: str
 
+class FrameOrderCreate(BaseModel):
+    user_email: str
+    user_name: str
+    photo_ids: List[str]
+    frame_size: str
+    frame_style: str
+    quantity: int
+    special_instructions: Optional[str] = None
+
+class PhotoUpload(BaseModel):
+    user_email: str
+    user_name: str
+    file_name: str
+    photo_type: str = "upload"
+
 # Initialize default services
 async def initialize_default_services():
     # Clear existing services first
