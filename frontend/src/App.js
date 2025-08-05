@@ -1061,7 +1061,7 @@ function App() {
             <Button 
               onClick={handleBooking} 
               className="w-full bg-pink-600 hover:bg-pink-700"
-              disabled={!bookingForm.customer_name || !bookingForm.customer_email || !bookingForm.booking_date || !bookingForm.booking_time || !bookingForm.service_id}
+              disabled={!bookingForm.customer_name || !bookingForm.customer_email || !bookingForm.booking_date || !bookingForm.booking_time || !bookingForm.service_id || !bookingForm.has_paid}
             >
               Create Booking
             </Button>
