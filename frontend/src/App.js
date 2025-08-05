@@ -571,7 +571,9 @@ function App() {
               <Button 
                 onClick={() => {
                   console.log('TEST: Opening completion dialog manually');
-                  setShowCompletionDialog(true);
+                  flushSync(() => {
+                    setShowCompletionDialog(true);
+                  });
                 }} 
                 variant="outline" 
                 className="bg-yellow-100"
@@ -581,7 +583,9 @@ function App() {
               <Button 
                 onClick={() => {
                   console.log('TEST: Opening upload dialog manually');
-                  setShowPhotoUploadDialog(true);
+                  flushSync(() => {
+                    setShowPhotoUploadDialog(true);
+                  });
                 }} 
                 variant="outline" 
                 className="bg-blue-100"
