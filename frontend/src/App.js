@@ -557,16 +557,17 @@ function App() {
               Admin Dashboard (Completion: {showCompletionDialog ? 'OPEN' : 'CLOSED'}, Upload: {showPhotoUploadDialog ? 'OPEN' : 'CLOSED'})
             </h1>
             <div className="flex gap-2">
-              <Button 
-                onClick={() => {
-                  alert('Button clicked - testing');
-                  setShowCompletionDialog(true);
-                }} 
-                variant="outline" 
-                className="bg-yellow-100"
+              <button 
+                onClick={() => setShowCompletionDialog(true)}
+                style={{
+                  padding: '10px',
+                  backgroundColor: 'yellow',
+                  border: '2px solid black',
+                  cursor: 'pointer'
+                }}
               >
-                Simple Test
-              </Button>
+                BASIC TEST
+              </button>
               <Button onClick={handleAdminLogout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
                 Logout
               </Button>
