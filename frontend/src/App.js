@@ -998,6 +998,7 @@ function App() {
                   setTimeout(() => scrollToServices(), 100);
                 }}
                 onImageZoom={(photo) => setZoomedImage(photo)}
+                onImageDownload={handleImageDownload}
               />
             </div>
           )}
