@@ -386,7 +386,9 @@ async def initialize_default_services():
 async def initialize_default_admin():
     existing_admin = await db.admins.count_documents({})
     if existing_admin == 0:
-        default_admin = Admin(username="admin", password_hash="admin123")
+        admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+        default_admin = Admin(username=admin_username, password_hash=admin_password)
         await db.admins.insert_one(default_admin.dict())
 
 # Initialize default settings
