@@ -182,6 +182,173 @@ class AlostudioAPITester:
         }
         return self.run_test("Admin Update Settings", "PUT", "admin/settings", 200, settings_data)[0]
 
+    # NEW TESTS FOR SPECIFIC FEATURES
+
+    def test_admin_session_verification(self):
+        """Test admin session verification and renewal"""
+        if not self.admin_session_token:
+            print("❌ Cannot test session verification - no session token available")
+            return False
+        
+        success, response = self.run_test("Admin Session Verification", "POST", "admin/verify-session", 200, 
+                                        {"session_token": self.admin_session_token})
+        if success and response:
+            print(f"   Session extended to: {response.get('expires_at')}")
+        return success
+
+    def test_user_photo_upload(self):
+        """Test user photo upload"""
+        photo_data = {
+            "user_email": self.test_user_email,
+            "user_name": "Test User",
+            "file_name": "test_photo.jpg",
+            "photo_type": "upload"
+        }
+        success, response = self.run_test("User Photo Upload", "POST", "user/photos", 200, photo_data)
+        if success and response:
+            self.test_photo_id = response.get('photo_id')
+            print(f"   Photo ID stored: {self.test_photo_id}")
+        return success
+
+    def test_get_user_photos(self):
+        """Test retrieving user photos"""
+        return self.run_test("Get User Photos", "GET", f"user/{self.test_user_email}/photos", 200)[0]
+
+    def test_user_dashboard(self):
+        """Test comprehensive user dashboard data"""
+        success, response = self.run_test("User Dashboard", "GET", f"user/{self.test_user_email}/dashboard", 200)
+        if success and response:
+            print(f"   Photos: {len(response.get('photos', []))}")
+            print(f"   Bookings: {len(response.get('bookings', []))}")
+            print(f"   Frame Orders: {len(response.get('frame_orders', []))}")
+            stats = response.get('stats', {})
+            print(f"   Stats - Total Photos: {stats.get('total_photos', 0)}, Total Bookings: {stats.get('total_bookings', 0)}")
+        return success
+
+    def test_create_frame_order(self):
+        """Test creating frame orders with different sizes"""
+        if not self.test_photo_id:
+            print("❌ Cannot test frame order - no photo ID available")
+            return False
+
+        # Test different frame sizes and their pricing
+        frame_sizes = ["5x7", "8x10", "11x14", "16x20"]
+        expected_prices = {"5x7": 25.0, "8x10": 45.0, "11x14": 75.0, "16x20": 120.0}
+        
+        all_success = True
+        for size in frame_sizes:
+            order_data = {
+                "user_email": self.test_user_email,
+                "user_name": "Test User",
+                "photo_ids": [self.test_photo_id],
+                "frame_size": size,
+                "frame_style": "modern",
+                "quantity": 2,
+                "special_instructions": f"Test order for {size} frames"
+            }
+            
+            success, response = self.run_test(f"Create Frame Order ({size})", "POST", "frames/order", 200, order_data)
+            if success and response:
+                expected_total = expected_prices[size] * 2
+                actual_total = response.get('total_price', 0)
+                if actual_total == expected_total:
+                    print(f"   ✅ Pricing correct: {size} = ${actual_total} (${expected_prices[size]} x 2)")
+                    if size == "8x10":  # Store one order ID for payment testing
+                        self.test_frame_order_id = response.get('id')
+                        print(f"   Frame order ID stored: {self.test_frame_order_id}")
+                else:
+                    print(f"   ❌ Pricing incorrect: Expected ${expected_total}, got ${actual_total}")
+                    all_success = False
+            else:
+                all_success = False
+        
+        return all_success
+
+    def test_frame_order_payment(self):
+        """Test frame order payment submission"""
+        if not self.test_frame_order_id:
+            print("❌ Cannot test frame payment - no frame order ID available")
+            return False
+
+        payment_data = {
+            "booking_id": self.test_frame_order_id,
+            "payment_amount": 90.0,  # 8x10 frames: $45 x 2
+            "payment_reference": "FRAME_TEST_REF_456"
+        }
+        
+        return self.run_test("Frame Order Payment", "POST", f"frames/{self.test_frame_order_id}/payment", 200, payment_data)[0]
+
+    def test_admin_get_frame_orders(self):
+        """Test admin retrieval of frame orders"""
+        success, response = self.run_test("Admin Get Frame Orders", "GET", "admin/frames", 200)
+        if success and response:
+            print(f"   Found {len(response)} frame orders")
+            for order in response[:3]:  # Show first 3
+                print(f"   - Order {order.get('id', 'Unknown')[:8]}...: {order.get('frame_size')} {order.get('frame_style')} x{order.get('quantity')} = ${order.get('total_price')}")
+        return success
+
+    def test_admin_approve_frame_order(self):
+        """Test admin approval of frame orders"""
+        if not self.test_frame_order_id:
+            print("❌ Cannot test frame approval - no frame order ID available")
+            return False
+
+        return self.run_test("Admin Approve Frame Order", "PUT", f"admin/frames/{self.test_frame_order_id}/approve", 200)[0]
+
+    def test_admin_earnings(self):
+        """Test admin earnings/wallet API"""
+        success, response = self.run_test("Admin Earnings", "GET", "admin/earnings", 200)
+        if success and response:
+            print(f"   Total Earnings: ${response.get('total_earnings', 0)}")
+            print(f"   Recent Earnings (30 days): ${response.get('recent_earnings', 0)}")
+            
+            breakdown = response.get('service_breakdown', {})
+            print(f"   Service Breakdown:")
+            for service, amount in breakdown.items():
+                print(f"     - {service}: ${amount}")
+            
+            stats = response.get('stats', {})
+            print(f"   Stats - Total Transactions: {stats.get('total_transactions', 0)}")
+            print(f"   Average Transaction: ${stats.get('average_transaction', 0):.2f}")
+        return success
+
+    def test_service_types_enhancement(self):
+        """Test that new service types are properly created"""
+        success, response = self.run_test("Get All Services (Enhanced)", "GET", "services", 200)
+        if success and response:
+            service_types = set()
+            for service in response:
+                service_types.add(service.get('type'))
+            
+            expected_types = {'makeup', 'photography', 'video', 'editing', 'graphic_design', 'frames'}
+            missing_types = expected_types - service_types
+            
+            if not missing_types:
+                print(f"   ✅ All expected service types found: {sorted(service_types)}")
+                
+                # Check specific new services
+                frames_services = [s for s in response if s.get('type') == 'frames']
+                editing_services = [s for s in response if s.get('type') == 'editing']
+                design_services = [s for s in response if s.get('type') == 'graphic_design']
+                
+                print(f"   - Frame services: {len(frames_services)}")
+                print(f"   - Editing services: {len(editing_services)}")
+                print(f"   - Graphic design services: {len(design_services)}")
+                
+                return True
+            else:
+                print(f"   ❌ Missing service types: {missing_types}")
+                return False
+        return success
+
+    def test_invalid_admin_session(self):
+        """Test invalid session token handling"""
+        invalid_token = "invalid-token-12345"
+        success, response = self.run_test("Invalid Session Token", "POST", "admin/verify-session", 401, 
+                                        {"session_token": invalid_token})
+        # For this test, we expect a 401 status, so success means we got the expected error
+        return success
+
 def main():
     print("🚀 Starting Alostudio API Tests")
     print("=" * 50)
