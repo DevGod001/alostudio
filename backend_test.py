@@ -11,6 +11,10 @@ class AlostudioAPITester:
         self.tests_passed = 0
         self.created_booking_id = None
         self.test_service_id = None
+        self.admin_session_token = None
+        self.test_photo_id = None
+        self.test_frame_order_id = None
+        self.test_user_email = "test@example.com"
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
