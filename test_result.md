@@ -224,7 +224,7 @@ frontend:
           comment: "AdminWallet component integrated with earnings display and service breakdown"
         - working: true
           agent: "testing"
-          comment: "✅ ADMIN WALLET BACKEND INTEGRATION VERIFIED - Admin earnings API (/api/admin/earnings) working perfectly with comprehensive data. Total earnings: $2086.56, Recent earnings (30 days): tracked properly. Service breakdown includes frame earnings ($1025.0) separately from other services. Earnings history shows detailed transaction records. Stats include total transactions count and average transaction calculations. Frame order approvals correctly integrate with earnings system (+$45 verified during testing). The admin wallet backend is fully functional and ready for frontend integration."
+          comment: "✅ ADMIN WALLET INTEGRATION VERIFIED - Fully functional earnings dashboard displaying total earnings ($2086.56), recent earnings calculation, average transaction ($69.55), total transactions (30), detailed service breakdown including frames ($1025.00), and recent transaction history. AdminWallet component perfectly integrated with backend earnings API."
 
   - task: "getServiceIcon Function"
     implemented: true
