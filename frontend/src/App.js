@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from './components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Checkbox } from './components/ui/checkbox';
-import { Clock, Calendar as CalendarIcon, MapPin, Star, Camera, Video, Palette, Package, Edit3, Image, Users, CheckCircle, Clock as ClockIcon, AlertCircle, MessageCircle, Phone, Heart, Gift, Cloud, DollarSign, Wallet } from 'lucide-react';
+import { Clock, Calendar as CalendarIcon, MapPin, Star, Camera, Video, Palette, Package, Edit3, Image, Users, CheckCircle, Clock as ClockIcon, AlertCircle, MessageCircle, Phone, Heart, Gift, Cloud, DollarSign, Wallet, Download } from 'lucide-react';
 import { CustomerDashboard } from './components/CustomerDashboard';
 import { AdminWallet } from './components/AdminWallet';
 import './App.css';
