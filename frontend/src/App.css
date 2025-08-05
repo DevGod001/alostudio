@@ -407,14 +407,16 @@ div[id*="emergent"] {
     padding: 1rem;
   }
   
-  .mobile-admin .booking-actions {
-    flex-direction: column;
-    gap: 0.5rem;
+  .mobile-admin-actions {
     width: 100%;
   }
   
-  .mobile-admin .booking-actions button {
+  .mobile-admin-actions .flex {
     width: 100%;
+  }
+  
+  .mobile-admin-actions button {
+    min-width: auto;
   }
 
   /* Customer portal mobile */
