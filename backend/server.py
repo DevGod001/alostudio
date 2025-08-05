@@ -558,22 +558,106 @@ async def complete_booking(booking_id: str):
     
     return {"message": "Booking marked as completed"}
 
-@api_router.put("/admin/bookings/{booking_id}/cancel")
-async def cancel_booking(booking_id: str):
-    result = await db.bookings.update_one(
-        {"id": booking_id},
-        {
-            "$set": {
-                "status": "cancelled",
-                "updated_at": datetime.utcnow()
-            }
-        }
-    )
-    
-    if result.modified_count == 0:
+# Admin photo upload for completed bookings
+@api_router.post("/admin/bookings/{booking_id}/upload-photos")
+async def admin_upload_photos(booking_id: str, files: List[UploadFile] = File(...)):
+    """Admin uploads photos/videos for a completed booking"""
+    # Verify booking exists and is completed
+    booking = await db.bookings.find_one({"id": booking_id})
+    if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
     
-    return {"message": "Booking cancelled"}
+    if booking["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Can only upload photos for completed bookings")
+    
+    uploaded_photos = []
+    
+    # Create uploads directory if it doesn't exist
+    upload_dir = Path("/app/uploads")
+    upload_dir.mkdir(exist_ok=True)
+    
+    for file in files:
+        # Generate unique filename
+        file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        unique_filename = f"{booking_id}_{str(uuid.uuid4())[:8]}.{file_extension}"
+        file_path = upload_dir / unique_filename
+        
+        try:
+            # Read file content
+            file_content = await file.read()
+            
+            # Save file to disk
+            async with aiofiles.open(file_path, 'wb') as f:
+                await f.write(file_content)
+            
+            # Convert to base64 for database storage
+            file_data_b64 = base64.b64encode(file_content).decode('utf-8')
+            
+            # Create photo record
+            photo = UserPhoto(
+                user_email=booking["customer_email"],
+                user_name=booking["customer_name"],
+                booking_id=booking_id,
+                file_name=file.filename,
+                file_data=file_data_b64,
+                file_url=f"/uploads/{unique_filename}",
+                photo_type="session",
+                uploaded_by_admin=True
+            )
+            
+            await db.user_photos.insert_one(photo.dict())
+            uploaded_photos.append({
+                "id": photo.id,
+                "file_name": file.filename,
+                "file_url": photo.file_url
+            })
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to upload {file.filename}: {str(e)}")
+    
+    return {
+        "message": f"Successfully uploaded {len(uploaded_photos)} photos",
+        "booking_id": booking_id,
+        "photos": uploaded_photos
+    }
+
+@api_router.post("/admin/bookings/{booking_id}/upload-photos-base64")
+async def admin_upload_photos_base64(booking_id: str, upload_data: AdminPhotoUpload):
+    """Admin uploads photos/videos using base64 data for a completed booking"""
+    # Verify booking exists and is completed
+    booking = await db.bookings.find_one({"id": booking_id})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    if booking["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Can only upload photos for completed bookings")
+    
+    uploaded_photos = []
+    
+    for file_data in upload_data.files:
+        photo = UserPhoto(
+            user_email=upload_data.user_email,
+            user_name=upload_data.user_name,
+            booking_id=booking_id,
+            file_name=file_data["file_name"],
+            file_data=file_data["file_data"],
+            file_url=f"data:image/jpeg;base64,{file_data['file_data']}",
+            photo_type=upload_data.photo_type,
+            uploaded_by_admin=True
+        )
+        
+        await db.user_photos.insert_one(photo.dict())
+        uploaded_photos.append({
+            "id": photo.id,
+            "file_name": photo.file_name,
+            "file_url": photo.file_url
+        })
+    
+    return {
+        "message": f"Successfully uploaded {len(uploaded_photos)} photos",
+        "booking_id": booking_id,
+        "photos": uploaded_photos
+    }
 
 @api_router.get("/admin/services", response_model=List[Service])
 async def admin_get_all_services():
