@@ -54,6 +54,11 @@ function App() {
   const [earnings, setEarnings] = useState({});
   const [frameOrders, setFrameOrders] = useState([]);
   
+  // Photo upload state
+  const [showPhotoUploadDialog, setShowPhotoUploadDialog] = useState(false);
+  const [selectedBookingForUpload, setSelectedBookingForUpload] = useState(null);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  
   // User dashboard state
   const [userPhotos, setUserPhotos] = useState([]);
   const [userDashboard, setUserDashboard] = useState(null);
