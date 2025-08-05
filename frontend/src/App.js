@@ -1680,8 +1680,46 @@ function App() {
         </DialogContent>
       </Dialog>
 
-      {/* Booking Completion Dialog */}
-      <Dialog open={showCompletionDialog} onOpenChange={setShowCompletionDialog}>
+      {/* Simple Custom Modal Test */}
+      {showCompletionDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold mb-4">CUSTOM Complete Booking</h2>
+            <p>This is a custom modal test. If you see this, the state is working!</p>
+            <p className="text-sm text-gray-600 mt-2">Booking: {selectedBookingForCompletion?.customer_name}</p>
+            <div className="mt-4 flex gap-2">
+              <button 
+                onClick={() => setShowCompletionDialog(false)}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Close Custom Modal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Simple Custom Upload Modal Test */}
+      {showPhotoUploadDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold mb-4">CUSTOM Upload Photos</h2>
+            <p>This is a custom upload modal test. If you see this, the state is working!</p>
+            <p className="text-sm text-gray-600 mt-2">Booking: {selectedBookingForUpload?.customer_name}</p>
+            <div className="mt-4 flex gap-2">
+              <button 
+                onClick={() => setShowPhotoUploadDialog(false)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Close Custom Modal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Original Booking Completion Dialog */}
+      <Dialog open={false} onOpenChange={setShowCompletionDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Complete Booking</DialogTitle>
