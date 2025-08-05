@@ -945,7 +945,12 @@ function App() {
       <div className="fixed bottom-20 right-6 z-50">
         <Button
           className="bg-green-500 hover:bg-green-600 rounded-full p-4 shadow-xl bounce-in"
-          onClick={() => window.open(`https://wa.me/${settings.whatsapp_number?.replace('+', '')}?text=Hi! I'm interested in Alostudio services.`)}
+          onClick={() => {
+            const phone = settings.whatsapp_number?.replace('+', '');
+            const message = encodeURIComponent("Hi! I'm interested in Alostudio services.");
+            const whatsappURL = `https://wa.me/${phone}?text=${message}`;
+            window.open(whatsappURL, '_blank');
+          }}
         >
           <MessageCircle className="w-6 h-6" />
         </Button>
