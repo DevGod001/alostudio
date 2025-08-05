@@ -558,15 +558,20 @@ function App() {
             </h1>
             <div className="flex gap-2">
               <button 
-                onClick={() => setShowCompletionDialog(true)}
+                onClick={() => {
+                  console.log('Setting completion dialog to true');
+                  setShowCompletionDialog(true);
+                }}
                 style={{
                   padding: '10px',
-                  backgroundColor: 'yellow',
+                  backgroundColor: 'green',
+                  color: 'white',
                   border: '2px solid black',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  borderRadius: '4px'
                 }}
               >
-                BASIC TEST
+                TEST MODAL
               </button>
               <Button onClick={handleAdminLogout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
                 Logout
