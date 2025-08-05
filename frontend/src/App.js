@@ -1687,6 +1687,36 @@ function App() {
         </DialogContent>
       </Dialog>
 
+      {/* Image Zoom Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div className="relative max-w-full max-h-full">
+            <img 
+              src={zoomedImage.file_url} 
+              alt={zoomedImage.file_name}
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button 
+              onClick={() => setZoomedImage(null)}
+              className="absolute top-4 right-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-2 transition-all"
+            >
+              <span className="sr-only">Close</span>
+              ✕
+            </button>
+            <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
+              <p className="text-sm font-medium">{zoomedImage.file_name}</p>
+              <p className="text-xs text-gray-300">
+                {zoomedImage.photo_type === 'session' && zoomedImage.uploaded_by_admin ? 'Session Photo' : 'Uploaded Photo'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
