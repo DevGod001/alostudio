@@ -350,38 +350,64 @@ class AlostudioAPITester:
         return success
 
 def main():
-    print("🚀 Starting Alostudio API Tests")
-    print("=" * 50)
+    print("🚀 Starting Alostudio API Tests - Comprehensive Backend Testing")
+    print("=" * 70)
     
     tester = AlostudioAPITester()
     
-    # Test sequence
+    # Test sequence - organized by feature areas
     tests = [
+        # Basic API Tests
         ("Root Endpoint", tester.test_root_endpoint),
         ("Get All Services", tester.test_get_all_services),
+        ("Service Types Enhancement", tester.test_service_types_enhancement),
         ("Get Services by Type", tester.test_get_services_by_type),
         ("Get Combo Services", tester.test_combo_services),
         ("Get Settings", tester.test_settings),
+        
+        # Booking Flow Tests
         ("Check Availability", tester.test_availability_check),
         ("Create Booking", tester.test_create_booking),
         ("Submit Payment", tester.test_submit_payment),
         ("Get Customer Bookings", tester.test_customer_bookings),
+        
+        # Admin Session Management Tests
         ("Admin Login", tester.test_admin_login),
+        ("Admin Session Verification", tester.test_admin_session_verification),
+        ("Invalid Session Token", tester.test_invalid_admin_session),
+        
+        # Photo Gallery API Tests
+        ("User Photo Upload", tester.test_user_photo_upload),
+        ("Get User Photos", tester.test_get_user_photos),
+        ("User Dashboard", tester.test_user_dashboard),
+        
+        # Frame Order System Tests
+        ("Create Frame Orders", tester.test_create_frame_order),
+        ("Frame Order Payment", tester.test_frame_order_payment),
+        ("Admin Get Frame Orders", tester.test_admin_get_frame_orders),
+        ("Admin Approve Frame Order", tester.test_admin_approve_frame_order),
+        
+        # Admin Management Tests
         ("Admin Get Bookings", tester.test_admin_get_bookings),
         ("Admin Booking Actions", tester.test_admin_booking_actions),
         ("Admin Services", tester.test_admin_services),
-        ("Admin Update Settings", tester.test_admin_update_settings)
+        ("Admin Update Settings", tester.test_admin_update_settings),
+        
+        # Admin Earnings/Wallet Tests
+        ("Admin Earnings", tester.test_admin_earnings),
     ]
     
+    print(f"📋 Running {len(tests)} comprehensive tests...")
+    
     for test_name, test_func in tests:
-        print(f"\n{'='*20} {test_name} {'='*20}")
+        print(f"\n{'='*25} {test_name} {'='*25}")
         try:
             test_func()
         except Exception as e:
             print(f"❌ Test {test_name} failed with exception: {str(e)}")
     
     # Print final results
-    print(f"\n{'='*50}")
+    print(f"\n{'='*70}")
     print(f"📊 FINAL RESULTS")
     print(f"Tests passed: {tester.tests_passed}/{tester.tests_run}")
     print(f"Success rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
