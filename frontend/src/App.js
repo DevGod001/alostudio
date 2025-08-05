@@ -1031,12 +1031,32 @@ function App() {
                 </div>
               </div>
             )}
-            <div className="bg-pink-50 p-3 rounded-lg">
-              <p className="text-sm text-pink-800">
-                <strong>Payment Info:</strong> Send {selectedService?.deposit_percentage}% deposit 
+            <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
+              <p className="text-sm text-pink-800 font-medium mb-3">
+                <strong>Payment Instructions:</strong>
+              </p>
+              <p className="text-sm text-pink-700 mb-3">
+                Send {selectedService?.deposit_percentage}% deposit 
                 (${((selectedService?.base_price || 0) * (selectedService?.deposit_percentage || 0) / 100).toFixed(2)}) 
                 to CashApp: <strong>{settings.cashapp_id}</strong>
               </p>
+              <div className="flex items-start space-x-3 mb-3">
+                <input
+                  type="checkbox"
+                  id="has_paid"
+                  checked={bookingForm.has_paid}
+                  onChange={(e) => setBookingForm(prev => ({ ...prev, has_paid: e.target.checked }))}
+                  className="mt-1 h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                />
+                <Label htmlFor="has_paid" className="text-sm font-medium text-pink-800">
+                  I have sent the payment to the CashApp above
+                </Label>
+              </div>
+              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                <p className="text-xs text-yellow-800 font-semibold">
+                  ⚠️ Important: Only paid appointments are considered booked. Please ensure payment is sent before confirming your booking.
+                </p>
+              </div>
             </div>
             <Button 
               onClick={handleBooking} 
