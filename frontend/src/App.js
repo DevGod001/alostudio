@@ -465,38 +465,40 @@ function App() {
             <nav className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6 w-full md:w-auto mobile-nav">
               <Button variant="ghost" onClick={() => setCurrentView('home')} className="w-full md:w-auto">Home</Button>
               <Button variant="ghost" onClick={() => setCurrentView('customer-portal')} className="w-full md:w-auto">My Bookings</Button>
-              <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" onClick={() => setShowAdminDialog(true)} className="w-full md:w-auto">Admin</Button>
-                </DialogTrigger>
-                <DialogContent className="mobile-dialog">
-                  <DialogHeader>
-                    <DialogTitle>Admin Login</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 mobile-form">
-                    <div>
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        value={adminForm.username}
-                        onChange={(e) => setAdminForm(prev => ({ ...prev, username: e.target.value }))}
-                      />
+              {isManageRoute && (
+                <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" onClick={() => setShowAdminDialog(true)} className="w-full md:w-auto">Admin</Button>
+                  </DialogTrigger>
+                  <DialogContent className="mobile-dialog">
+                    <DialogHeader>
+                      <DialogTitle>Admin Login</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 mobile-form">
+                      <div>
+                        <Label htmlFor="username">Username</Label>
+                        <Input
+                          id="username"
+                          value={adminForm.username}
+                          onChange={(e) => setAdminForm(prev => ({ ...prev, username: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          value={adminForm.password}
+                          onChange={(e) => setAdminForm(prev => ({ ...prev, password: e.target.value }))}
+                        />
+                      </div>
+                      <Button onClick={handleAdminLogin} className="w-full bg-black hover:bg-gray-800">
+                        Login
+                      </Button>
                     </div>
-                    <div>
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={adminForm.password}
-                        onChange={(e) => setAdminForm(prev => ({ ...prev, password: e.target.value }))}
-                      />
-                    </div>
-                    <Button onClick={handleAdminLogin} className="w-full bg-black hover:bg-gray-800">
-                      Login
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                  </DialogContent>
+                </Dialog>
+              )}
             </nav>
           </div>
         </div>
