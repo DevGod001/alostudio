@@ -435,107 +435,191 @@ function App() {
   if (currentView === 'admin' && isAdmin) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-black/5">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 mobile-admin">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-            <Button onClick={() => { setCurrentView('home'); setIsAdmin(false); }} variant="outline">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+            <Button onClick={() => { setCurrentView('home'); }} variant="outline">
               Back to Website
             </Button>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>All Bookings</CardTitle>
-                <CardDescription>Manage customer bookings and payments</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {allBookings.map((booking) => (
-                    <div key={booking.id} className="border rounded-lg p-4 bg-white shadow-sm">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-semibold">{booking.customer_name}</h3>
-                          <p className="text-sm text-gray-600">{booking.customer_email}</p>
-                          <p className="text-sm text-gray-600">{booking.customer_phone}</p>
-                          <p className="text-sm">Service: {booking.service_type}</p>
-                          <p className="text-sm">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
-                          <p className="text-sm">Time: {booking.booking_time}</p>
-                          {booking.payment_amount && (
-                            <p className="text-sm font-medium text-green-600">
-                              Payment: ${booking.payment_amount} - Ref: {booking.payment_reference}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex flex-col gap-2 items-end mobile-admin-actions">
-                          {getStatusBadge(booking.status)}
-                          <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                            {booking.status === 'payment_submitted' && (
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleBookingAction(booking.id, 'approve')}
-                                className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
-                              >
-                                Approve Payment
-                              </Button>
+          <Tabs defaultValue="bookings" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsTrigger value="bookings">Bookings</TabsTrigger>
+              <TabsTrigger value="frames">Frame Orders</TabsTrigger>
+              <TabsTrigger value="wallet">
+                <Wallet className="w-4 h-4 mr-2" />
+                Earnings
+              </TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="bookings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>All Bookings</CardTitle>
+                  <CardDescription>Manage customer bookings and payments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {allBookings.map((booking) => (
+                      <div key={booking.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                          <div className="flex-1">
+                            <h3 className="font-semibold">{booking.customer_name}</h3>
+                            <p className="text-sm text-gray-600">{booking.customer_email}</p>
+                            <p className="text-sm text-gray-600">{booking.customer_phone}</p>
+                            <p className="text-sm">Service: {booking.service_type}</p>
+                            <p className="text-sm">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
+                            <p className="text-sm">Time: {booking.booking_time}</p>
+                            {booking.payment_amount && (
+                              <p className="text-sm font-medium text-green-600">
+                                Payment: ${booking.payment_amount} - Ref: {booking.payment_reference}
+                              </p>
                             )}
-                            {booking.status === 'confirmed' && (
+                          </div>
+                          <div className="flex flex-col gap-2 items-end mobile-admin-actions">
+                            {getStatusBadge(booking.status)}
+                            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                              {booking.status === 'payment_submitted' && (
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleBookingAction(booking.id, 'approve')}
+                                  className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+                                >
+                                  Approve Payment
+                                </Button>
+                              )}
+                              {booking.status === 'confirmed' && (
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleBookingAction(booking.id, 'complete')}
+                                  variant="outline"
+                                  className="w-full md:w-auto"
+                                >
+                                  Mark Complete
+                                </Button>
+                              )}
                               <Button 
                                 size="sm" 
-                                onClick={() => handleBookingAction(booking.id, 'complete')}
-                                variant="outline"
+                                variant="destructive"
+                                onClick={() => handleBookingAction(booking.id, 'cancel')}
                                 className="w-full md:w-auto"
                               >
-                                Mark Complete
+                                Cancel
                               </Button>
-                            )}
-                            <Button 
-                              size="sm" 
-                              variant="destructive"
-                              onClick={() => handleBookingAction(booking.id, 'cancel')}
-                              className="w-full md:w-auto"
-                            >
-                              Cancel
-                            </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Settings</CardTitle>
-                <CardDescription>Update business settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                  <Input
-                    id="whatsapp"
-                    value={adminSettings.whatsapp_number || settings.whatsapp_number}
-                    onChange={(e) => setAdminSettings(prev => ({ ...prev, whatsapp_number: e.target.value }))}
-                    placeholder="+16144055997"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cashapp">CashApp ID</Label>
-                  <Input
-                    id="cashapp"
-                    value={adminSettings.cashapp_id || settings.cashapp_id}
-                    onChange={(e) => setAdminSettings(prev => ({ ...prev, cashapp_id: e.target.value }))}
-                    placeholder="$VitiPay"
-                  />
-                </div>
-                <Button onClick={handleUpdateSettings} className="w-full bg-pink-600 hover:bg-pink-700">
-                  Update Settings
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+            <TabsContent value="frames">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Frame Orders</CardTitle>
+                  <CardDescription>Manage custom frame orders and approvals</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {frameOrders.map((order) => (
+                      <div key={order.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                          <div className="flex-1">
+                            <h3 className="font-semibold">{order.user_name}</h3>
+                            <p className="text-sm text-gray-600">{order.user_email}</p>
+                            <p className="text-sm">Size: {order.frame_size} | Style: {order.frame_style}</p>
+                            <p className="text-sm">Quantity: {order.quantity} | Photos: {order.photo_ids.length}</p>
+                            <p className="text-sm font-medium">Total: ${order.total_price}</p>
+                            {order.payment_amount && (
+                              <p className="text-sm font-medium text-green-600">
+                                Payment: ${order.payment_amount} - Ref: {order.payment_reference}
+                              </p>
+                            )}
+                            {order.special_instructions && (
+                              <p className="text-sm text-gray-600">Instructions: {order.special_instructions}</p>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-2 items-end mobile-admin-actions">
+                            {getStatusBadge(order.status)}
+                            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                              {order.status === 'payment_submitted' && (
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleFrameOrderAction(order.id, 'approve')}
+                                  className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+                                >
+                                  Approve Order
+                                </Button>
+                              )}
+                              {order.status === 'confirmed' && (
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleFrameOrderAction(order.id, 'complete')}
+                                  variant="outline"
+                                  className="w-full md:w-auto"
+                                >
+                                  Mark Complete
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                onClick={() => handleFrameOrderAction(order.id, 'cancel')}
+                                className="w-full md:w-auto"
+                              >
+                                Cancel Order
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="wallet">
+              <AdminWallet earnings={earnings} />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Business Settings</CardTitle>
+                  <CardDescription>Update contact information and payment details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                    <Input
+                      id="whatsapp"
+                      value={adminSettings.whatsapp_number || settings.whatsapp_number}
+                      onChange={(e) => setAdminSettings(prev => ({ ...prev, whatsapp_number: e.target.value }))}
+                      placeholder="+16144055997"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="cashapp">CashApp ID</Label>
+                    <Input
+                      id="cashapp"
+                      value={adminSettings.cashapp_id || settings.cashapp_id}
+                      onChange={(e) => setAdminSettings(prev => ({ ...prev, cashapp_id: e.target.value }))}
+                      placeholder="$VitiPay"
+                    />
+                  </div>
+                  <Button onClick={handleUpdateSettings} className="w-full bg-pink-600 hover:bg-pink-700">
+                    Update Settings
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     );
