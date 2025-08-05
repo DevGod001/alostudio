@@ -329,6 +329,51 @@ function App() {
     }
   };
 
+  const handleAdminPhotoUpload = async (bookingId, files) => {
+    if (!files || files.length === 0) {
+      alert('Please select at least one file to upload');
+      return;
+    }
+
+    setUploadingPhotos(true);
+    try {
+      const filePromises = Array.from(files).map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64Data = e.target.result.split(',')[1]; // Remove data:image/...;base64, prefix
+            resolve({
+              file_name: file.name,
+              file_data: base64Data
+            });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const fileData = await Promise.all(filePromises);
+      const booking = allBookings.find(b => b.id === bookingId);
+      
+      const uploadData = {
+        user_email: booking.customer_email,
+        user_name: booking.customer_name,
+        booking_id: bookingId,
+        files: fileData,
+        photo_type: "session"
+      };
+
+      await axios.post(`${API}/admin/bookings/${bookingId}/upload-photos-base64`, uploadData);
+      alert(`Successfully uploaded ${fileData.length} photos for ${booking.customer_name}`);
+      setShowPhotoUploadDialog(false);
+      setSelectedBookingForUpload(null);
+    } catch (error) {
+      alert('Error uploading photos: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setUploadingPhotos(false);
+    }
+  };
+
   const handleFrameOrderAction = async (orderId, action) => {
     try {
       await axios.put(`${API}/admin/frames/${orderId}/${action}`);
