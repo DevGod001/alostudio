@@ -490,15 +490,7 @@ async def get_customer_bookings(email: str):
         result.append(booking)
     return result
 
-# Admin Routes
-@api_router.post("/admin/login")
-async def admin_login(login_data: AdminLogin):
-    admin = await db.admins.find_one({"username": login_data.username, "password_hash": login_data.password})
-    if not admin:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    return {"message": "Login successful", "admin_id": admin["id"]}
-
+# Admin Routes - moved to session management above
 @api_router.get("/admin/bookings")
 async def get_all_bookings():
     bookings = await db.bookings.find().sort("created_at", -1).to_list(1000)
