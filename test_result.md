@@ -165,20 +165,30 @@ backend:
           agent: "testing"
           comment: "✅ PASSED - Admin earnings API fully functional. Total earnings: $280, service breakdown working (makeup: $100, frames: $180), statistics calculated correctly. Fixed datetime handling issue for recent earnings calculation."
 
-  - task: "Service Types Enhancement"
+  - task: "Admin Photo Upload for Sessions"
     implemented: true
-    working: true
+    working: "unknown"
     file: "server.py"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "unknown"
+          agent: "main"
+          comment: "Admin photo upload endpoints implemented - admin can upload session photos/videos for completed bookings using both file upload and base64 methods"
+
+frontend:
+  - task: "Admin Photo Upload UI"
+    implemented: true
+    working: "unknown"
+    file: "App.js"
+    stuck_count: 0
+    priority: "high"
     needs_retesting: false
     status_history:
         - working: "unknown"
           agent: "main"
-          comment: "Added frame, editing, and graphic design services to default services - need testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASSED - All new service types properly created and available. Found 13 total services including 1 frame service, 2 editing services, and 1 graphic design service. All expected service types present: makeup, photography, video, editing, graphic_design, frames."
+          comment: "Admin photo upload dialog and functionality implemented - Upload Photos button appears for completed bookings, handles multiple file upload with base64 conversion"
 
 frontend:
   - task: "CustomerDashboard Integration"
