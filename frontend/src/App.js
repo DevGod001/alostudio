@@ -419,21 +419,20 @@ function App() {
     }
   };
 
-  const handleBookingCompletion = async () => {
-    if (!selectedBookingForCompletion) return;
+  const handleBookingCompletion = async (bookingId) => {
+    if (!bookingId) return;
     
     try {
       const completionData = {
-        booking_id: selectedBookingForCompletion.id,
+        booking_id: bookingId,
         full_payment_received: completionForm.full_payment_received,
         full_payment_amount: completionForm.full_payment_received ? parseFloat(completionForm.full_payment_amount) : null,
         payment_reference: completionForm.payment_reference
       };
       
-      await axios.put(`${API}/admin/bookings/${selectedBookingForCompletion.id}/complete`, completionData);
+      await axios.put(`${API}/admin/bookings/${bookingId}/complete`, completionData);
       alert('Booking marked as completed!');
-      setShowCompletionDialog(false);
-      setSelectedBookingForCompletion(null);
+      setExpandedCompletionBooking(null);
       setCompletionForm({
         full_payment_received: false,
         full_payment_amount: '',
