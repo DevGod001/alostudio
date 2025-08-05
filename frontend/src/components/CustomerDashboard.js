@@ -128,6 +128,10 @@ export const CustomerDashboard = ({
                         src={photo.file_url} 
                         alt={photo.file_name}
                         className="w-full h-full object-cover"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onImageZoom && onImageZoom(photo);
+                        }}
                       />
                       {selectedPhotos.includes(photo.id) && (
                         <div className="absolute inset-0 bg-pink-500 bg-opacity-20 flex items-center justify-center">
@@ -136,6 +140,11 @@ export const CustomerDashboard = ({
                       )}
                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
                         <p className="text-xs truncate">{photo.file_name}</p>
+                      </div>
+                      <div className="absolute top-2 right-2">
+                        <div className="bg-white bg-opacity-80 rounded-full p-1">
+                          <ZoomIn className="w-4 h-4 text-gray-600" />
+                        </div>
                       </div>
                     </div>
                   ))}
