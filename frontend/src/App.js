@@ -832,6 +832,10 @@ function App() {
                 handleFrameOrder={handleFrameOrder}
                 handleFramePayment={handleFramePayment}
                 settings={settings}
+                onBookSession={() => {
+                  setCurrentView('home');
+                  setTimeout(() => scrollToServices(), 100);
+                }}
               />
             </div>
           )}
