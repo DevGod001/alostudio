@@ -379,7 +379,10 @@ export const CustomerDashboard = ({
                   <p className="text-gray-600 mb-4">
                     You need to have photos with us first, or you can upload your own photos for custom framing.
                   </p>
-                  <Button className="bg-pink-600 hover:bg-pink-700">
+                  <Button 
+                    className="bg-pink-600 hover:bg-pink-700"
+                    onClick={onBookSession}
+                  >
                     Upload Photos for Framing
                   </Button>
                 </div>
