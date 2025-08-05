@@ -217,6 +217,9 @@ class FrameOrderCreate(BaseModel):
     frame_size: str
     frame_style: str
     quantity: int
+    payment_reference: str
+    delivery_method: DeliveryMethod
+    delivery_address: Optional[str] = None
     special_instructions: Optional[str] = None
 
 class PhotoUpload(BaseModel):
