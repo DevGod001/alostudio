@@ -64,6 +64,9 @@ function App() {
   });
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
   
+  // Image zoom modal state
+  const [zoomedImage, setZoomedImage] = useState(null);
+  
   // User dashboard state
   const [userPhotos, setUserPhotos] = useState([]);
   const [userDashboard, setUserDashboard] = useState(null);
