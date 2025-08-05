@@ -1645,6 +1645,7 @@ function App() {
       {/* Booking Completion Dialog */}
       <Dialog open={showCompletionDialog} onOpenChange={setShowCompletionDialog}>
         <DialogContent className="max-w-md">
+          {console.log('Completion dialog render - showCompletionDialog:', showCompletionDialog)}
           <DialogHeader>
             <DialogTitle>Complete Booking</DialogTitle>
             <DialogDescription>
