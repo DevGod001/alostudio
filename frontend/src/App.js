@@ -372,7 +372,6 @@ function App() {
       case 'combo': return <Package className="w-6 h-6" />;
       case 'editing': return <Edit3 className="w-6 h-6" />;
       case 'graphic_design': return <Image className="w-6 h-6" />;
-      case 'memory_storage': return <Cloud className="w-6 h-6" />;
       case 'frames': return <Gift className="w-6 h-6" />;
       default: return <Star className="w-6 h-6" />;
     }
