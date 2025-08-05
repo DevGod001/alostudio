@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import json
 
 class AlostudioAPITester:
-    def __init__(self, base_url="https://a11188dd-ed74-44ef-b8ec-e94856b80d3a.preview.emergentagent.com"):
+    def __init__(self, base_url="https://660c9e73-bf14-4313-a5e9-0d599270a454.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
