@@ -142,7 +142,7 @@ export const CustomerDashboard = ({
                       </div>
                       
                       {/* Zoom Indicator */}
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center pointer-events-none">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <ZoomIn className="w-8 h-8 text-white drop-shadow-lg" />
                         </div>
