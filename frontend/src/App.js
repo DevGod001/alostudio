@@ -1653,7 +1653,7 @@ function App() {
         </DialogContent>
       </Dialog>
 
-      {/* Simple Custom Modal Test - HIGHEST Z-INDEX */}
+      {/* Working Completion Modal */}
       {showCompletionDialog && (
         <div style={{
           position: 'fixed',
@@ -1661,47 +1661,213 @@ function App() {
           left: 0,
           width: '100vw',
           height: '100vh',
-          backgroundColor: 'rgba(255, 0, 0, 0.8)', // Red background to make it super obvious
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 9999999, // Highest possible z-index
-          fontSize: '24px',
-          fontWeight: 'bold'
+          zIndex: 999999
         }}>
           <div style={{
             backgroundColor: 'white',
-            padding: '50px',
+            padding: '30px',
             borderRadius: '10px',
-            border: '5px solid red',
-            textAlign: 'center'
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto'
           }}>
-            <h1 style={{ color: 'red', fontSize: '32px' }}>🎉 SUCCESS! 🎉</h1>
-            <p style={{ color: 'black', fontSize: '18px' }}>
-              MODAL IS WORKING!<br/>
-              State management works perfectly!<br/>
-              The issue was with the original Dialog component!
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#333' }}>
+              Complete Booking
+            </h2>
+            <p style={{ marginBottom: '20px', color: '#666' }}>
+              Mark booking as completed for {selectedBookingForCompletion?.customer_name}
             </p>
-            <button 
-              onClick={() => setShowCompletionDialog(false)}
-              style={{
-                padding: '10px 20px',
-                fontSize: '16px',
-                backgroundColor: 'red',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                marginTop: '20px'
-              }}
-            >
-              CLOSE MODAL
-            </button>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <input
+                  type="checkbox"
+                  checked={completionForm.full_payment_received}
+                  onChange={(e) => setCompletionForm(prev => ({ ...prev, full_payment_received: e.target.checked }))}
+                  style={{ width: '16px', height: '16px' }}
+                />
+                <span>Customer paid the full service amount</span>
+              </label>
+            </div>
+            
+            {completionForm.full_payment_received && (
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Full Payment Amount ($)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={completionForm.full_payment_amount}
+                  onChange={(e) => setCompletionForm(prev => ({ ...prev, full_payment_amount: e.target.value }))}
+                  placeholder="Enter full payment amount"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    marginBottom: '10px'
+                  }}
+                />
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Payment Reference (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={completionForm.payment_reference}
+                  onChange={(e) => setCompletionForm(prev => ({ ...prev, payment_reference: e.target.value }))}
+                  placeholder="CashApp reference, receipt number, etc."
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px'
+                  }}
+                />
+              </div>
+            )}
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={handleBookingCompletion}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                ✓ Complete Booking
+              </button>
+              <button 
+                onClick={() => {
+                  setShowCompletionDialog(false);
+                  setSelectedBookingForCompletion(null);
+                  setCompletionForm({
+                    full_payment_received: false,
+                    full_payment_amount: '',
+                    payment_reference: ''
+                  });
+                }}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#6b7280',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Original Booking Completion Dialog */}
+      {/* Working Photo Upload Modal */}
+      {showPhotoUploadDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999999
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '10px',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto'
+          }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#333' }}>
+              Upload Session Photos
+            </h2>
+            <p style={{ marginBottom: '20px', color: '#666' }}>
+              Upload photos/videos for {selectedBookingForUpload?.customer_name}'s session
+            </p>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
+                Select Photos/Videos
+              </label>
+              <input
+                id="photo_files"
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px'
+                }}
+              />
+              <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                You can select multiple photos and videos. Supported formats: JPG, PNG, GIF, MP4, MOV
+              </p>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => {
+                  const fileInput = document.getElementById('photo_files');
+                  const files = fileInput.files;
+                  if (selectedBookingForUpload && files) {
+                    handleAdminPhotoUpload(selectedBookingForUpload.id, files);
+                  }
+                }}
+                disabled={uploadingPhotos}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: uploadingPhotos ? '#9ca3af' : '#2563eb',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: uploadingPhotos ? 'not-allowed' : 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                {uploadingPhotos ? '⏳ Uploading...' : '📸 Upload Photos'}
+              </button>
+              <button 
+                onClick={() => {
+                  setShowPhotoUploadDialog(false);
+                  setSelectedBookingForUpload(null);
+                }}
+                disabled={uploadingPhotos}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#6b7280',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: uploadingPhotos ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Original Booking Completion Dialog - DISABLED */}
       <Dialog open={false} onOpenChange={setShowCompletionDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
