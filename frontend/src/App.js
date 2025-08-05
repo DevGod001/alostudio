@@ -629,8 +629,10 @@ function App() {
                                 <Button 
                                   size="sm" 
                                   onClick={() => {
+                                    console.log('Upload Photos clicked for booking:', booking);
                                     setSelectedBookingForUpload(booking);
                                     setShowPhotoUploadDialog(true);
+                                    console.log('Photo upload dialog state set to true');
                                   }}
                                   className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
                                 >
