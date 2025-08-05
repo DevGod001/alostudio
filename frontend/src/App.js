@@ -371,8 +371,7 @@ function App() {
 
       await axios.post(`${API}/admin/bookings/${bookingId}/upload-photos-base64`, uploadData);
       alert(`Successfully uploaded ${fileData.length} photos for ${booking.customer_name}`);
-      setShowPhotoUploadDialog(false);
-      setSelectedBookingForUpload(null);
+      setExpandedUploadBooking(null);
     } catch (error) {
       alert('Error uploading photos: ' + (error.response?.data?.detail || error.message));
     } finally {
