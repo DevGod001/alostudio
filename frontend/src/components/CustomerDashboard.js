@@ -267,29 +267,22 @@ export const CustomerDashboard = ({
           <Card>
             <CardHeader>
               <CardTitle>Order Custom Frames</CardTitle>
-              <CardDescription>
-                {userDashboard.photos.length > 0 
-                  ? "Select photos from your gallery and customize your frame order"
-                  : "Upload photos to get custom frames made"
-                }
-              </CardDescription>
+              <CardDescription>Select photos, customize frames, and complete payment</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {userDashboard.photos.length > 0 ? (
+              {userDashboard.photos && userDashboard.photos.length > 0 ? (
                 <>
                   {/* Photo Selection */}
                   <div>
-                    <h3 className="text-lg font-medium mb-3">
-                      Select Photos ({selectedPhotos.length} selected)
-                    </h3>
+                    <Label className="text-base font-medium mb-3 block">Select Photos ({selectedPhotos.length} selected)</Label>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                       {userDashboard.photos.map((photo) => (
                         <div 
                           key={photo.id}
-                          className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 ${
+                          className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
                             selectedPhotos.includes(photo.id) 
                               ? 'border-pink-500 ring-2 ring-pink-200' 
-                              : 'border-gray-200'
+                              : 'border-gray-200 hover:border-pink-300'
                           }`}
                           onClick={() => togglePhotoSelection(photo.id)}
                         >
@@ -300,7 +293,7 @@ export const CustomerDashboard = ({
                           />
                           {selectedPhotos.includes(photo.id) && (
                             <div className="absolute inset-0 bg-pink-500 bg-opacity-30 flex items-center justify-center">
-                              <CheckCircle className="w-4 h-4 text-white" />
+                              <CheckCircle className="w-6 h-6 text-white" />
                             </div>
                           )}
                         </div>
@@ -314,10 +307,10 @@ export const CustomerDashboard = ({
                       <Label htmlFor="frame_size">Frame Size</Label>
                       <Select 
                         value={frameOrderForm.frame_size} 
-                        onValueChange={(value) => setFrameOrderForm(prev => ({...prev, frame_size: value}))}
+                        onValueChange={(value) => setFrameOrderForm(prev => ({ ...prev, frame_size: value }))}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select size" />
+                          <SelectValue placeholder="Choose size" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="5x7">5x7 - $25</SelectItem>
@@ -332,10 +325,10 @@ export const CustomerDashboard = ({
                       <Label htmlFor="frame_style">Frame Style</Label>
                       <Select 
                         value={frameOrderForm.frame_style} 
-                        onValueChange={(value) => setFrameOrderForm(prev => ({...prev, frame_style: value}))}
+                        onValueChange={(value) => setFrameOrderForm(prev => ({ ...prev, frame_style: value }))}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select style" />
+                          <SelectValue placeholder="Choose style" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="modern">Modern</SelectItem>
@@ -348,61 +341,111 @@ export const CustomerDashboard = ({
                     <div>
                       <Label htmlFor="quantity">Quantity per Photo</Label>
                       <Input
-                        id="quantity"
                         type="number"
                         min="1"
                         value={frameOrderForm.quantity}
-                        onChange={(e) => setFrameOrderForm(prev => ({...prev, quantity: parseInt(e.target.value) || 1}))}
+                        onChange={(e) => setFrameOrderForm(prev => ({ ...prev, quantity: parseInt(e.target.value) || 1 }))}
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="instructions">Special Instructions</Label>
-                    <Textarea
-                      id="instructions"
-                      placeholder="Any special requests or instructions..."
-                      value={frameOrderForm.special_instructions}
-                      onChange={(e) => setFrameOrderForm(prev => ({...prev, special_instructions: e.target.value}))}
-                    />
+                  {/* Delivery Options */}
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                    <Label className="text-base font-medium">Delivery Options</Label>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="self_pickup"
+                          name="delivery"
+                          value="self_pickup"
+                          checked={frameOrderForm.delivery_method === 'self_pickup'}
+                          onChange={(e) => setFrameOrderForm(prev => ({ ...prev, delivery_method: e.target.value }))}
+                          className="h-4 w-4 text-pink-600"
+                        />
+                        <Label htmlFor="self_pickup" className="flex-1">
+                          <span className="font-medium">Self Pickup</span> - Free
+                          <span className="block text-sm text-gray-600">Pick up from our studio</span>
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="ship_to_me"
+                          name="delivery"
+                          value="ship_to_me"
+                          checked={frameOrderForm.delivery_method === 'ship_to_me'}
+                          onChange={(e) => setFrameOrderForm(prev => ({ ...prev, delivery_method: e.target.value }))}
+                          className="h-4 w-4 text-pink-600"
+                        />
+                        <Label htmlFor="ship_to_me" className="flex-1">
+                          <span className="font-medium">Ship to Me</span> - Delivery fee will be added
+                          <span className="block text-sm text-gray-600">We'll deliver to your address</span>
+                        </Label>
+                      </div>
+                    </div>
+
+                    {frameOrderForm.delivery_method === 'ship_to_me' && (
+                      <div>
+                        <Label htmlFor="delivery_address">Delivery Address</Label>
+                        <textarea
+                          id="delivery_address"
+                          value={frameOrderForm.delivery_address}
+                          onChange={(e) => setFrameOrderForm(prev => ({ ...prev, delivery_address: e.target.value }))}
+                          placeholder="Enter your complete delivery address..."
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500"
+                          rows="3"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Order Summary */}
-                  {selectedPhotos.length > 0 && (
-                    <div className="bg-pink-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-pink-900 mb-2">Order Summary</h3>
-                      <div className="text-sm text-pink-800 space-y-1">
-                        <p>Photos selected: {selectedPhotos.length}</p>
-                        <p>Frame size: {frameOrderForm.frame_size}</p>
-                        <p>Frame style: {frameOrderForm.frame_style}</p>
-                        <p>Quantity per photo: {frameOrderForm.quantity}</p>
-                        <p className="font-semibold text-lg">Total: ${calculateFrameTotal()}</p>
-                        <p className="text-xs">50% deposit required: ${(calculateFrameTotal() * 0.5).toFixed(2)}</p>
+                  <div className="bg-pink-50 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Order Summary</h4>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span>{selectedPhotos.length} photos × {frameOrderForm.quantity} frames each</span>
+                        <span>${calculateFramePrice(frameOrderForm.frame_size, frameOrderForm.quantity * selectedPhotos.length)}</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span>Frame Size: {frameOrderForm.frame_size}</span>
+                        <span>Style: {frameOrderForm.frame_style}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Delivery: {frameOrderForm.delivery_method === 'self_pickup' ? 'Self Pickup (Free)' : 'Ship to Me (+delivery fee)'}</span>
+                      </div>
+                      <div className="flex justify-between font-medium pt-2 border-t">
+                        <span>Total:</span>
+                        <span>${calculateFramePrice(frameOrderForm.frame_size, frameOrderForm.quantity * selectedPhotos.length)}</span>
+                      </div>
+                      {frameOrderForm.delivery_method === 'ship_to_me' && (
+                        <p className="text-xs text-gray-600 mt-1">
+                          *Delivery fee will be calculated and added by admin based on your address
+                        </p>
+                      )}
                     </div>
-                  )}
+                  </div>
 
+                  {/* Create Order Button */}
                   <Button 
-                    onClick={handleFrameOrder}
-                    disabled={selectedPhotos.length === 0}
-                    className="w-full bg-pink-600 hover:bg-pink-700"
+                    onClick={handleFrameOrder} 
+                    className="w-full bg-pink-600 hover:bg-pink-700 text-white py-3"
+                    disabled={selectedPhotos.length === 0 || !frameOrderForm.frame_size || !frameOrderForm.frame_style || !frameOrderForm.delivery_method}
                   >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Create Frame Order (${calculateFrameTotal()})
+                    Proceed to Payment - ${calculateFramePrice(frameOrderForm.frame_size, frameOrderForm.quantity * selectedPhotos.length)}
                   </Button>
                 </>
               ) : (
                 <div className="text-center py-12">
-                  <ImageIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No Photos Available</h3>
-                  <p className="text-gray-600 mb-4">
-                    You need to have photos with us first, or you can upload your own photos for custom framing.
-                  </p>
+                  <p className="text-gray-600 mb-4">You need photos in your gallery before you can order frames.</p>
                   <Button 
                     className="bg-pink-600 hover:bg-pink-700"
                     onClick={onBookSession}
                   >
-                    Upload Photos for Framing
+                    Book a Session
                   </Button>
                 </div>
               )}
