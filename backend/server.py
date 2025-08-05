@@ -198,6 +198,13 @@ class PhotoUpload(BaseModel):
     file_name: str
     photo_type: str = "upload"
 
+class AdminPhotoUpload(BaseModel):
+    user_email: str
+    user_name: str
+    booking_id: str
+    files: List[dict]  # List of {file_name: str, file_data: str (base64)}
+    photo_type: str = "session"
+
 # Initialize default services
 async def initialize_default_services():
     # Clear existing services first
