@@ -349,6 +349,208 @@ class AlostudioAPITester:
         # For this test, we expect a 401 status, so success means we got the expected error
         return success
 
+    # ADMIN PHOTO UPLOAD TESTS - NEW FUNCTIONALITY
+    
+    def test_admin_photo_upload_base64(self):
+        """Test admin photo upload using base64 method for completed bookings"""
+        if not self.created_booking_id:
+            print("❌ Cannot test admin photo upload - no completed booking ID available")
+            return False
+        
+        # Sample base64 image data (small test image)
+        sample_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        
+        upload_data = {
+            "user_email": "test@example.com",
+            "user_name": "Test User",
+            "booking_id": self.created_booking_id,
+            "files": [
+                {
+                    "file_name": "session_photo1.jpg",
+                    "file_data": sample_base64
+                },
+                {
+                    "file_name": "session_photo2.jpg", 
+                    "file_data": sample_base64
+                }
+            ],
+            "photo_type": "session"
+        }
+        
+        success, response = self.run_test("Admin Photo Upload (Base64)", "POST", 
+                                        f"admin/bookings/{self.created_booking_id}/upload-photos-base64", 200, upload_data)
+        if success and response:
+            photos = response.get('photos', [])
+            print(f"   Successfully uploaded {len(photos)} photos")
+            for photo in photos:
+                print(f"   - Photo ID: {photo.get('id')}, File: {photo.get('file_name')}")
+        return success
+
+    def test_admin_photo_upload_non_completed_booking(self):
+        """Test that admin photo upload fails for non-completed bookings"""
+        # Create a new booking that's not completed
+        if not self.test_service_id:
+            print("❌ Cannot test - no service ID available")
+            return False
+
+        tomorrow = (datetime.now() + timedelta(days=2)).strftime("%Y-%m-%d")
+        booking_data = {
+            "service_id": self.test_service_id,
+            "customer_name": "Jane Doe",
+            "customer_email": "jane@test.com",
+            "customer_phone": "555-5678",
+            "booking_date": tomorrow,
+            "booking_time": "14:00"
+        }
+        
+        # Create booking
+        success, response = self.run_test("Create Test Booking (Non-Completed)", "POST", "bookings", 200, booking_data)
+        if not success:
+            return False
+            
+        non_completed_booking_id = response.get('id')
+        
+        # Try to upload photos to non-completed booking (should fail)
+        sample_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        upload_data = {
+            "user_email": "jane@test.com",
+            "user_name": "Jane Doe",
+            "booking_id": non_completed_booking_id,
+            "files": [{"file_name": "test.jpg", "file_data": sample_base64}],
+            "photo_type": "session"
+        }
+        
+        success, response = self.run_test("Admin Photo Upload (Non-Completed Booking)", "POST", 
+                                        f"admin/bookings/{non_completed_booking_id}/upload-photos-base64", 400, upload_data)
+        # For this test, we expect a 400 status (bad request), so success means we got the expected error
+        return success
+
+    def test_get_booking_photos(self):
+        """Test retrieving photos for a specific booking"""
+        if not self.created_booking_id:
+            print("❌ Cannot test - no booking ID available")
+            return False
+            
+        success, response = self.run_test("Get Booking Photos", "GET", 
+                                        f"admin/bookings/{self.created_booking_id}/photos", 200)
+        if success and response:
+            print(f"   Found {len(response)} photos for booking")
+            for photo in response:
+                print(f"   - Photo: {photo.get('file_name')}, Type: {photo.get('photo_type')}, Admin Upload: {photo.get('uploaded_by_admin')}")
+        return success
+
+    def test_user_dashboard_with_session_photos(self):
+        """Test that uploaded session photos appear in user dashboard"""
+        success, response = self.run_test("User Dashboard (With Session Photos)", "GET", 
+                                        f"user/test@example.com/dashboard", 200)
+        if success and response:
+            photos = response.get('photos', [])
+            session_photos = [p for p in photos if p.get('photo_type') == 'session' and p.get('uploaded_by_admin')]
+            
+            print(f"   Total photos in dashboard: {len(photos)}")
+            print(f"   Session photos uploaded by admin: {len(session_photos)}")
+            
+            if session_photos:
+                print("   Session photos found:")
+                for photo in session_photos[:3]:  # Show first 3
+                    print(f"   - {photo.get('file_name')} (Booking: {photo.get('booking_id')})")
+                return True
+            else:
+                print("   ❌ No session photos found in user dashboard")
+                return False
+        return success
+
+    def test_admin_photo_upload_workflow(self):
+        """Test complete admin photo upload workflow"""
+        print("\n🔄 Testing Complete Admin Photo Upload Workflow:")
+        
+        # Step 1: Verify we have a completed booking
+        if not self.created_booking_id:
+            print("❌ No completed booking available for workflow test")
+            return False
+        
+        print(f"   ✅ Using completed booking: {self.created_booking_id}")
+        
+        # Step 2: Upload photos via admin
+        sample_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        upload_data = {
+            "user_email": "test@example.com",
+            "user_name": "Test User",
+            "booking_id": self.created_booking_id,
+            "files": [
+                {"file_name": "workflow_photo1.jpg", "file_data": sample_base64},
+                {"file_name": "workflow_photo2.jpg", "file_data": sample_base64}
+            ],
+            "photo_type": "session"
+        }
+        
+        success1, response1 = self.run_test("Workflow: Admin Upload Photos", "POST", 
+                                          f"admin/bookings/{self.created_booking_id}/upload-photos-base64", 200, upload_data)
+        if not success1:
+            return False
+        
+        print(f"   ✅ Uploaded {len(response1.get('photos', []))} photos")
+        
+        # Step 3: Verify photos appear in booking photos endpoint
+        success2, response2 = self.run_test("Workflow: Get Booking Photos", "GET", 
+                                          f"admin/bookings/{self.created_booking_id}/photos", 200)
+        if not success2:
+            return False
+        
+        booking_photos = response2
+        workflow_photos = [p for p in booking_photos if 'workflow_photo' in p.get('file_name', '')]
+        print(f"   ✅ Found {len(workflow_photos)} workflow photos in booking")
+        
+        # Step 4: Verify photos appear in user dashboard
+        success3, response3 = self.run_test("Workflow: User Dashboard Check", "GET", 
+                                          f"user/test@example.com/dashboard", 200)
+        if not success3:
+            return False
+        
+        dashboard_photos = response3.get('photos', [])
+        dashboard_workflow_photos = [p for p in dashboard_photos if 'workflow_photo' in p.get('file_name', '')]
+        print(f"   ✅ Found {len(dashboard_workflow_photos)} workflow photos in user dashboard")
+        
+        # Step 5: Verify metadata is correct
+        if dashboard_workflow_photos:
+            sample_photo = dashboard_workflow_photos[0]
+            metadata_correct = (
+                sample_photo.get('photo_type') == 'session' and
+                sample_photo.get('uploaded_by_admin') == True and
+                sample_photo.get('booking_id') == self.created_booking_id
+            )
+            
+            if metadata_correct:
+                print("   ✅ Photo metadata is correct (session type, admin uploaded, correct booking ID)")
+                return True
+            else:
+                print("   ❌ Photo metadata is incorrect")
+                print(f"      Type: {sample_photo.get('photo_type')} (expected: session)")
+                print(f"      Admin uploaded: {sample_photo.get('uploaded_by_admin')} (expected: True)")
+                print(f"      Booking ID: {sample_photo.get('booking_id')} (expected: {self.created_booking_id})")
+                return False
+        else:
+            print("   ❌ No workflow photos found in user dashboard")
+            return False
+
+    def test_admin_photo_upload_invalid_booking(self):
+        """Test admin photo upload with invalid booking ID"""
+        invalid_booking_id = "invalid-booking-123"
+        sample_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        
+        upload_data = {
+            "user_email": "test@example.com",
+            "user_name": "Test User",
+            "booking_id": invalid_booking_id,
+            "files": [{"file_name": "test.jpg", "file_data": sample_base64}],
+            "photo_type": "session"
+        }
+        
+        success, response = self.run_test("Admin Photo Upload (Invalid Booking)", "POST", 
+                                        f"admin/bookings/{invalid_booking_id}/upload-photos-base64", 404, upload_data)
+        # For this test, we expect a 404 status, so success means we got the expected error
+        return success
+
 def main():
     print("🚀 Starting Alostudio API Tests - Comprehensive Backend Testing")
     print("=" * 70)
