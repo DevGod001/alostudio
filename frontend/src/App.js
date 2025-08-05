@@ -66,6 +66,42 @@ function App() {
   
   // Image zoom modal state
   const [zoomedImage, setZoomedImage] = useState(null);
+
+  // Image download functionality
+  const handleImageDownload = async (photo) => {
+    try {
+      if (photo.file_data) {
+        // If we have base64 data, create a download link
+        const link = document.createElement('a');
+        link.href = `data:image/jpeg;base64,${photo.file_data}`;
+        link.download = photo.file_name || 'photo.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (photo.file_url) {
+        // If we have a URL, try to download it
+        try {
+          const response = await fetch(photo.file_url);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = photo.file_name || 'photo.jpg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (fetchError) {
+          // If fetch fails, try opening in new tab
+          window.open(photo.file_url, '_blank');
+        }
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Download failed. The image will open in a new tab instead.');
+      window.open(photo.file_url, '_blank');
+    }
+  };
   
   // User dashboard state
   const [userPhotos, setUserPhotos] = useState([]);
