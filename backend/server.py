@@ -100,11 +100,13 @@ class UserPhoto(BaseModel):
     user_name: str
     booking_id: Optional[str] = None
     file_name: str
+    file_data: Optional[str] = None  # Base64 encoded file data
     file_url: str
     upload_date: datetime = Field(default_factory=datetime.utcnow)
     photo_type: str  # "session", "upload", "edited"
     is_edited: bool = False
     is_private: bool = False
+    uploaded_by_admin: bool = False
 
 class FrameOrder(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
