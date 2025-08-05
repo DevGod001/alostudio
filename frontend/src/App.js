@@ -964,10 +964,10 @@ function App() {
 
       {/* Booking Dialog */}
       <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md mx-4 mobile-dialog">
           <DialogHeader>
-            <DialogTitle>Book {selectedService?.name}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg md:text-xl">Book {selectedService?.name}</DialogTitle>
+            <DialogDescription className="text-sm md:text-base">
               ${selectedService?.base_price} - {selectedService?.deposit_percentage}% deposit required
               {selectedService?.type === 'combo' && (
                 <span className="block text-green-600 font-medium mt-1">
@@ -976,37 +976,40 @@ function App() {
               )}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 mobile-form">
             <div>
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name" className="text-sm">Full Name</Label>
               <Input
                 id="name"
                 value={bookingForm.customer_name}
                 onChange={(e) => setBookingForm(prev => ({ ...prev, customer_name: e.target.value }))}
                 placeholder="Enter your name"
+                className="text-base"
               />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={bookingForm.customer_email}
                 onChange={(e) => setBookingForm(prev => ({ ...prev, customer_email: e.target.value }))}
                 placeholder="Enter your email"
+                className="text-base"
               />
             </div>
             <div>
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone" className="text-sm">Phone</Label>
               <Input
                 id="phone"
                 value={bookingForm.customer_phone}
                 onChange={(e) => setBookingForm(prev => ({ ...prev, customer_phone: e.target.value }))}
                 placeholder="Enter your phone number"
+                className="text-base"
               />
             </div>
             <div>
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="date" className="text-sm">Date</Label>
               <Input
                 id="date"
                 type="date"
@@ -1017,19 +1020,20 @@ function App() {
                     fetchAvailability(new Date(e.target.value));
                   }
                 }}
+                className="text-base"
               />
             </div>
             {availableSlots.length > 0 && (
               <div>
-                <Label>Available Times</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2 max-h-32 overflow-y-auto">
+                <Label className="text-sm">Available Times</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 max-h-32 overflow-y-auto mobile-time-slots">
                   {availableSlots.map((slot) => (
                     <Button
                       key={slot}
                       variant={bookingForm.booking_time === slot ? "default" : "outline"}
                       size="sm"
                       onClick={() => setBookingForm(prev => ({ ...prev, booking_time: slot }))}
-                      className={bookingForm.booking_time === slot ? "bg-pink-600 hover:bg-pink-700" : ""}
+                      className={`text-xs md:text-sm ${bookingForm.booking_time === slot ? "bg-pink-600 hover:bg-pink-700" : ""}`}
                     >
                       {slot}
                     </Button>
@@ -1037,7 +1041,7 @@ function App() {
                 </div>
               </div>
             )}
-            <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
+            <div className="bg-pink-50 p-3 md:p-4 rounded-lg border-l-4 border-pink-500">
               <p className="text-sm text-pink-800 font-medium mb-3">
                 <strong>Payment Instructions:</strong>
               </p>
@@ -1054,7 +1058,7 @@ function App() {
                   onChange={(e) => setBookingForm(prev => ({ ...prev, has_paid: e.target.checked }))}
                   className="mt-1 h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
                 />
-                <Label htmlFor="has_paid" className="text-sm font-medium text-pink-800">
+                <Label htmlFor="has_paid" className="text-sm font-medium text-pink-800 leading-tight">
                   I have sent the payment to the CashApp above
                 </Label>
               </div>
@@ -1066,7 +1070,7 @@ function App() {
             </div>
             <Button 
               onClick={handleBooking} 
-              className="w-full bg-pink-600 hover:bg-pink-700"
+              className="w-full bg-pink-600 hover:bg-pink-700 py-3"
               disabled={!bookingForm.customer_name || !bookingForm.customer_email || !bookingForm.booking_date || !bookingForm.booking_time || !bookingForm.service_id || !bookingForm.has_paid}
             >
               Create Booking
