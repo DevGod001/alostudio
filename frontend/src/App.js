@@ -640,10 +640,8 @@ function App() {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('Upload Photos clicked - booking:', booking.id);
                                     setSelectedBookingForUpload(booking);
                                     setShowPhotoUploadDialog(true);
-                                    console.log('Photo upload dialog state set to true');
                                   }}
                                   className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
                                 >
