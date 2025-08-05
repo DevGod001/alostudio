@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import json
 
 class FrameOrderTester:
-    def __init__(self, base_url="https://660c9e73-bf14-4313-a5e9-0d599270a454.preview.emergentagent.com"):
+    def __init__(self, base_url="https://746ffa03-72c3-4e29-97a1-6ab365d40411.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0

@@ -1,94 +1,67 @@
 <analysis>
-The AI engineer successfully built the Alostudio application from scratch, iteratively refining it based on user feedback. The initial phase focused on establishing a full-stack (React, FastAPI, MongoDB) MVP with core booking functionalities for makeup, photography, and video sessions, including a manual CashApp payment workflow and admin approvals. Significant effort was then directed towards enhancing the UI/UX, ensuring mobile responsiveness across devices, and fixing various navigational and display issues, such as ensuring all service tabs were visible on mobile and fixing hero section scroll behavior. A persistent challenge involved correctly implementing admin access via a hidden route and removing the Made with Emergent badge. The latest phase, still in progress, involves expanding the application with advanced features like an admin earnings wallet, a comprehensive user photo gallery, and a robust frame ordering system tied to user-uploaded or studio photos, alongside improving admin session persistence.
+The AI engineer successfully progressed Alostudio from an MVP to a more feature-rich application. Initial work involved establishing the core React-FastAPI-MongoDB stack, implementing booking, and basic admin features. Subsequent phases focused on UI/UX enhancements, mobile responsiveness, and critical bug fixes. Key decisions included shifting from modal dialogs to inline expandable forms for admin actions due to persistent UI/event blocking issues, moving sensitive credentials to environment variables, and refining the admin session logic. The most recent focus has been on building a robust frame ordering system, involving significant backend schema and endpoint updates, and corresponding frontend UI/logic changes for payments, status tracking, and delivery options. The engineer systematically addressed user feedback, iteratively refining features like image galleries and booking workflows, often through detailed debugging and refactoring to resolve complex frontend interaction issues.
 </analysis>
 
 <product_requirements>
-The user requested a professional, functional AI-driven photo and video studio called Alostudio. Key features include booking makeup (natural, soft, full glow glam), photography (standard, deluxe, newborn/infant indoor, outdoor), and video (indoor, outdoor) sessions for all occasions. Services must have descriptions, prices (admin-adjustable), and images. A 25% deposit for indoor and 60% for outdoor sessions is required, with manual CashApp () payment verification and admin approval. A late fee for indoor sessions and a no-refund policy for user cancellations (admin can refund) are required.
-Further requirements included:
-- Real-time availability checking for appointments.
-- Email/number authentication for user dashboard access (no registration).
-- Brand colors: pink and black.
-- Admin dashboard for price control, booking management (approve, complete, cancel), and payment approval.
-- Processing time: 1-2 weeks for editing.
-- Combo packages (makeup + photo/video) with 15% discount.
-- Newsletter section and policy page.
-- Memories cloud storage for photos/videos (/6 months, user privacy option). (Later removed from scope)
-- Frame ordering: based on user's past studio photos or uploaded photos, with size selection and admin approval.
-- Video editing and graphic design services: users upload files, admin edits/uploads back.
-- Mobile responsiveness for all sections.
-- Persistent admin login (not logged out for an hour).
-- Admin wallet to view earnings.
-- Seamless flow and professional presentation across all sections.
-- WhatsApp chat integration (+16144055997), easily changeable by admin.
+Alostudio is a professional AI-driven photo and video studio requiring online booking for makeup, photography, and video sessions with detailed service descriptions, prices (admin-adjustable), and images. It mandates a 25%/60% deposit via manual CashApp verification and admin approval. A key requirement is real-time availability and user dashboard access via email/number authentication. The admin dashboard needs robust booking, payment approval, and earnings management. Core brand colors are pink and black. The app must be fully mobile-responsive.
+
+Recent additions requested by the user include:
+- Admin ability to upload session photos/videos for completed bookings, viewable in the user's dashboard.
+- A comprehensive user photo gallery with image zoom and download functionality (without conflicting selection).
+- A robust frame ordering system where users select photos (uploaded or studio), choose frame sizes, submit payment via CashApp, see pending admin review status, and admin manages approval, status updates (ready for pickup/shipped), and delivery fees/pickup addresses.
+- Persistent admin login.
+- Admin earnings wallet.
+- Fixes for UI/UX flows, including non-functional buttons and mobile tab overlaps.
 </product_requirements>
 
 <key_technical_concepts>
-- **Full-stack Architecture**: React (Frontend), FastAPI (Backend), MongoDB (Database).
-- **Styling**: Tailwind CSS with Shadcn UI components for a modern, professional look.
-- **Data Handling**: RESTful API communication, MongoDB document structure.
-- **Authentication**: Simple email/phone authentication, specific admin credentials.
-- **Payment Flow**: Manual verification process integrated with booking.
-- **Image Management**:  for sourcing images,  for initial app generation.
-- **State Management**: React  and  hooks.
-- **Utility**:  for unique identifiers.
+- **Full-stack**: React (Frontend), FastAPI (Backend), MongoDB (Database).
+- **Styling**: Tailwind CSS with Shadcn UI components.
+- **Data Flow**: RESTful API communication, Pydantic models for data validation.
+- **State Management**: React  and .
+- **Payment**: Manual CashApp verification process.
+- **Image Handling**: Base64 for image display/download.
 </key_technical_concepts>
 
 <code_architecture>
-The application follows a standard full-stack structure:
 
 
 **Detailed Directory Structure:**
 
 
--   : This is the core FastAPI backend application.
-    -   **Importance**: Handles API routes (), database interactions with MongoDB, service data management, booking logic, admin functionalities (approvals, earnings tracking), and new features like photo uploads, user galleries, and frame orders. It defines Pydantic models for data structures (e.g., , , , , , ).
-    -   **Changes Made**: Initial setup with ,  (async MongoDB driver), , , . Implemented CRUD for services and bookings. Added  for WhatsApp number and CashApp ID. Integrated logic for admin earnings calculation. Implemented new endpoints for , , , , and  to support the photo gallery, frame ordering, and admin wallet features. Updated default services to remove memory storage and include frames. Adjusted booking creation to correctly set  status if the user confirms payment.
+-   :
+    -   **Importance**: The central FastAPI application handling all API endpoints. It manages database interactions with MongoDB for services, bookings, admin settings, photos, and frame orders.
+    -   **Changes Made**: Initial setup with , , . Implemented CRUD operations. Added  for dynamic WhatsApp/CashApp. Integrated admin earnings. Implemented photo upload (), user gallery, and frame order endpoints. Enhanced admin session management. Updated  and  Pydantic models for  status, delivery options (, , ), and comprehensive frame order statuses (, , ). Added  to . Implemented  and . Moved admin credentials to environment variables. Added  endpoint.
 
--   : The main React component for the frontend.
-    -   **Importance**: Manages application state, handles routing (based on URL pathname/hash), fetches data from the backend, renders different sections (hero, services, booking dialog, admin/customer dashboards), and implements UI interactions.
-    -   **Changes Made**:
-        -   Initial scaffold with hero section, service tabs (Makeup, Photo, Video, Combos, Editing, Extras).
-        -   Integrated API calls for fetching services and creating bookings.
-        -   Implemented booking dialog with date/time picker and payment details.
-        -   Added admin login and dashboard rendering based on admin status.
-        -   Implemented scroll functionality for hero buttons (Book Session, View Portfolio).
-        -   Added WhatsApp chat button with dynamic phone number from backend settings.
-        -   Enhanced mobile responsiveness for navigation, hero section, and service cards (single column on mobile, 3/4 columns on tablet/desktop).
-        -   Hid Made with Emergent badge using CSS and JavaScript (later reverted JS for stability).
-        -   Implemented dynamic display of admin menu based on  route or  hash for security.
-        -   Added I have paid checkbox to booking dialog, disabling Create Booking until checked, and displaying a warning.
-        -   Integrated  and  components.
-        -   Added session verification logic () on component mount to support persistent admin login.
-        -   Updated  function to include new service types.
+-   :
+    -   **Importance**: The main React component controlling application state, routing, API calls, and rendering of different sections.
+    -   **Changes Made**: Integrated  and . Enhanced mobile responsiveness for tabs and sections. Implemented admin photo upload UI. Added admin logout button and functionality. Modified  to use inline forms for Mark Complete and Upload Photos instead of Shadcn s. Fixed admin view logic to ensure  is  after login/session verification. Integrated image zoom and download handlers. Updated  state and  to support new payment-integrated frame ordering workflow and delivery options. Added  and  icons.
 
--    (New file): React component for the customer's personal dashboard.
-    -   **Importance**: Displays a user's booking history, their photo gallery (uploaded or studio photos), and allows them to place frame orders.
-    -   **Changes Made**: Created to encapsulate customer-specific functionalities.
+-   :
+    -   **Importance**: Handles customer-specific functionalities including booking history, photo gallery, and frame ordering.
+    -   **Changes Made**: Encapsulates customer-specific UIs. Modified to integrate new image zoom/download with dedicated buttons and removed conflicting selection functionality from the general gallery view. Ensured frame order section retains selection functionality. Began comprehensive rewrite of the Frame Orders tab to display detailed status and delivery options.
 
--    (New file): React component for the admin's earnings wallet.
-    -   **Importance**: Provides the admin with a view of earnings from bookings.
-    -   **Changes Made**: Created to display financial data for the admin.
+-   :
+    -   **Importance**: Displays the admin's earnings.
+    -   **Changes Made**: Created and integrated to show financial data.
 
--    and : Tailwind CSS configuration and custom styles.
-    -   **Importance**: Define the overall visual theme (pink and black), responsiveness, and specific UI element styling.  contains base Tailwind layers and custom CSS variables.
-    -   **Changes Made**: Added custom styles for hero section, service cards, responsive layouts, WhatsApp button positioning, scrollbar hiding, and aggressive CSS for badge removal.
-
-The application leverages Shadcn UI components (e.g., , , , , , ) for a consistent and modern UI.
-
+-    and :
+    -   **Importance**: Defines the application's visual theme and responsiveness.
+    -   **Changes Made**: Adjustments for responsive layouts, including fixes for mobile tab overlapping issues in admin and user dashboards.
 </code_architecture>
 
 <pending_tasks>
-- Full implementation and comprehensive testing of the Order Frame workflow (user selection from gallery/upload, payment, admin approval).
-- Ensuring the user dashboard (My Bookings) fully displays photos and pending jobs.
-- Comprehensive testing of admin session persistence (admin not logged out for an hour after refresh).
-- Complete integration and testing of the  component with real earnings data.
-- Overall flow and functionality of newly added features (photo gallery, frame orders, admin wallet, session persistence) needs thorough verification.
+- Complete the frontend implementation of the robust Order Frame workflow to display all statuses, payment information, and delivery options in the .
+- Integrate and define the  helper function and other necessary helper functions for the frame order status display in .
+- Thoroughly test the comprehensive frame ordering system end-to-end (frontend and backend).
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was actively working on integrating the newly introduced comprehensive photo studio features into the frontend. The backend  had already been updated to include API endpoints for uploading photos, managing user galleries, handling frame orders, and tracking admin earnings, along with changes for admin session management. On the frontend, new React components like  and  were created to handle these functionalities. The current task involved integrating these components into the main  file and ensuring all new service types and features are correctly reflected and handled. Specifically, the last action was updating the  function in  to properly display icons for the new service categories, indicating that the new features are in the process of being wired up and made visible/functional in the UI.
+Immediately before this summary request, the AI engineer was actively implementing the comprehensive frame ordering system on the frontend. The backend () has already been significantly updated to support the new  model (including , , , and detailed  like , , ), admin settings for , and new endpoints for frame order creation with payment, payment submission, and admin management of frame order status and delivery.
+
+On the frontend, the  state in  has been updated to include  and . The  function has been modified to integrate the new payment-integrated workflow, prompting for CashApp reference and setting the initial status. The engineer was in the process of rewriting the Frame Orders section within  to display the detailed status and delivery options for each frame order. The last observed action was adding the  function and other helpers, which resulted in a lint error because  was not yet defined, indicating that the new frontend components for detailed frame order display are still under active development.
 </current_work>
 
 <optional_next_step>
-Continue updating the  function to handle new service types and then proceed with thoroughly testing the newly integrated photo gallery, frame ordering, admin wallet, and admin session persistence features.
+Define and implement the  function and other helper functions in  to correctly display frame order statuses and details.
 </optional_next_step>
