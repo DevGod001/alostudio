@@ -49,8 +49,25 @@ function App() {
   const [allBookings, setAllBookings] = useState([]);
   const [adminSettings, setAdminSettings] = useState({ whatsapp_number: '', cashapp_id: '' });
 
-  // Check if current URL contains /manage for admin access
-  const isManageRoute = window.location.pathname.includes('/manage');
+  // Check if current URL contains manage hash for admin access
+  const [showAdminAccess, setShowAdminAccess] = useState(false);
+  
+  useEffect(() => {
+    // Check for admin access via URL hash or query parameter
+    const checkAdminAccess = () => {
+      const url = window.location.href.toLowerCase();
+      const hasManage = url.includes('/manage') || url.includes('#manage') || url.includes('?admin') || url.includes('manage');
+      setShowAdminAccess(hasManage);
+    };
+    
+    checkAdminAccess();
+    // Listen for URL changes
+    window.addEventListener('popstate', checkAdminAccess);
+    
+    return () => {
+      window.removeEventListener('popstate', checkAdminAccess);
+    };
+  }, []);
 
   // Scroll functions
   const scrollToServices = () => {
