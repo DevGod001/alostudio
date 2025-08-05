@@ -543,13 +543,26 @@ async def approve_booking(booking_id: str):
     
     return {"message": "Booking approved"}
 
+class BookingCompletion(BaseModel):
+    booking_id: str
+    full_payment_received: bool
+    full_payment_amount: Optional[float] = None
+    payment_reference: Optional[str] = None
+
 @api_router.put("/admin/bookings/{booking_id}/complete")
-async def complete_booking(booking_id: str):
+async def complete_booking(booking_id: str, completion_data: BookingCompletion):
+    booking = await db.bookings.find_one({"id": booking_id})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
     result = await db.bookings.update_one(
         {"id": booking_id},
         {
             "$set": {
                 "status": "completed",
+                "full_payment_received": completion_data.full_payment_received,
+                "full_payment_amount": completion_data.full_payment_amount,
+                "full_payment_reference": completion_data.payment_reference,
                 "updated_at": datetime.utcnow()
             }
         }
@@ -557,6 +570,21 @@ async def complete_booking(booking_id: str):
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Add full payment earnings if received
+    if completion_data.full_payment_received and completion_data.full_payment_amount:
+        # Calculate remaining balance (full amount - deposit already paid)
+        deposit_paid = booking.get("payment_amount", 0)
+        remaining_balance = completion_data.full_payment_amount - deposit_paid
+        
+        if remaining_balance > 0:
+            earnings = Earnings(
+                booking_id=booking_id,
+                service_type=f"{booking['service_type']}_balance",
+                amount=remaining_balance,
+                payment_date=datetime.utcnow()
+            )
+            await db.earnings.insert_one(earnings.dict())
     
     return {"message": "Booking marked as completed"}
 
