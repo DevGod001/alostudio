@@ -578,39 +578,40 @@ function App() {
                     {allBookings.map((booking) => (
                       <div key={booking.id} className="border rounded-lg p-4 bg-white shadow-sm">
                         <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                          <div className="flex-1">
-                            <h3 className="font-semibold">{booking.customer_name}</h3>
-                            <p className="text-sm text-gray-600">{booking.customer_email}</p>
-                            <p className="text-sm text-gray-600">{booking.customer_phone}</p>
-                            <p className="text-sm">Service: {booking.service_type}</p>
-                            <p className="text-sm">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
-                            <p className="text-sm">Time: {booking.booking_time}</p>
-                            {booking.payment_amount && (
-                              <p className="text-sm font-medium text-green-600">
-                                Payment: ${booking.payment_amount} - Ref: {booking.payment_reference}
-                              </p>
-                            )}
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-800">{booking.customer_name}</h3>
+                            <p className="text-sm text-gray-600">Service: {booking.service_type}</p>
+                            <p className="text-sm text-gray-600">Date: {new Date(booking.booking_date).toLocaleDateString()}</p>
+                            <p className="text-sm text-gray-600">Time: {booking.booking_time}</p>
+                            <p className="text-sm text-gray-600">Amount: ${booking.payment_amount}</p>
+                            <p className="text-sm text-gray-600">Email: {booking.customer_email}</p>
                           </div>
-                          <div className="flex flex-col gap-2 items-end mobile-admin-actions">
-                            {getStatusBadge(booking.status)}
-                            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                              {booking.status === 'payment_submitted' && (
+                          
+                          <div className="flex flex-col gap-2">
+                            <Badge className={`${
+                              booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              booking.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                              booking.status === 'completed' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                            </Badge>
+                            
+                            <div className="flex flex-col gap-2">
+                              {booking.status === 'pending' && (
                                 <Button 
                                   size="sm" 
                                   onClick={() => handleBookingAction(booking.id, 'approve')}
-                                  className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+                                  className="w-full md:w-auto bg-green-600 hover:bg-green-700"
                                 >
-                                  Approve Payment
+                                  Approve
                                 </Button>
                               )}
                               {booking.status === 'confirmed' && (
                                 <Button 
                                   size="sm" 
-                                  onClick={() => {
-                                  handleBookingAction(booking.id, 'complete');
-                                }}
-                                  variant="outline"
-                                  className="w-full md:w-auto"
+                                  onClick={() => handleBookingAction(booking.id, 'complete')}
+                                  className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
                                 >
                                   Mark Complete
                                 </Button>
@@ -618,11 +619,7 @@ function App() {
                               {booking.status === 'completed' && (
                                 <Button 
                                   size="sm" 
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setExpandedUploadBooking(booking.id);
-                                  }}
+                                  onClick={() => setExpandedUploadBooking(booking.id)}
                                   className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
                                 >
                                   <Camera className="w-4 h-4 mr-1" />
@@ -640,6 +637,133 @@ function App() {
                             </div>
                           </div>
                         </div>
+
+                        {/* Inline Completion Form */}
+                        {expandedCompletionBooking === booking.id && (
+                          <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-800 mb-3">Complete Booking</h4>
+                            <div className="space-y-3">
+                              <label className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={completionForm.full_payment_received}
+                                  onChange={(e) => setCompletionForm(prev => ({ ...prev, full_payment_received: e.target.checked }))}
+                                  className="h-4 w-4"
+                                />
+                                <span className="text-sm">Customer paid the full service amount</span>
+                              </label>
+                              
+                              {completionForm.full_payment_received && (
+                                <>
+                                  <div>
+                                    <Label className="text-sm font-medium">Full Payment Amount ($)</Label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      value={completionForm.full_payment_amount}
+                                      onChange={(e) => setCompletionForm(prev => ({ ...prev, full_payment_amount: e.target.value }))}
+                                      placeholder="Enter full payment amount"
+                                      className="mt-1"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium">Payment Reference (Optional)</Label>
+                                    <Input
+                                      value={completionForm.payment_reference}
+                                      onChange={(e) => setCompletionForm(prev => ({ ...prev, payment_reference: e.target.value }))}
+                                      placeholder="CashApp reference, receipt number, etc."
+                                      className="mt-1"
+                                    />
+                                  </div>
+                                </>
+                              )}
+                              
+                              <div className="flex gap-2 pt-2">
+                                <Button 
+                                  size="sm"
+                                  onClick={() => handleBookingCompletion(booking.id)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  Complete Booking
+                                </Button>
+                                <Button 
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setExpandedCompletionBooking(null);
+                                    setCompletionForm({
+                                      full_payment_received: false,
+                                      full_payment_amount: '',
+                                      payment_reference: ''
+                                    });
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Inline Photo Upload Form */}
+                        {expandedUploadBooking === booking.id && (
+                          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="font-semibold text-blue-800 mb-3">Upload Session Photos</h4>
+                            <div className="space-y-3">
+                              <div>
+                                <Label className="text-sm font-medium">Select Photos/Videos</Label>
+                                <Input
+                                  id={`photo_files_${booking.id}`}
+                                  type="file"
+                                  multiple
+                                  accept="image/*,video/*"
+                                  className="mt-1"
+                                />
+                                <p className="text-xs text-gray-600 mt-1">
+                                  You can select multiple photos and videos. Supported formats: JPG, PNG, GIF, MP4, MOV
+                                </p>
+                              </div>
+                              
+                              <div className="flex gap-2 pt-2">
+                                <Button 
+                                  size="sm"
+                                  onClick={() => {
+                                    const fileInput = document.getElementById(`photo_files_${booking.id}`);
+                                    const files = fileInput.files;
+                                    if (files && files.length > 0) {
+                                      handleAdminPhotoUpload(booking.id, files);
+                                    } else {
+                                      alert('Please select at least one file to upload');
+                                    }
+                                  }}
+                                  disabled={uploadingPhotos}
+                                  className="bg-blue-600 hover:bg-blue-700"
+                                >
+                                  {uploadingPhotos ? (
+                                    <>
+                                      <ClockIcon className="w-4 h-4 mr-1 animate-spin" />
+                                      Uploading...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Camera className="w-4 h-4 mr-1" />
+                                      Upload Photos
+                                    </>
+                                  )}
+                                </Button>
+                                <Button 
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setExpandedUploadBooking(null)}
+                                  disabled={uploadingPhotos}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
